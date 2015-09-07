@@ -1,0 +1,34 @@
+name: iPractice
+main: com.shawckz.ipractice.Practice
+version: 1.0.0
+author: Shawckz
+description: The iPractice plugin, made for the iPvP.org Network by Shawckz
+website: http://shawckz.com
+
+commands:
+  practice:
+    usage: /<command>
+    aliases: [prac]
+    description: iPractice general command
+  duel:
+    usage: /<command>
+    aliases: [1v1, fight, challenge]
+    description: Challenge another player to a duel
+  accept:
+    usage: /<command>
+    aliases: [acc, accreq, acceptrequest]
+    description: Accept a duel from another player
+  viewinv:
+    usage: /<command>
+    aliases: [viewinventory]
+    description: View a match inventory
+  party:
+    usage: /<party>
+    aliases: [p]
+    description: Party commands
+  umatch:
+  rmatch:
+  pmatch:
+  prmatch:
+  pduel:
+  paccept:

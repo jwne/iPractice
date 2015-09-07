@@ -1,0 +1,8 @@
+database:
+    credentials:
+      username: user
+      password: pass
+  name: somedatabase
+  authName: admin
+  host: localhost
+  port: 12345
