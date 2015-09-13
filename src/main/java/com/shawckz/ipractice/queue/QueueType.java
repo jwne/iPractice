@@ -10,6 +10,15 @@ public enum QueueType {
     UNRANKED_PING,
     RANKED_PING,
     UNRANKED_PARTY,
-    RANKED_PARTY
+    RANKED_PARTY;
+
+    public static QueueType fromString(String s){
+        for(QueueType qt : values()){
+            if(qt.toString().equalsIgnoreCase(s)){
+                return qt;
+            }
+        }
+        return null;
+    }
 
 }

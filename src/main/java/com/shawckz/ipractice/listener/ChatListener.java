@@ -2,7 +2,6 @@ package com.shawckz.ipractice.listener;
 
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.player.IPlayer;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

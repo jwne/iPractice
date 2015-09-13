@@ -5,11 +5,10 @@ import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.scoreboard.internal.XLabel;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.practice.label.ValueLabel;
+import org.bukkit.ChatColor;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import org.bukkit.ChatColor;
 
 public class KitBuilderBoardType implements PracticeBoardType {
 

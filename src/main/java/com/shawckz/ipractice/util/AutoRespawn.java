@@ -8,12 +8,11 @@ package com.shawckz.ipractice.util;
 
 
 import com.shawckz.ipractice.Practice;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Created by 360 on 8/12/2014.

@@ -15,15 +15,17 @@ import com.shawckz.ipractice.match.MatchManager;
 import com.shawckz.ipractice.party.PartiesInv;
 import com.shawckz.ipractice.party.PartyManager;
 import com.shawckz.ipractice.player.ICache;
+import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.QueueManager;
-import com.shawckz.ipractice.queue.QueueMatchSet;
 import com.shawckz.ipractice.spawn.Spawn;
+import com.shawckz.ipractice.task.TaskAutoSave;
 import com.shawckz.ipractice.util.EntityHider;
 import lombok.Getter;
-
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class Practice extends JavaPlugin {
 
@@ -59,23 +61,44 @@ public class Practice extends JavaPlugin {
         queueManager.run();
         Ladder.loadLadders(this);
 
-        Bukkit.getPluginManager().registerEvents(new KitInvClose(), this);
-        Bukkit.getPluginManager().registerEvents(new WorldListener(),this);
-        Bukkit.getPluginManager().registerEvents(new ChatListener(),this);
-        Bukkit.getPluginManager().registerEvents(new PartiesInv(),this);
+        getServer().getPluginManager().registerEvents(new KitInvClose(), this);
+        getServer().getPluginManager().registerEvents(new WorldListener(),this);
+        getServer().getPluginManager().registerEvents(new ChatListener(),this);
+        getServer().getPluginManager().registerEvents(new PartiesInv(),this);
 
-
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new TaskAutoSave(), 18000, 18000);//Every 15 minutes
     }
 
     @Override
     public void onDisable(){
+        if(!eventManager.canStartEvent()){
+            eventManager.endEvent();
+        }
+        for(Player pl : Bukkit.getOnlinePlayers()){
+            if(queueManager.inQueue(Practice.getCache().getIPlayer(pl))){
+                queueManager.removeFromQueue(Practice.getCache().getIPlayer(pl));
+            }
+            IPlayer ip = getCache().getIPlayer(pl);
+            ip.update();
+        }
+
+        cache.clearCache();
         dbManager.shutdown();
         iConfig.save();
-        cache.clearCache();
-
         cache = null;
         dbManager = null;
+        commandHandler.getCommands().clear();
+        commandHandler = null;
+        spawn = null;
+        partyManager.getParties().clear();
+        partyManager = null;
         iConfig = null;
+        matchManager = null;
+        entityHider = null;
+        arenaManager.getArenas().clear();;
+        arenaManager = null;
+        eventManager = null;
+
         plugin = null;
     }
 

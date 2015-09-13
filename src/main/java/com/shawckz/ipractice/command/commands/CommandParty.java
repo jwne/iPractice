@@ -8,7 +8,6 @@ import com.shawckz.ipractice.party.Party;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import mkremins.fanciful.FancyMessage;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -37,8 +36,8 @@ public class CommandParty implements ICommand {
             return;
         }
 
-        if(QueueSearch.inQueue(p.getName())){
-            p.sendMessage(ChatColor.RED+"You cannot use party commands while you are in a queue.");
+        if(Practice.getQueueManager().inQueue(ip)){
+            p.sendMessage(ChatColor.RED+"You cannot do this while you are in a queue.");
             return;
         }
 

@@ -1,7 +1,6 @@
 package com.shawckz.ipractice.arena;
 
 import com.shawckz.ipractice.configuration.Configuration;
-
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 

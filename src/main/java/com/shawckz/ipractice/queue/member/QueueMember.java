@@ -2,9 +2,7 @@ package com.shawckz.ipractice.queue.member;
 
 import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import com.shawckz.ipractice.queue.range.QueueRange;
 
 import java.util.Set;
 
@@ -23,5 +21,7 @@ public interface QueueMember {
     Ladder getLadder();
 
     String getName();
+
+    QueueRange getRange();
 
 }

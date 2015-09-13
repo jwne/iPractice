@@ -3,7 +3,6 @@ package com.shawckz.ipractice.match;
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.arena.Arena;
 import com.shawckz.ipractice.exception.PracticeException;
-import com.shawckz.ipractice.match.Team;
 import com.shawckz.ipractice.party.Party;
 import org.bukkit.entity.Player;
 

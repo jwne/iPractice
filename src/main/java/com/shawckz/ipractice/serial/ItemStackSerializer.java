@@ -2,7 +2,6 @@ package com.shawckz.ipractice.serial;
 
 import com.shawckz.ipractice.configuration.AbstractSerializer;
 import com.shawckz.ipractice.util.ItemUtil;
-
 import org.bukkit.inventory.ItemStack;
 
 /**

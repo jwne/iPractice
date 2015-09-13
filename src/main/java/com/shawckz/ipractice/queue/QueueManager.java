@@ -3,9 +3,11 @@ package com.shawckz.ipractice.queue;
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.exception.PracticeException;
 import com.shawckz.ipractice.player.IPlayer;
-import com.shawckz.ipractice.queue.type.RankedQueue;
-import com.shawckz.ipractice.queue.type.UnrankedQueue;
-import lombok.Getter;
+import com.shawckz.ipractice.queue.member.PartyQueueMember;
+import com.shawckz.ipractice.queue.member.QueueMember;
+import com.shawckz.ipractice.queue.member.RankedPartyQueueMember;
+import com.shawckz.ipractice.queue.member.UnrankedPartyQueueMember;
+import com.shawckz.ipractice.queue.type.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -24,6 +26,10 @@ public class QueueManager {
     public QueueManager(Practice instance) {
         registerQueue(QueueType.UNRANKED, new UnrankedQueue());
         registerQueue(QueueType.RANKED, new RankedQueue());
+        registerQueue(QueueType.UNRANKED_PARTY, new UnrankedPartyQueue());
+        registerQueue(QueueType.RANKED_PARTY, new RankedPartyQueue());
+        registerQueue(QueueType.UNRANKED_PING, new UnrankedPingQueue());
+        registerQueue(QueueType.RANKED_PING, new RankedPingQueue());
     }
 
     public void run(){
@@ -47,8 +53,6 @@ public class QueueManager {
         queues.put(type, queue);
     }
 
-
-
     public boolean inQueue(IPlayer player){
         for(Queue queue : queues.values()){
             if(queue.inQueue(player)){
@@ -58,12 +62,34 @@ public class QueueManager {
         return false;
     }
 
-    public void removeFromQueue(IPlayer player){
-        Set<IPlayer> remove = new HashSet<>();
-        remove.add(player);
+    public Queue getQueue(IPlayer player){
         for(Queue queue : queues.values()){
             if(queue.inQueue(player)){
-                queue.removeFromQueue(remove);
+                return queue;
+            }
+        }
+        return null;
+    }
+
+    public void removeFromQueue(IPlayer player){
+        for(Queue queue : queues.values()){
+            if(queue.inQueue(player)){
+                QueueMember member = queue.getMember(player);
+                if(member instanceof PartyQueueMember){
+                    PartyQueueMember pq = (PartyQueueMember) member;
+                    if(pq.getParty().getLeader().equals(player.getName())){
+                        queue.removeFromQueue(member);
+                        //If they are the leader, remove the whole party from the queue
+                    }
+                    else{
+                        member.getPlayers().remove(player);
+                        //If they aren't the leader, just remove them from member
+                    }
+                }
+                else{
+                    //They are in the queue alone, not in a party
+                    queue.removeFromQueue(member);
+                }
             }
         }
     }

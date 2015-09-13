@@ -4,7 +4,6 @@ import com.shawckz.ipractice.command.CmdArgs;
 import com.shawckz.ipractice.command.Command;
 import com.shawckz.ipractice.command.ICommand;
 import com.shawckz.ipractice.match.MatchInventory;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

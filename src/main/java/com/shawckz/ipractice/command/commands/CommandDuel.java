@@ -9,7 +9,6 @@ import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.match.LadderSelect;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -24,7 +23,7 @@ public class CommandDuel implements ICommand {
         if(ip.getState() == PlayerState.AT_SPAWN){
             if(ip.getDuelRequestCooldown() < System.currentTimeMillis()){
 
-                if(QueueSearch.inQueue(ip.getName())){
+                if(Practice.getQueueManager().inQueue(ip)){
                     p.sendMessage(ChatColor.RED+"You cannot do this while you are in a queue.");
                     return;
                 }
@@ -48,7 +47,7 @@ public class CommandDuel implements ICommand {
                         p.sendMessage(ChatColor.RED+"That player is in a party.");
                         return;
                     }
-                    if(QueueSearch.inQueue(tip.getName())){
+                    if(Practice.getQueueManager().inQueue(tip)){
                         p.sendMessage(ChatColor.RED+"That player is in a queue.");
                         return;
                     }

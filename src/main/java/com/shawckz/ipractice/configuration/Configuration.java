@@ -3,14 +3,13 @@ package com.shawckz.ipractice.configuration;
 
 import com.shawckz.ipractice.configuration.annotations.ConfigData;
 import com.shawckz.ipractice.configuration.annotations.ConfigSerializer;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
 
 public class Configuration {

@@ -1,17 +1,16 @@
 package com.shawckz.ipractice.scoreboard.practice.state;
 
+import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
-import com.shawckz.ipractice.queue.member.RankedPartyQueueMember;
-import com.shawckz.ipractice.queue.member.QueueMember;
+import com.shawckz.ipractice.queue.Queue;
 import com.shawckz.ipractice.scoreboard.internal.XLabel;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.practice.label.ValueLabel;
+import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.ChatColor;
 
 public class QueueBoardType implements PracticeBoardType {
 
@@ -31,30 +30,8 @@ public class QueueBoardType implements PracticeBoardType {
         valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.GOLD+"Ladder: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
-                if(QueueSearch.contains(player.getName(), QueueType.RANKED)){
-                    QueueMember qm = QueueSearch.getQueueMember(player.getName(), QueueType.RANKED);
-                    if(qm != null){
-                        return ChatColor.AQUA+qm.getRange().getLadder().getName();
-                    }
-                }
-                else if (QueueSearch.contains(player.getName(), QueueType.UNRANKED)){
-                    QueueMember qm = QueueSearch.getQueueMember(player.getName(), QueueType.UNRANKED);
-                    if(qm != null){
-                        return ChatColor.AQUA+qm.getRange().getLadder().getName();
-                    }
-                }
-                else if (QueueSearch.contains(player.getName(), QueueType.RANKED_PARTY)){
-                    RankedPartyQueueMember qm = QueueSearch.getPartyQueueMember(player.getName(), QueueType.RANKED_PARTY);
-                    if(qm != null){
-                        return ChatColor.AQUA+qm.getRange().getLadder().getName();
-                    }
-                }
-                else if (QueueSearch.contains(player.getName(), QueueType.PARTY)){
-                    RankedPartyQueueMember qm = QueueSearch.getPartyQueueMember(player.getName(), QueueType.PARTY);
-                    if(qm != null){
-                        return ChatColor.AQUA+qm.getRange().getLadder().getName();
-                    }
-
+                if(Practice.getQueueManager().inQueue(player)){
+                    return ChatColor.AQUA+Practice.getQueueManager().getQueue(player).getMember(player).getLadder().getName();
                 }
                 return "";
             }
@@ -63,32 +40,9 @@ public class QueueBoardType implements PracticeBoardType {
         valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.GOLD+"Range: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
-                if(QueueSearch.contains(player.getName(), QueueType.RANKED)){
-                    QueueMember qm = QueueSearch.getQueueMember(player.getName(), QueueType.RANKED);
-                    if(qm != null){
-                        return ChatColor.AQUA+
-                                "["+qm.getRange().getMinKDR()+" -> "+qm.getRange().getMaxKDR()+"]";
-                    }
-                }
-                else if (QueueSearch.contains(player.getName(), QueueType.UNRANKED)){
-                    QueueMember qm = QueueSearch.getQueueMember(player.getName(), QueueType.UNRANKED);
-                    if(qm != null){
-                        return ChatColor.AQUA+"[N/A]";
-                    }
-                }
-                else if (QueueSearch.contains(player.getName(), QueueType.RANKED_PARTY)){
-                    RankedPartyQueueMember qm = QueueSearch.getPartyQueueMember(player.getName(), QueueType.RANKED_PARTY);
-                    if(qm != null){
-                        return ChatColor.AQUA+
-                                "["+qm.getRange().getMinKDR()+" -> "+qm.getRange().getMaxKDR()+"]";
-                    }
-                }
-                else if (QueueSearch.contains(player.getName(), QueueType.PARTY)){
-                    RankedPartyQueueMember qm = QueueSearch.getPartyQueueMember(player.getName(), QueueType.PARTY);
-                    if(qm != null){
-                        return ChatColor.AQUA+"[N/A]";
-                    }
-
+                if(Practice.getQueueManager().inQueue(player)){
+                    Queue queue = Practice.getQueueManager().getQueue(player);
+                    return ChatColor.AQUA+queue.getMember(player).getRange().rangeToString();
                 }
                 return "";
             }
@@ -127,6 +81,6 @@ public class QueueBoardType implements PracticeBoardType {
 
     @Override
     public boolean isApplicable(IPlayer player) {
-        return player.getState() == PlayerState.AT_SPAWN && QueueSearch.inAnyQueue(player);
+        return player.getState() == PlayerState.AT_SPAWN && Practice.getQueueManager().inQueue(player);
     }
 }

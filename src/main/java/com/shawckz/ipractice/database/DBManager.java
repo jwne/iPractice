@@ -1,15 +1,10 @@
 package com.shawckz.ipractice.database;
 
 import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import com.shawckz.ipractice.configuration.Configuration;
 import com.shawckz.ipractice.configuration.annotations.ConfigData;
-
-import java.util.Arrays;
-
 import org.bukkit.plugin.Plugin;
 
 

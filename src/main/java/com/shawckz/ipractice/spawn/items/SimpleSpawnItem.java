@@ -1,7 +1,9 @@
-package com.shawckz.ipractice.spawn;
+package com.shawckz.ipractice.spawn.items;
 
+import com.shawckz.ipractice.spawn.item.SpawnItem;
+import com.shawckz.ipractice.spawn.item.SpawnItemAction;
+import com.shawckz.ipractice.spawn.item.SpawnItemType;
 import com.shawckz.ipractice.util.ItemBuilder;
-
 import org.bukkit.inventory.ItemStack;
 
 public class SimpleSpawnItem extends SpawnItem {

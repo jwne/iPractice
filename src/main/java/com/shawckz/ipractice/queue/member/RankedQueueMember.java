@@ -3,6 +3,7 @@ package com.shawckz.ipractice.queue.member;
 import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.range.EloRange;
+import com.shawckz.ipractice.queue.range.QueueRange;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +18,7 @@ public class RankedQueueMember implements QueueMember {
 
     @Getter private final IPlayer player;
     private final Ladder ladder;
-    @Getter private final EloRange range;
+    @Getter private final QueueRange range;
 
     @Override
     public Set<IPlayer> getPlayers() {

@@ -5,10 +5,9 @@ import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.match.Match;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.member.QueueMember;
-import com.shawckz.ipractice.queue.range.QueueRange;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,13 +33,18 @@ public abstract class Queue {
     public void run(){
         for(Ladder ladder : Ladder.getLadders()){
             Set<QueueMatchSet> found = findMatches(ladder);
-            for(QueueMatchSet set : found){
+            for(final QueueMatchSet set : found){
                 for(QueueMember mem : set.getAll()){
                     if(members.contains(mem)){
                         members.remove(mem);
                     }
                 }
-                createMatch(set).startMatch(Practice.getMatchManager());
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Practice.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+                        createMatch(set).startMatch(Practice.getMatchManager());
+                    }
+                });
             }
         }
     }
@@ -72,16 +76,31 @@ public abstract class Queue {
         return false;
     }
 
-    public abstract void addToQueue(Set<IPlayer> players, Ladder ladder);
+    public abstract void addToQueue(IPlayer player, Ladder ladder);
 
-    public abstract void removeFromQueue(Set<IPlayer> players);
+    public void removeFromQueue(QueueMember member) {
+        if(getMembers().contains(member)){
+            getMembers().remove(member);
+        }
+    }
 
     public abstract Match createMatch(QueueMatchSet set);
-
-    public abstract boolean inRange(QueueMatchSet set);
 
     public abstract Material getIcon();
 
     public abstract boolean canJoin(IPlayer player);
+
+    public QueueMember getMember(IPlayer player) {
+        for(QueueMember member : getMembers()){
+            if(member.getPlayers().contains(player)){
+                return member;
+            }
+        }
+        return null;
+    }
+
+    public boolean inRange(QueueMatchSet set){
+        return set.getAlpha().getRange().inRange(set.getBravo().getRange());
+    }
 
 }

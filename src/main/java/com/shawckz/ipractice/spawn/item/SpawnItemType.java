@@ -1,4 +1,4 @@
-package com.shawckz.ipractice.spawn;
+package com.shawckz.ipractice.spawn.item;
 
 public enum SpawnItemType {
 

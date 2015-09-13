@@ -2,11 +2,10 @@ package com.shawckz.ipractice.party;
 
 import com.shawckz.ipractice.Practice;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.entity.Player;
 
 /**
  * Created by 360 on 5/13/2015.

@@ -2,21 +2,16 @@ package com.shawckz.ipractice.scoreboard.practice;
 
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.player.IPlayer;
-import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
-import com.shawckz.ipractice.scoreboard.internal.label.BasicLabel;
 import com.shawckz.ipractice.scoreboard.practice.state.*;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Team;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class PracticeScoreboard {
 

@@ -3,13 +3,14 @@ package com.shawckz.ipractice.queue.type;
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.match.*;
 import com.shawckz.ipractice.player.IPlayer;
+import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.queue.Queue;
 import com.shawckz.ipractice.queue.QueueMatchSet;
+import com.shawckz.ipractice.queue.QueueType;
 import com.shawckz.ipractice.queue.member.QueueMember;
 import com.shawckz.ipractice.queue.member.UnrankedQueueMember;
-import com.shawckz.ipractice.queue.range.QueueRange;
+import org.bukkit.Material;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -17,6 +18,10 @@ import java.util.Set;
  * Created by 360 on 9/12/2015.
  */
 public class UnrankedQueue extends Queue {
+
+    public UnrankedQueue() {
+        super(QueueType.UNRANKED);
+    }
 
     @Override
     public Match createMatch(QueueMatchSet set) {
@@ -34,28 +39,19 @@ public class UnrankedQueue extends Queue {
     }
 
     @Override
-    public void addToQueue(Set<IPlayer> players, Ladder ladder) {
-        for(IPlayer pl : players){
-            UnrankedQueueMember queueMember = new UnrankedQueueMember(pl, ladder);
-            getMembers().add(queueMember);
-        }
+    public void addToQueue(IPlayer player, Ladder ladder) {
+        UnrankedQueueMember queueMember = new UnrankedQueueMember(player, ladder);
+        getMembers().add(queueMember);
     }
 
     @Override
-    public void removeFromQueue(Set<IPlayer> players) {
-        for(IPlayer pl : players){
-            Iterator<QueueMember> it = getMembers().iterator();
-            while(it.hasNext()){
-                QueueMember member = it.next();
-                if(member.getPlayers().contains(pl)){
-                    getMembers().remove(member);
-                }
-            }
-        }
+    public Material getIcon() {
+        return Material.IRON_HELMET;
     }
 
     @Override
-    public boolean inRange(QueueMatchSet set) {
-        return true;
+    public boolean canJoin(IPlayer player) {
+        return player.getState() == PlayerState.AT_SPAWN && player.getParty() == null;
     }
+
 }

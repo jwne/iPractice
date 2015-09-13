@@ -1,15 +1,15 @@
 package com.shawckz.ipractice.scoreboard.practice.state;
 
+import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.scoreboard.internal.XLabel;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.practice.label.ValueLabel;
+import org.bukkit.ChatColor;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import org.bukkit.ChatColor;
 
 public class SpawnBoardType implements PracticeBoardType {
 
@@ -86,6 +86,6 @@ public class SpawnBoardType implements PracticeBoardType {
 
     @Override
     public boolean isApplicable(IPlayer player) {
-        return player.getState() == PlayerState.AT_SPAWN && !QueueSearch.inAnyQueue(player) && player.getParty() == null;
+        return player.getState() == PlayerState.AT_SPAWN && !Practice.getQueueManager().inQueue(player) && player.getParty() == null;
     }
 }

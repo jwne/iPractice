@@ -5,7 +5,6 @@ import com.shawckz.ipractice.exception.PracticeEventException;
 import com.shawckz.ipractice.player.IPlayer;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 

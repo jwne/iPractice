@@ -10,7 +10,6 @@ import com.shawckz.ipractice.match.PracticeTeam;
 import com.shawckz.ipractice.match.Team;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -22,8 +21,8 @@ public class CommandAccept implements ICommand {
         Player p = (Player) cmdArgs.getSender();
         IPlayer ip = Practice.getCache().getIPlayer(p);
         if(ip.getState() == PlayerState.AT_SPAWN){
-            if(QueueSearch.inQueue(ip.getName())){
-                p.sendMessage(ChatColor.RED+"You cannot duel this while you are in a queue.");
+            if(Practice.getQueueManager().inQueue(ip)){
+                p.sendMessage(ChatColor.RED+"You cannot do this while you are in a queue.");
                 return;
             }
             Player t = cmdArgs.getPlayer(0);
@@ -41,7 +40,7 @@ public class CommandAccept implements ICommand {
                     p.sendMessage(ChatColor.RED+"That player is in a party.");
                     return;
                 }
-                if(QueueSearch.inQueue(tip.getName())){
+                if(Practice.getQueueManager().inQueue(tip)){
                     p.sendMessage(ChatColor.RED+"That player is in a queue.");
                     return;
                 }

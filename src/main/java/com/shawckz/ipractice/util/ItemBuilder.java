@@ -2,11 +2,6 @@ package com.shawckz.ipractice.util;
 
 
 import com.shawckz.ipractice.Practice;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -22,6 +17,10 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This is a chainable builder for {@link ItemStack}s in {@link Bukkit}

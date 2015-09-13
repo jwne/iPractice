@@ -7,21 +7,19 @@ import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.queue.Queue;
 import com.shawckz.ipractice.queue.QueueMatchSet;
 import com.shawckz.ipractice.queue.QueueType;
-import com.shawckz.ipractice.queue.member.QueueMember;
 import com.shawckz.ipractice.queue.member.RankedQueueMember;
 import com.shawckz.ipractice.queue.range.EloRange;
+import com.shawckz.ipractice.queue.range.PingRange;
 import org.bukkit.Material;
-
-import java.util.Iterator;
-import java.util.Set;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 
 /**
  * Created by 360 on 9/12/2015.
  */
-public class RankedQueue extends Queue {
+public class RankedPingQueue extends Queue implements PingQueue{
 
-    public RankedQueue() {
-        super(QueueType.RANKED);
+    public RankedPingQueue() {
+        super(QueueType.RANKED_PING);
     }
 
     @Override
@@ -41,13 +39,14 @@ public class RankedQueue extends Queue {
 
     @Override
     public void addToQueue(IPlayer player, Ladder ladder) {
-        RankedQueueMember queueMember = new RankedQueueMember(player, ladder, new EloRange(player.getElo(ladder)));
+        int ping = ((CraftPlayer)player.getPlayer()).getHandle().ping / 2;
+        RankedQueueMember queueMember = new RankedQueueMember(player, ladder, new PingRange(ping));
         getMembers().add(queueMember);
     }
 
     @Override
     public Material getIcon() {
-        return Material.DIAMOND_HELMET;
+        return Material.CHAINMAIL_CHESTPLATE;
     }
 
     @Override

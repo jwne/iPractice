@@ -5,15 +5,12 @@ import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.configuration.annotations.ConfigData;
 import com.shawckz.ipractice.configuration.annotations.ConfigSerializer;
 import com.shawckz.ipractice.serial.LocationSerializer;
-
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.File;
-import java.util.UUID;
-
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
+
+import java.io.File;
 
 @Getter
 @Setter

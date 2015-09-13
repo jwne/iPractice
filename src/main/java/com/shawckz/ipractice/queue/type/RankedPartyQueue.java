@@ -7,21 +7,19 @@ import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.queue.Queue;
 import com.shawckz.ipractice.queue.QueueMatchSet;
 import com.shawckz.ipractice.queue.QueueType;
-import com.shawckz.ipractice.queue.member.QueueMember;
-import com.shawckz.ipractice.queue.member.RankedQueueMember;
+import com.shawckz.ipractice.queue.member.RankedPartyQueueMember;
+import com.shawckz.ipractice.queue.member.UnrankedPartyQueueMember;
 import com.shawckz.ipractice.queue.range.EloRange;
+import com.shawckz.ipractice.queue.range.UnrankedQueueRange;
 import org.bukkit.Material;
-
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Created by 360 on 9/12/2015.
  */
-public class RankedQueue extends Queue {
+public class RankedPartyQueue extends Queue implements PartyQueue {
 
-    public RankedQueue() {
-        super(QueueType.RANKED);
+    public RankedPartyQueue() {
+        super(QueueType.RANKED_PARTY);
     }
 
     @Override
@@ -41,18 +39,19 @@ public class RankedQueue extends Queue {
 
     @Override
     public void addToQueue(IPlayer player, Ladder ladder) {
-        RankedQueueMember queueMember = new RankedQueueMember(player, ladder, new EloRange(player.getElo(ladder)));
+        RankedPartyQueueMember queueMember = new RankedPartyQueueMember(player.getParty(),
+                new EloRange(player.getParty().getAverageElo(ladder)), ladder);
         getMembers().add(queueMember);
     }
 
     @Override
     public Material getIcon() {
-        return Material.DIAMOND_HELMET;
+        return Material.REDSTONE;
     }
 
     @Override
     public boolean canJoin(IPlayer player) {
-        return player.getState() == PlayerState.AT_SPAWN && player.getParty() == null;
+        return player.getState() == PlayerState.AT_SPAWN && player.getParty() != null &&
+                player.getParty().getLeader().equals(player.getName());
     }
-
 }

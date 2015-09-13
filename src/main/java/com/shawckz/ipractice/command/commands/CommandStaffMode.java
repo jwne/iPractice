@@ -25,7 +25,7 @@ public class CommandStaffMode implements ICommand {
             return;
         }
 
-        if(QueueSearch.inQueue(ip.getName())){
+        if(Practice.getQueueManager().inQueue(ip)){
             p.sendMessage(ChatColor.RED+"You cannot do this while you are in a queue.");
             return;
         }

@@ -4,11 +4,10 @@ import com.shawckz.ipractice.Practice;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.util.io.netty.util.internal.ConcurrentSet;
-
-import java.util.Set;
-
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.Set;
 
 public abstract class XScoreboardTimer implements XLabel {
 

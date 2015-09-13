@@ -3,7 +3,6 @@ package com.shawckz.ipractice.kit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

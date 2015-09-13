@@ -2,14 +2,13 @@ package com.shawckz.ipractice.serial;
 
 import com.shawckz.ipractice.configuration.AbstractSerializer;
 import com.shawckz.ipractice.exception.PracticeException;
-
-import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Map;
 
 public class InventorySerializer extends AbstractSerializer<Inventory> {
 

@@ -4,12 +4,11 @@ import com.shawckz.ipractice.Practice;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.util.org.apache.commons.io.FilenameUtils;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.bukkit.plugin.Plugin;
 
 public class ArenaManager {
 

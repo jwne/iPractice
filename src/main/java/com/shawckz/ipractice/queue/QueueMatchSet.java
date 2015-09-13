@@ -1,10 +1,7 @@
 package com.shawckz.ipractice.queue;
 
 import com.shawckz.ipractice.match.Ladder;
-import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.member.QueueMember;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;

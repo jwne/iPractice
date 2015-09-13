@@ -2,6 +2,8 @@ package com.shawckz.ipractice.queue.member;
 
 import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
+import com.shawckz.ipractice.queue.range.QueueRange;
+import com.shawckz.ipractice.queue.range.UnrankedQueueRange;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
@@ -15,6 +17,7 @@ public class UnrankedQueueMember implements QueueMember {
 
     private final IPlayer player;
     private final Ladder ladder;
+    private final UnrankedQueueRange range = new UnrankedQueueRange();
 
     @Override
     public Set<IPlayer> getPlayers() {
@@ -31,5 +34,10 @@ public class UnrankedQueueMember implements QueueMember {
     @Override
     public String getName() {
         return player.getName();
+    }
+
+    @Override
+    public QueueRange getRange() {
+        return range;
     }
 }

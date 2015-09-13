@@ -1,9 +1,8 @@
 package com.shawckz.ipractice.serial;
 
 import com.shawckz.ipractice.configuration.AbstractSerializer;
-import com.shawckz.ipractice.kit.Kit;
 import com.shawckz.ipractice.exception.PracticeException;
-
+import com.shawckz.ipractice.kit.Kit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

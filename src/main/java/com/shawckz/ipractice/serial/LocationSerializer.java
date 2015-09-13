@@ -1,7 +1,6 @@
 package com.shawckz.ipractice.serial;
 
 import com.shawckz.ipractice.configuration.AbstractSerializer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

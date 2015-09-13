@@ -4,10 +4,10 @@ import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.party.Party;
 import com.shawckz.ipractice.player.IPlayer;
+import com.shawckz.ipractice.queue.range.EloRange;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
-
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -23,11 +23,10 @@ import java.util.Set;
  * Basically combines a party with range and ladder into one class.
  */
 @AllArgsConstructor
-public class RankedPartyQueueMember implements QueueMember {
+public class RankedPartyQueueMember implements QueueMember, PartyQueueMember {
 
     @Getter @NonNull Party party;
-    @Getter @NonNull
-    EloRange range;
+    @Getter @NonNull EloRange range;
     @Getter @NonNull Ladder ladder;
 
     public double getAverageElo(){
@@ -47,5 +46,10 @@ public class RankedPartyQueueMember implements QueueMember {
             players.add(Practice.getCache().getIPlayer(pl));
         }
         return players;
+    }
+
+    @Override
+    public String getName() {
+        return party.getLeader()+"'s Party";
     }
 }

@@ -11,7 +11,6 @@ import com.shawckz.ipractice.party.PartyDuel;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import mkremins.fanciful.FancyMessage;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

@@ -4,7 +4,6 @@ import com.shawckz.ipractice.player.IPlayer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import mkremins.fanciful.FancyMessage;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

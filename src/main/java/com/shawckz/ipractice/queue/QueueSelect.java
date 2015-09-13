@@ -1,8 +1,8 @@
 package com.shawckz.ipractice.queue;
 
 import com.shawckz.ipractice.Practice;
-import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
+import com.shawckz.ipractice.queue.type.PartyQueue;
 import com.shawckz.ipractice.util.ItemBuilder;
 import lombok.Getter;
 import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
@@ -34,7 +34,9 @@ public abstract class QueueSelect implements Listener {
         inv = Bukkit.createInventory(null, 9, ChatColor.BLUE + "Select a Queue");
 
         for (Queue queue : Practice.getQueueManager().getQueues().values()) {
-            inv.addItem(new ItemBuilder(queue.getIcon()).name(ChatColor.AQUA + WordUtils.capitalizeFully(queue.getType().toString())).build());
+            if(queue.canJoin(p)){
+                inv.addItem(new ItemBuilder(queue.getIcon()).name(ChatColor.AQUA + WordUtils.capitalizeFully(queue.getType().toString().replaceAll(" ","_"))).build());
+            }
         }
 
         p.getPlayer().openInventory(inv);
@@ -52,9 +54,9 @@ public abstract class QueueSelect implements Listener {
                         p.getPlayer().closeInventory();
                         ItemStack i = e.getCurrentItem();
                         if (i.hasItemMeta() && i.getItemMeta().getDisplayName() != null) {
-                            String name = ChatColor.stripColor(i.getItemMeta().getDisplayName());
-                            if (QueueType.valueOf(name.toUpperCase()) != null) {
-                                onSelect(QueueType.valueOf(name.toUpperCase()));
+                            String name = ChatColor.stripColor(i.getItemMeta().getDisplayName()).replaceAll(" ","_");
+                            if (QueueType.fromString(name.toUpperCase()) != null) {
+                                onSelect(QueueType.fromString(name.toUpperCase()));
                                 HandlerList.unregisterAll(this);
                                 return;
                             } else {

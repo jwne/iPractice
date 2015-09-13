@@ -10,19 +10,25 @@ import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.queue.Queue;
 import com.shawckz.ipractice.queue.QueueSelect;
 import com.shawckz.ipractice.queue.QueueType;
+import com.shawckz.ipractice.spawn.item.SpawnItem;
+import com.shawckz.ipractice.spawn.item.SpawnItemAction;
+import com.shawckz.ipractice.spawn.item.SpawnItemType;
+import com.shawckz.ipractice.spawn.items.SimpleSpawnItem;
 import com.shawckz.ipractice.util.ItemBuilder;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Spawn implements Listener {
 
@@ -65,9 +71,7 @@ public class Spawn implements Listener {
                                     Queue queue = Practice.getQueueManager().getQueues().get(type);
                                     if(queue != null){
                                         if(queue.canJoin(player)){
-                                            Set<IPlayer> add = new HashSet<>();
-                                            add.add(player);
-                                            queue.addToQueue(add, ladder);
+                                            queue.addToQueue(player, ladder);
                                             player.getPlayer().sendMessage(ChatColor.BLUE+"You joined the "+ChatColor.GREEN+
                                                     WordUtils.capitalizeFully(queue.getType().toString())
                                                     +ChatColor.BLUE+" queue.");
@@ -90,11 +94,19 @@ public class Spawn implements Listener {
             }
         }));
 
-        registerItem(new SimpleSpawnItem(5, new ItemBuilder(Material.EYE_OF_ENDER)
+        registerItem(new SimpleSpawnItem(4, new ItemBuilder(Material.EYE_OF_ENDER)
                 .name(ChatColor.GOLD + "Host an Event"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().sendMessage(ChatColor.GOLD + "Coming soon!");
+                player.getPlayer().sendMessage(ChatColor.GOLD + "The Event System is currently in development and will be out soon!!");
+            }
+        }));
+
+        registerItem(new SimpleSpawnItem(6, new ItemBuilder(Material.FIREWORK_CHARGE)
+                .name(ChatColor.GOLD + "Kite Practice"), new SpawnItemAction() {
+            @Override
+            public void onClick(final IPlayer player) {
+                player.getPlayer().sendMessage(ChatColor.GOLD + "Kite Practice is currently in development and will be out soon!");
             }
         }));
 
@@ -127,17 +139,18 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(2, new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD))
-                .name(ChatColor.GOLD+"Ranked 2v2 Party Queue"), SpawnItemType.PARTY, new SpawnItemAction() {
+                .name(ChatColor.GOLD+"Join a Party Queue"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().performCommand("prmatch");
+                player.getPlayer().sendMessage(ChatColor.GOLD + "Party queues are currently in development and will be out soon!!");
             }
         }));
-        registerItem(new SimpleSpawnItem(3, new ItemBuilder(new ItemStack(Material.IRON_SWORD))
-                .name(ChatColor.GOLD + "Unranked Party Queue"), SpawnItemType.PARTY, new SpawnItemAction() {
+
+        registerItem(new SimpleSpawnItem(4, new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD))
+                .name(ChatColor.GOLD+"Party Kite Practice"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().performCommand("pmatch");
+                player.getPlayer().sendMessage(ChatColor.GOLD + "Kite Practice is currently in development and will be out soon!");
             }
         }));
 

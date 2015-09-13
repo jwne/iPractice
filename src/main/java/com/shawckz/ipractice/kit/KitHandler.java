@@ -4,12 +4,10 @@ import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.exception.KitException;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.serial.KitSerializer;
-import com.shawckz.ipractice.exception.PracticeException;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public class KitHandler {
 

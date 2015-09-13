@@ -12,6 +12,7 @@ import com.shawckz.ipractice.database.mongo.annotations.DatabaseSerializer;
 import com.shawckz.ipractice.database.mongo.annotations.MongoColumn;
 import org.apache.commons.lang.ClassUtils;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -20,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
 
 public abstract class AutoMongo {
 

@@ -1,6 +1,5 @@
 package com.shawckz.ipractice.event;
 
-import lombok.Getter;
 import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 
 public enum EventType {

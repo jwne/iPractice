@@ -8,8 +8,9 @@ import com.shawckz.ipractice.queue.Queue;
 import com.shawckz.ipractice.queue.QueueMatchSet;
 import com.shawckz.ipractice.queue.QueueType;
 import com.shawckz.ipractice.queue.member.QueueMember;
-import com.shawckz.ipractice.queue.member.RankedQueueMember;
-import com.shawckz.ipractice.queue.range.EloRange;
+import com.shawckz.ipractice.queue.member.UnrankedPartyQueueMember;
+import com.shawckz.ipractice.queue.member.UnrankedQueueMember;
+import com.shawckz.ipractice.queue.range.UnrankedQueueRange;
 import org.bukkit.Material;
 
 import java.util.Iterator;
@@ -18,16 +19,16 @@ import java.util.Set;
 /**
  * Created by 360 on 9/12/2015.
  */
-public class RankedQueue extends Queue {
+public class UnrankedPartyQueue extends Queue implements PartyQueue {
 
-    public RankedQueue() {
-        super(QueueType.RANKED);
+    public UnrankedPartyQueue() {
+        super(QueueType.UNRANKED_PARTY);
     }
 
     @Override
     public Match createMatch(QueueMatchSet set) {
         MatchBuilder builder = Practice.getMatchManager().matchBuilder(set.getLadder());
-        builder.setRanked(true);
+        builder.setRanked(false);
         builder.registerTeam(new PracticeTeam(set.getAlpha().getName(), Team.ALPHA));
         builder.registerTeam(new PracticeTeam(set.getBravo().getName(), Team.BRAVO));
         for(IPlayer player : set.getAlpha().getPlayers()){
@@ -41,18 +42,18 @@ public class RankedQueue extends Queue {
 
     @Override
     public void addToQueue(IPlayer player, Ladder ladder) {
-        RankedQueueMember queueMember = new RankedQueueMember(player, ladder, new EloRange(player.getElo(ladder)));
+        UnrankedPartyQueueMember queueMember = new UnrankedPartyQueueMember(player.getParty(), ladder, new UnrankedQueueRange());
         getMembers().add(queueMember);
     }
 
     @Override
     public Material getIcon() {
-        return Material.DIAMOND_HELMET;
+        return Material.GOLD_INGOT;
     }
 
     @Override
     public boolean canJoin(IPlayer player) {
-        return player.getState() == PlayerState.AT_SPAWN && player.getParty() == null;
+        return player.getState() == PlayerState.AT_SPAWN && player.getParty() != null &&
+                player.getParty().getLeader().equals(player.getName());
     }
-
 }

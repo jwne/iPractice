@@ -31,15 +31,15 @@ public class MatchBoardType implements PracticeBoardType {
         remove(scoreboard);
         Match match = Practice.getMatchManager().getMatch(player);
 
-        labels.add(new BasicLabel(scoreboard, 3, ChatColor.GRAY + "" +
+        labels.add(new BasicLabel(scoreboard, 4, ChatColor.GRAY + "" +
                 ChatColor.STRIKETHROUGH + "-------------------" + ChatColor.GREEN + "" + ChatColor.YELLOW));
 
-        labels.add(new BasicLabel(scoreboard, 1, ChatColor.GRAY + "" +
+        labels.add(new BasicLabel(scoreboard, 2, ChatColor.GRAY + "" +
                 ChatColor.STRIKETHROUGH + "-------------------" + ChatColor.RED));
 
 
-        this.matchTimerLabel = new MatchTimerLabel(scoreboard, 2, match);
-        this.enderpearlCooldownLabel = new EnderpearlCooldownLabel(scoreboard, 2, player);
+        this.matchTimerLabel = new MatchTimerLabel(scoreboard, 3, match);
+        this.enderpearlCooldownLabel = new EnderpearlCooldownLabel(scoreboard, 1, player);
 
         labels.add(matchTimerLabel);
 

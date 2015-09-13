@@ -3,7 +3,7 @@ package com.shawckz.ipractice.queue.range;
 /**
  * Created by 360 on 9/12/2015.
  */
-public class EloRange implements QueueRange<EloRange> {
+public class EloRange implements QueueRange {
 
     private int minElo;
     private int maxElo;
@@ -23,8 +23,12 @@ public class EloRange implements QueueRange<EloRange> {
     }
 
     @Override
-    public boolean inRange(EloRange range) {
-        return minElo <= range.getElo() && maxElo >= range.getElo();
+    public boolean inRange(QueueRange range) {
+        if(range instanceof EloRange){
+            EloRange r = (EloRange) range;
+            return minElo <= r.getElo() && maxElo >= r.getElo();
+        }
+        return false;
     }
 
     public int getElo() {
@@ -37,5 +41,10 @@ public class EloRange implements QueueRange<EloRange> {
 
     public int getMinElo() {
         return minElo;
+    }
+
+    @Override
+    public String rangeToString() {
+        return "["+minElo+" -> "+maxElo+"]";
     }
 }

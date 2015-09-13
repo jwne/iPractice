@@ -4,7 +4,6 @@ import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.util.ItemBuilder;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

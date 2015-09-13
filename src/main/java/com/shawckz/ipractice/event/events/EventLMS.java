@@ -5,12 +5,11 @@ import com.shawckz.ipractice.event.EventType;
 import com.shawckz.ipractice.event.PracticeEvent;
 import com.shawckz.ipractice.exception.PracticeEventException;
 import com.shawckz.ipractice.player.IPlayer;
+import org.bukkit.ChatColor;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import org.bukkit.ChatColor;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class EventLMS extends PracticeEvent {
 
