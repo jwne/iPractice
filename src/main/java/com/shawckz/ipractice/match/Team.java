@@ -1,15 +1,10 @@
 package com.shawckz.ipractice.match;
 
+/**
+ * Created by 360 on 9/12/2015.
+ */
 public enum Team {
 
-    ALPHA,
-    BRAVO;
-
-    public Team getOpposite(){
-        if(this == ALPHA){
-            return BRAVO;
-        }
-        return ALPHA;
-    }
+    ALPHA, BRAVO
 
 }

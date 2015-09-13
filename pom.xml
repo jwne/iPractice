@@ -27,14 +27,6 @@
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
-        <!-- <repository>
-             <id>techcable-repo</id>
-             <url>http://repo.techcable.net/content/groups/public/</url>
-             <snapshots>
-                 <enabled>true</enabled>
-                 <updatePolicy>always</updatePolicy>
-             </snapshots>
-         </repository>-->
     </repositories>
 
     <dependencies>
@@ -62,25 +54,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>Bukkit</artifactId>
-            <version>LATEST</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>Spigot</artifactId>
-            <version>LATEST</version>
-        </dependency>
-        <!-- <dependency>
-             <groupId>net.techcable</groupId>
-             <artifactId>npclib</artifactId>
-             <version>LATEST</version>
-         </dependency> -->
-        <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>LATEST</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

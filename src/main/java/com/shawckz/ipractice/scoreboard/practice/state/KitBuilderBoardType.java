@@ -52,7 +52,7 @@ public class KitBuilderBoardType implements PracticeBoardType {
         remove(scoreboard);
         for(ValueLabel label : valueLabels){
             label.setVisible(true);
-            label.updateValue();
+            label.update();
         }
     }
 

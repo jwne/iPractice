@@ -6,19 +6,16 @@ import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.match.LadderSelect;
 import com.shawckz.ipractice.party.PartiesInv;
 import com.shawckz.ipractice.player.IPlayer;
-import com.shawckz.ipractice.exception.PracticeException;
 import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.queue.Queue;
+import com.shawckz.ipractice.queue.QueueSelect;
 import com.shawckz.ipractice.queue.QueueType;
 import com.shawckz.ipractice.util.ItemBuilder;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -55,23 +52,46 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(2, new ItemBuilder(Material.DIAMOND_SWORD)
-                .name(ChatColor.GOLD+"Ranked Queue"), new SpawnItemAction() {
+                .name(ChatColor.GOLD+"Join a Queue"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().performCommand("rmatch");
-            }
-        }));
-
-        registerItem(new SimpleSpawnItem(3, new ItemBuilder(Material.IRON_SWORD)
-                .name(ChatColor.GOLD + "Unranked Queue"), new SpawnItemAction() {
-            @Override
-            public void onClick(final IPlayer player) {
-                player.getPlayer().performCommand("umatch");
+                if(!Practice.getQueueManager().inQueue(player)){
+                    new QueueSelect(player){
+                        @Override
+                        public void onSelect(final QueueType type) {
+                            new LadderSelect(player){
+                                @Override
+                                public void onSelect(final Ladder ladder) {
+                                    Queue queue = Practice.getQueueManager().getQueues().get(type);
+                                    if(queue != null){
+                                        if(queue.canJoin(player)){
+                                            Set<IPlayer> add = new HashSet<>();
+                                            add.add(player);
+                                            queue.addToQueue(add, ladder);
+                                            player.getPlayer().sendMessage(ChatColor.BLUE+"You joined the "+ChatColor.GREEN+
+                                                    WordUtils.capitalizeFully(queue.getType().toString())
+                                                    +ChatColor.BLUE+" queue.");
+                                        }
+                                        else{
+                                            player.getPlayer().sendMessage(ChatColor.RED+"You can't join the queue right now.");
+                                        }
+                                    }
+                                    else{
+                                        player.getPlayer().sendMessage(ChatColor.RED+"That queue is not yet supported.");
+                                    }
+                                }
+                            };
+                        }
+                    };
+                }
+                else{
+                    player.getPlayer().sendMessage(ChatColor.RED+"You are already in a queue!");
+                }
             }
         }));
 
         registerItem(new SimpleSpawnItem(5, new ItemBuilder(Material.EYE_OF_ENDER)
-                .name(ChatColor.GOLD + "Host an PracticeEvent"), new SpawnItemAction() {
+                .name(ChatColor.GOLD + "Host an Event"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 player.getPlayer().sendMessage(ChatColor.GOLD + "Coming soon!");
@@ -114,7 +134,7 @@ public class Spawn implements Listener {
             }
         }));
         registerItem(new SimpleSpawnItem(3, new ItemBuilder(new ItemStack(Material.IRON_SWORD))
-                .name(ChatColor.GOLD+"Unranked Party Queue"), SpawnItemType.PARTY, new SpawnItemAction() {
+                .name(ChatColor.GOLD + "Unranked Party Queue"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 player.getPlayer().performCommand("pmatch");
@@ -171,22 +191,11 @@ public class Spawn implements Listener {
 
         if(p.getItemInHand() != null && p.getItemInHand().getType() == Material.BLAZE_POWDER && p.getItemInHand().hasItemMeta()
                 &&p.getItemInHand().getItemMeta().getDisplayName() != null){
-            if(Queue.contains(p.getName(), QueueType.UNRANKED)){
-                Queue.removeFromQueue(iPlayer,QueueType.UNRANKED);
+            if(Practice.getQueueManager().inQueue(iPlayer)){
+                Practice.getQueueManager().removeFromQueue(iPlayer);
+                iPlayer.sendToSpawnNoTp();
+                e.setCancelled(true);
             }
-            if (Queue.contains(p.getName(), QueueType.RANKED)) {
-                Queue.removeFromQueue(iPlayer, QueueType.RANKED);
-            }
-            if(iPlayer.getParty() != null){
-                if(Queue.inPartyQueue(iPlayer.getParty())){
-                    Queue.removeFromPartyQueue(iPlayer.getParty());
-                }
-                if(Queue.inRankedPartyQueue(iPlayer.getParty())){
-                    Queue.removeFromRankedPartyQueue(iPlayer.getParty());
-                }
-            }
-            iPlayer.sendToSpawn();
-            e.setCancelled(true);
             return;
         }
 

@@ -1,4 +1,4 @@
-package com.shawckz.ipractice.queue;
+package com.shawckz.ipractice.queue.member;
 
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.match.Ladder;
@@ -10,6 +10,9 @@ import lombok.NonNull;
 
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by 360 on 5/13/2015.
  */
@@ -20,13 +23,14 @@ import org.bukkit.entity.Player;
  * Basically combines a party with range and ladder into one class.
  */
 @AllArgsConstructor
-public class PartyQueueMember {
+public class RankedPartyQueueMember implements QueueMember {
 
     @Getter @NonNull Party party;
-    @Getter @NonNull KDRange range;
+    @Getter @NonNull
+    EloRange range;
     @Getter @NonNull Ladder ladder;
 
-    public double getScopeAverage(){
+    public double getAverageElo(){
         double averageScope = 0.0;
         for(Player p : party.getAllPlayers()){
             IPlayer ip = Practice.getCache().getIPlayer(p);
@@ -36,4 +40,12 @@ public class PartyQueueMember {
         return (double)averageScope;
     }
 
+    @Override
+    public Set<IPlayer> getPlayers() {
+        Set<IPlayer> players = new HashSet<>();
+        for(Player pl : party.getAllPlayers()){
+            players.add(Practice.getCache().getIPlayer(pl));
+        }
+        return players;
+    }
 }

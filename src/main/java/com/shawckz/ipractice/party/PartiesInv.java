@@ -1,11 +1,9 @@
 package com.shawckz.ipractice.party;
 
 import com.shawckz.ipractice.Practice;
-import com.shawckz.ipractice.match.LadderSelect;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.util.ItemBuilder;
-import mkremins.fanciful.FancyMessage;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

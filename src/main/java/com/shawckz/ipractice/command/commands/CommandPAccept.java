@@ -4,10 +4,11 @@ import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.command.CmdArgs;
 import com.shawckz.ipractice.command.Command;
 import com.shawckz.ipractice.command.ICommand;
-import com.shawckz.ipractice.match.type.PartyMatch;
+import com.shawckz.ipractice.match.Match;
+import com.shawckz.ipractice.match.PracticeTeam;
+import com.shawckz.ipractice.match.Team;
 import com.shawckz.ipractice.party.Party;
 import com.shawckz.ipractice.party.PartyDuel;
-import com.shawckz.ipractice.party.PartyManager;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 
@@ -39,8 +40,16 @@ public class CommandPAccept implements ICommand {
                             if(party.hasDuel(tParty)){
                                 PartyDuel duel = party.getDuel(tParty);
 
-                                PartyMatch match = new PartyMatch(duel.getLadder(), party, tParty, false);
-                                match.start();
+                                Match match = Practice.getMatchManager().matchBuilder(duel.getLadder())
+                                        .registerTeam(new PracticeTeam(duel.getSender().getLeader()+"'s Party", Team.ALPHA))
+                                        .registerTeam(new PracticeTeam(duel.getRecipient().getLeader()+"'s Party", Team.BRAVO))
+                                        .withParty(duel.getSender(), duel.getSender().getLeader()+"'s Party")
+                                        .withParty(duel.getRecipient(), duel.getSender().getLeader()+"'s Party")
+                                        .setRanked(false)
+                                        .build();
+
+                                match.startMatch(Practice.getMatchManager());
+
                             }
                             else{
                                 p.sendMessage(ChatColor.RED+"That party has not challenged you to a duel.");

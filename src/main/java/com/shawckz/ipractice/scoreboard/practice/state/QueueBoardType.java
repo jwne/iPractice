@@ -2,18 +2,14 @@ package com.shawckz.ipractice.scoreboard.practice.state;
 
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
-import com.shawckz.ipractice.queue.PartyQueueMember;
-import com.shawckz.ipractice.queue.Queue;
-import com.shawckz.ipractice.queue.QueueMember;
-import com.shawckz.ipractice.queue.QueueType;
+import com.shawckz.ipractice.queue.member.RankedPartyQueueMember;
+import com.shawckz.ipractice.queue.member.QueueMember;
 import com.shawckz.ipractice.scoreboard.internal.XLabel;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.practice.label.ValueLabel;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.ChatColor;
 
@@ -35,26 +31,26 @@ public class QueueBoardType implements PracticeBoardType {
         valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.GOLD+"Ladder: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
-                if(Queue.contains(player.getName(), QueueType.RANKED)){
-                    QueueMember qm = Queue.getQueueMember(player.getName(), QueueType.RANKED);
+                if(QueueSearch.contains(player.getName(), QueueType.RANKED)){
+                    QueueMember qm = QueueSearch.getQueueMember(player.getName(), QueueType.RANKED);
                     if(qm != null){
                         return ChatColor.AQUA+qm.getRange().getLadder().getName();
                     }
                 }
-                else if (Queue.contains(player.getName(), QueueType.UNRANKED)){
-                    QueueMember qm = Queue.getQueueMember(player.getName(), QueueType.UNRANKED);
+                else if (QueueSearch.contains(player.getName(), QueueType.UNRANKED)){
+                    QueueMember qm = QueueSearch.getQueueMember(player.getName(), QueueType.UNRANKED);
                     if(qm != null){
                         return ChatColor.AQUA+qm.getRange().getLadder().getName();
                     }
                 }
-                else if (Queue.contains(player.getName(), QueueType.RANKED_PARTY)){
-                    PartyQueueMember qm = Queue.getPartyQueueMember(player.getName(), QueueType.RANKED_PARTY);
+                else if (QueueSearch.contains(player.getName(), QueueType.RANKED_PARTY)){
+                    RankedPartyQueueMember qm = QueueSearch.getPartyQueueMember(player.getName(), QueueType.RANKED_PARTY);
                     if(qm != null){
                         return ChatColor.AQUA+qm.getRange().getLadder().getName();
                     }
                 }
-                else if (Queue.contains(player.getName(), QueueType.PARTY)){
-                    PartyQueueMember qm = Queue.getPartyQueueMember(player.getName(), QueueType.PARTY);
+                else if (QueueSearch.contains(player.getName(), QueueType.PARTY)){
+                    RankedPartyQueueMember qm = QueueSearch.getPartyQueueMember(player.getName(), QueueType.PARTY);
                     if(qm != null){
                         return ChatColor.AQUA+qm.getRange().getLadder().getName();
                     }
@@ -67,28 +63,28 @@ public class QueueBoardType implements PracticeBoardType {
         valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.GOLD+"Range: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
-                if(Queue.contains(player.getName(), QueueType.RANKED)){
-                    QueueMember qm = Queue.getQueueMember(player.getName(), QueueType.RANKED);
+                if(QueueSearch.contains(player.getName(), QueueType.RANKED)){
+                    QueueMember qm = QueueSearch.getQueueMember(player.getName(), QueueType.RANKED);
                     if(qm != null){
                         return ChatColor.AQUA+
                                 "["+qm.getRange().getMinKDR()+" -> "+qm.getRange().getMaxKDR()+"]";
                     }
                 }
-                else if (Queue.contains(player.getName(), QueueType.UNRANKED)){
-                    QueueMember qm = Queue.getQueueMember(player.getName(), QueueType.UNRANKED);
+                else if (QueueSearch.contains(player.getName(), QueueType.UNRANKED)){
+                    QueueMember qm = QueueSearch.getQueueMember(player.getName(), QueueType.UNRANKED);
                     if(qm != null){
                         return ChatColor.AQUA+"[N/A]";
                     }
                 }
-                else if (Queue.contains(player.getName(), QueueType.RANKED_PARTY)){
-                    PartyQueueMember qm = Queue.getPartyQueueMember(player.getName(), QueueType.RANKED_PARTY);
+                else if (QueueSearch.contains(player.getName(), QueueType.RANKED_PARTY)){
+                    RankedPartyQueueMember qm = QueueSearch.getPartyQueueMember(player.getName(), QueueType.RANKED_PARTY);
                     if(qm != null){
                         return ChatColor.AQUA+
                                 "["+qm.getRange().getMinKDR()+" -> "+qm.getRange().getMaxKDR()+"]";
                     }
                 }
-                else if (Queue.contains(player.getName(), QueueType.PARTY)){
-                    PartyQueueMember qm = Queue.getPartyQueueMember(player.getName(), QueueType.PARTY);
+                else if (QueueSearch.contains(player.getName(), QueueType.PARTY)){
+                    RankedPartyQueueMember qm = QueueSearch.getPartyQueueMember(player.getName(), QueueType.PARTY);
                     if(qm != null){
                         return ChatColor.AQUA+"[N/A]";
                     }
@@ -117,7 +113,7 @@ public class QueueBoardType implements PracticeBoardType {
         remove(scoreboard);
         for (ValueLabel label : valueLabels) {
             label.setVisible(true);
-            label.updateValue();
+            label.update();
         }
     }
 
@@ -131,6 +127,6 @@ public class QueueBoardType implements PracticeBoardType {
 
     @Override
     public boolean isApplicable(IPlayer player) {
-        return player.getState() == PlayerState.AT_SPAWN && Queue.inAnyQueue(player);
+        return player.getState() == PlayerState.AT_SPAWN && QueueSearch.inAnyQueue(player);
     }
 }

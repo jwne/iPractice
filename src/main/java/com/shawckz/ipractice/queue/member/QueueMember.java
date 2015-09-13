@@ -1,9 +1,12 @@
-package com.shawckz.ipractice.queue;
+package com.shawckz.ipractice.queue.member;
 
+import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Set;
 
 /**
  * Created by 360 on 09/05/2015.
@@ -13,14 +16,12 @@ import lombok.RequiredArgsConstructor;
  * The QueueMember class, just a simple class to combine a CPlayer with a KDRange
  * in order to make the queue system a lot easier.
  */
-@RequiredArgsConstructor
-public class QueueMember {
+public interface QueueMember {
 
-    @Getter
-    @NonNull
-    IPlayer player;
-    @Getter
-    @NonNull
-    KDRange range;
+    Set<IPlayer> getPlayers();
+
+    Ladder getLadder();
+
+    String getName();
 
 }

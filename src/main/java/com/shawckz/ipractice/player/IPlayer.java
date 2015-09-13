@@ -114,6 +114,64 @@ public class IPlayer extends CachePlayer {
         this.scoreboard = new PracticeScoreboard(this);
     }
 
+    public void handlePlayerVisibility(){
+        if(!staffMode){
+            for(Player pl : Bukkit.getOnlinePlayers()){
+                IPlayer ipl = Practice.getCache().getIPlayer(pl);
+
+                if(getState() == PlayerState.AT_SPAWN){
+                    if(ipl.getState() == PlayerState.BUILDING_KIT){
+                        //this player is @ spawn, other player is building kit
+                        ipl.getPlayer().hidePlayer(player);
+                        player.showPlayer(pl);
+                    }
+                    else if (ipl.getState() == PlayerState.IN_MATCH){
+                        //this player is @ spawn, other player is in match
+                        Practice.getEntityHider().hideEntity(player, pl);
+                        Practice.getEntityHider().hideEntity(pl, player);
+                    }
+                    else if (ipl.getState() == PlayerState.AT_SPAWN){
+                        //both players are at spawn
+                        Practice.getEntityHider().showEntity(player, pl);
+                        Practice.getEntityHider().showEntity(pl, player);
+                        pl.showPlayer(player);
+                        player.showPlayer(pl);
+                    }
+                }
+                else if(getState() == PlayerState.IN_MATCH){
+                    //this player is in a match
+                    if(ipl.getState() == PlayerState.IN_MATCH){
+                        //if both players are in match and are in the same match, we dont want to hide them from eachother
+                        if(Practice.getMatchManager().getMatch(ipl).getId().equals(Practice.getMatchManager().getMatch(this).getId())){
+                            Practice.getEntityHider().showEntity(player, pl);
+                            Practice.getEntityHider().showEntity(pl, player);
+                            pl.showPlayer(player);
+                            player.showPlayer(pl);
+                        }
+                        else{
+                            Practice.getEntityHider().hideEntity(player, pl);
+                            Practice.getEntityHider().hideEntity(pl, player);
+                        }
+                    }
+                    else{
+                        Practice.getEntityHider().hideEntity(player, pl);
+                        Practice.getEntityHider().hideEntity(pl, player);
+                    }
+                }
+                else if (getState() == PlayerState.BUILDING_KIT){
+                    player.hidePlayer(pl);
+                }
+            }
+        }
+        else{
+            for(Player pl : Bukkit.getOnlinePlayers()){
+                Practice.getEntityHider().showEntity(player, pl);
+                player.showPlayer(pl);
+                Practice.getEntityHider().hideEntity(pl, player);
+            }
+        }
+    }
+
     public Party getParty(){
         return Practice.getPartyManager().getParty(player);
     }
@@ -148,6 +206,7 @@ public class IPlayer extends CachePlayer {
         Practice.getSpawn().giveItems(this);
         player.updateInventory();
         scoreboard.update();
+        handlePlayerVisibility();
     }
 
     public void setKit(Ladder ladder, Kit kit){

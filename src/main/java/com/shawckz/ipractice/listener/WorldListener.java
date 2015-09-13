@@ -1,8 +1,6 @@
 package com.shawckz.ipractice.listener;
 
 import com.shawckz.ipractice.Practice;
-import com.shawckz.ipractice.match.Match;
-import com.shawckz.ipractice.match.MatchHandler;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 
@@ -23,6 +21,22 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class WorldListener implements Listener {
+
+    @EventHandler
+    public void onJoinHide(PlayerJoinEvent e){
+        Player p = e.getPlayer();
+        IPlayer ip = Practice.getCache().getIPlayer(p);
+        for(Player pl : Bukkit.getOnlinePlayers()){
+            IPlayer ipl = Practice.getCache().getIPlayer(pl);
+            if(ipl.getState() == PlayerState.BUILDING_KIT){
+                ipl.getPlayer().hidePlayer(pl);
+            }
+            else if (ipl.getState() == PlayerState.IN_MATCH){
+                Practice.getEntityHider().hideEntity(p, pl);
+                Practice.getEntityHider().hideEntity(pl, p);
+            }
+        }
+    }
 
     @EventHandler
     public void onJoinNoMsg(PlayerJoinEvent e){

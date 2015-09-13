@@ -17,9 +17,10 @@ public class ValueLabel extends XScoreboardLabel {
         this.iPlayer = iPlayer;
     }
 
-    public void updateValue(){
+    @Override
+    public void update(){
         setValue(key+value.call(iPlayer));
-        update();
+        super.update();
     }
 
     public interface CallableValue {

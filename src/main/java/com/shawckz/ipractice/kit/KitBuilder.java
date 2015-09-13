@@ -1,23 +1,15 @@
 package com.shawckz.ipractice.kit;
 
 import com.shawckz.ipractice.Practice;
-import com.shawckz.ipractice.configuration.Configuration;
 import com.shawckz.ipractice.match.Ladder;
-import com.shawckz.ipractice.player.ICache;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
-import com.shawckz.ipractice.serial.LocationSerializer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;

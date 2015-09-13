@@ -26,9 +26,5 @@ commands:
     usage: /<party>
     aliases: [p]
     description: Party commands
-  umatch:
-  rmatch:
-  pmatch:
-  prmatch:
   pduel:
   paccept:

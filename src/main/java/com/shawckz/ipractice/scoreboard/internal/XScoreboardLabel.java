@@ -40,7 +40,7 @@ public class XScoreboardLabel implements XLabel {
         toRemove.add(new XRemoveLabel(this.value,this.lastValue,this.score,this.visible));
     }
 
-    public final void update(){
+    public void update(){
         scoreboard.updateLabel(this);
     }
 

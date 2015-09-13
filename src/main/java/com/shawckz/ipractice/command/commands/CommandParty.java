@@ -7,7 +7,6 @@ import com.shawckz.ipractice.command.ICommand;
 import com.shawckz.ipractice.party.Party;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
-import com.shawckz.ipractice.queue.Queue;
 import mkremins.fanciful.FancyMessage;
 
 import org.bukkit.Bukkit;
@@ -38,7 +37,7 @@ public class CommandParty implements ICommand {
             return;
         }
 
-        if(Queue.inQueue(p.getName())){
+        if(QueueSearch.inQueue(p.getName())){
             p.sendMessage(ChatColor.RED+"You cannot use party commands while you are in a queue.");
             return;
         }

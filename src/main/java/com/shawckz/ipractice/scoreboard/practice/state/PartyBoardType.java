@@ -2,7 +2,6 @@ package com.shawckz.ipractice.scoreboard.practice.state;
 
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
-import com.shawckz.ipractice.queue.Queue;
 import com.shawckz.ipractice.scoreboard.internal.XLabel;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.practice.label.ValueLabel;
@@ -57,7 +56,7 @@ public class PartyBoardType implements PracticeBoardType {
                 scoreboard.addLabel(label);
             }
             label.setVisible(true);
-            label.updateValue();
+            label.update();
         }
     }
 
@@ -70,6 +69,6 @@ public class PartyBoardType implements PracticeBoardType {
 
     @Override
     public boolean isApplicable(IPlayer player) {
-        return player.getState() == PlayerState.AT_SPAWN && !Queue.inAnyQueue(player) && player.getParty() != null;
+        return player.getState() == PlayerState.AT_SPAWN && !QueueSearch.inAnyQueue(player) && player.getParty() != null;
     }
 }

@@ -36,10 +36,6 @@ public class CommandHandler implements CommandExecutor {
         registerCommand(new CommandAccept(), true);
         registerCommand(new CommandViewInventory(), true);
         registerCommand(new CommandParty(), true);
-        registerCommand(new CommandUMatch(), true);
-        registerCommand(new CommandRMatch(), true);
-        registerCommand(new CommandPMatch(), true);
-        registerCommand(new CommandPRMatch(), true);
         registerCommand(new CommandPDuel(), true);
         registerCommand(new CommandPAccept(), true);
     }

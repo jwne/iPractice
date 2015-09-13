@@ -2,12 +2,12 @@ package com.shawckz.ipractice.scoreboard.internal;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.md_5.bungee.api.ChatColor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
@@ -18,10 +18,19 @@ public class XScoreboard {
     @Getter
     @Setter
     private String title;
-    private Scoreboard scoreboard;
+    @Getter private Scoreboard scoreboard;
     private Map<Integer, XLabel> scores;
 
     public XScoreboard(String title) {
+        this.title = title;
+        this.scores = new HashMap<>();
+        this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        this.scoreboard.registerNewObjective(filterTitle(), "dummy");
+        this.scoreboard.getObjective(filterTitle()).setDisplaySlot(DisplaySlot.SIDEBAR);
+        this.scoreboard.getObjective(filterTitle()).setDisplayName(title);
+    }
+
+    public XScoreboard(String title, boolean filt) {
         this.title = title;
         this.scores = new HashMap<>();
         this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();

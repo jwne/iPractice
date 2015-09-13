@@ -1,14 +1,15 @@
 package com.shawckz.ipractice.match;
 
+import com.shawckz.ipractice.player.IPlayer;
 import lombok.Data;
 
-import org.bukkit.entity.Player;
-
+/**
+ * Created by 360 on 9/7/2015.
+ */
 @Data
 public class MatchPlayer {
 
-    private final Player player;
-    private final Team team;
-    private boolean eliminated = false;
+    private final IPlayer player;
+    private boolean alive = true;
 
 }

@@ -6,7 +6,6 @@ import com.shawckz.ipractice.arena.BasicArena;
 import com.shawckz.ipractice.command.CmdArgs;
 import com.shawckz.ipractice.command.Command;
 import com.shawckz.ipractice.command.ICommand;
-import com.shawckz.ipractice.kit.KitBuilder;
 import com.shawckz.ipractice.match.Ladder;
 
 import org.bukkit.Bukkit;
