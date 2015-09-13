@@ -162,6 +162,14 @@ public class Spawn implements Listener {
             }
         }));
 
+        registerItem(new SimpleSpawnItem(6, new ItemBuilder(new ItemStack(Material.REDSTONE_TORCH_ON))
+                .name(ChatColor.GOLD+"Party Events"), SpawnItemType.PARTY, new SpawnItemAction() {
+            @Override
+            public void onClick(final IPlayer player) {
+                player.getPlayer().sendMessage(ChatColor.GOLD + "Party Events are currently in development and will be out soon!");
+            }
+        }));
+
         registerItem(new SimpleSpawnItem(8, new ItemBuilder(new ItemStack(Material.FIREBALL))
                 .name(ChatColor.GOLD+"Leave the Party"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
