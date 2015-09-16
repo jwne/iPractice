@@ -7,6 +7,7 @@ import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.queue.Queue;
 import com.shawckz.ipractice.queue.QueueMatchSet;
 import com.shawckz.ipractice.queue.QueueType;
+import com.shawckz.ipractice.queue.member.QueueMember;
 import com.shawckz.ipractice.queue.member.RankedPartyQueueMember;
 import com.shawckz.ipractice.queue.member.UnrankedPartyQueueMember;
 import com.shawckz.ipractice.queue.range.EloRange;

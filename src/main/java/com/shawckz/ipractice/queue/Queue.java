@@ -7,6 +7,7 @@ import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.member.QueueMember;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import java.util.HashSet;
@@ -52,19 +53,37 @@ public abstract class Queue {
     public Set<QueueMatchSet> findMatches(Ladder ladder) {
         Iterator<QueueMember> it = getMembers().iterator();
         Set<QueueMatchSet> results = new HashSet<>();
+        main:
         while(it.hasNext()){
             QueueMember search = it.next();
-            if(it.hasNext()){
-                QueueMember found = it.next();
-                if(found.getLadder().getName().equals(search.getLadder().getName())){
-                    QueueMatchSet set = new QueueMatchSet(ladder, search, found);
-                    if(inRange(set)){
-                        results.add(set);
+            if(search.getLadder().getName().equals(ladder.getName())) {
+                if (it.hasNext()) {
+                    QueueMember found = it.next();
+                    if (found.getLadder().getName().equals(search.getLadder().getName())) {
+                        QueueMatchSet set = new QueueMatchSet(ladder, search, found);
+                        if (inRange(set)) {
+                            results.add(set);
+                        } else {
+                            incrementRange(search);
+                            incrementRange(found);
+                        }
+                    }
+                } else {
+                    if (search.getLadder().getName().equals(ladder.getName())) {
+                        incrementRange(search);
                     }
                 }
             }
         }
         return results;
+    }
+
+    public void incrementRange(QueueMember member){
+        member.getRange().incrementRange();
+        for(IPlayer ip : member.getPlayers()){
+            ip.getPlayer().sendMessage(ChatColor.BLUE+"Searching in range "+ChatColor.GOLD+member.getRange().rangeToString());
+            ip.getScoreboard().update();
+        }
     }
 
     public boolean inQueue(IPlayer player){
@@ -102,5 +121,7 @@ public abstract class Queue {
     public boolean inRange(QueueMatchSet set){
         return set.getAlpha().getRange().inRange(set.getBravo().getRange());
     }
+
+
 
 }

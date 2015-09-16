@@ -13,7 +13,7 @@ public class CommandViewInventory implements ICommand {
     @Override
     public void onCommand(CmdArgs cmdArgs) {
         Player p = (Player) cmdArgs.getSender();
-        String id = cmdArgs.getArg(0).toLowerCase();
+        String id = cmdArgs.getArg(0);
         if(MatchInventory.getMatchInventories().containsKey(id)){
 
             MatchInventory.getMatchInventory(id).open(p);

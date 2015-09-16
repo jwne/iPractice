@@ -1,8 +1,11 @@
 package com.shawckz.ipractice.scoreboard.practice.label;
 
+import com.shawckz.ipractice.Practice;
+import com.shawckz.ipractice.match.Match;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboardTimer;
+import org.bukkit.ChatColor;
 
 import java.text.DecimalFormat;
 
@@ -11,12 +14,10 @@ import java.text.DecimalFormat;
  */
 public class EnderpearlCooldownLabel extends XScoreboardTimer {
 
-    private static final DecimalFormat df = new DecimalFormat("#.##");
-
     private final IPlayer player;
 
     public EnderpearlCooldownLabel(XScoreboard scoreboard, int score, IPlayer player) {
-        super(scoreboard, score, "", 0, 2);
+        super(scoreboard, score, "", 0, 20);
         this.player = player;
     }
 
@@ -24,10 +25,11 @@ public class EnderpearlCooldownLabel extends XScoreboardTimer {
     public void onUpdate() {
         if(player.getEnderpearl() > System.currentTimeMillis()){
             setVisible(true);
-            setTime((player.getEnderpearl() - System.currentTimeMillis())/1000);
+            setValue(ChatColor.LIGHT_PURPLE+"Enderpearl: "+ChatColor.GREEN+((player.getEnderpearl() - System.currentTimeMillis())/1000)+"s");
         }
         else{
             setVisible(false);
+            getScoreboard().removeLabel(this);
         }
     }
 
@@ -38,18 +40,12 @@ public class EnderpearlCooldownLabel extends XScoreboardTimer {
 
     @Override
     public void updateTime() {
-        if(getTime() > 0){
-            setVisible(true);
-            setTime(Double.parseDouble(df.format(getTime() - 0.1)));
-        }
-        else{
-            setTime(0);
-            setVisible(false);
-        }
+
     }
 
     @Override
     public boolean isComplete() {
-        return player.getEnderpearl() <= System.currentTimeMillis();
+        Match match = Practice.getMatchManager().getMatch(player);
+        return match == null || match.isOver();
     }
 }

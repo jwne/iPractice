@@ -43,7 +43,7 @@ public class DuelRequest {
 
             new FancyMessage(ChatColor.LIGHT_PURPLE+p.getName()+ChatColor.GOLD
                     +" has sent you a duel request with ladder "+ChatColor.AQUA+
-                    ladder.getName()+ChatColor.GOLD+". \n"+ChatColor.GOLD
+                    ladder.getName()+ChatColor.GOLD+".  "+ChatColor.GOLD
                     +"Type "+ChatColor.GREEN+"/accept "+p.getName()+ChatColor.GOLD+" or ")
                     .then(ChatColor.GREEN+""+ChatColor.BOLD+"[CLICK HERE]")
                     .command("/accept "+p.getName())

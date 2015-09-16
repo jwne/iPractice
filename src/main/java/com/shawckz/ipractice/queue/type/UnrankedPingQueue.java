@@ -18,7 +18,7 @@ import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 public class UnrankedPingQueue extends Queue implements PingQueue{
 
     public UnrankedPingQueue() {
-        super(QueueType.UNRANKED_PING);
+        super(QueueType.PING);
     }
 
     @Override
@@ -39,6 +39,7 @@ public class UnrankedPingQueue extends Queue implements PingQueue{
     @Override
     public void addToQueue(IPlayer player, Ladder ladder) {
         int ping = ((CraftPlayer)player.getPlayer()).getHandle().ping / 2;
+        System.out.println("Ping: "+ping);
         RankedQueueMember queueMember = new RankedQueueMember(player, ladder, new PingRange(ping));
         getMembers().add(queueMember);
     }

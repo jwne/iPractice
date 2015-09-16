@@ -7,6 +7,7 @@ import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import lombok.Getter;
 import lombok.Setter;
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -31,6 +32,7 @@ public class Match {
     private MatchManager matchManager;
     private boolean over = false;
     private final MatchHandler matchHandler;
+    private final Map<String, String> inventories = new HashMap<>();
 
     public Match(Ladder ladder) {
         this.id = UUID.randomUUID().toString();
@@ -56,6 +58,7 @@ public class Match {
         versus = versus.substring(0, versus.length() - 5);
         msg(versus);
 
+        countdown = 5;
         for(MatchParticipant pmp : playerManager.getParticipants()){
             for(MatchPlayer pmmp : pmp.getPlayers()){
                 IPlayer ip = pmmp.getPlayer();
@@ -71,10 +74,10 @@ public class Match {
                 ip.equipKit(ladder);
                 ip.setState(PlayerState.IN_MATCH);
                 ip.handlePlayerVisibility();
+                ip.getScoreboard().update();
             }
         }
 
-        countdown = 5;
         new BukkitRunnable(){
             @Override
             public void run() {
@@ -86,6 +89,12 @@ public class Match {
                     started = true;
                     over = false;
                     msg(ChatColor.GREEN+"Go!");
+                    for(MatchParticipant pmp : playerManager.getParticipants()){
+                        for(MatchPlayer pmmp : pmp.getPlayers()){
+                            IPlayer ip = pmmp.getPlayer();
+                            ip.getScoreboard().update();
+                        }
+                    }
                     cancel();
                 }
             }
@@ -114,8 +123,6 @@ public class Match {
         matchHandler.unregister();
         matchManager.unregisterMatch(this);
         this.over = true;
-
-        this.started = false;
     }
 
     public void eliminatePlayer(IPlayer player, IPlayer killer){
@@ -132,6 +139,8 @@ public class Match {
             else{
                 msg(ChatColor.BLUE+player.getName()+ChatColor.GOLD+" was killed");
             }
+
+            inventories.put(player.getName(), new MatchInventory(player.getPlayer()).getUuid());
 
             if(ranked){
                 player.getDeaths().put(ladder, (player.getDeaths().get(ladder)+1));
@@ -187,6 +196,18 @@ public class Match {
 
     public void handleWin(final PracticeTeam team){
         msg(ChatColor.GOLD + "Winner(s): " + ChatColor.LIGHT_PURPLE + team.getName());
+
+        for(MatchParticipant pl : playerManager.getParticipants()){
+            if(pl.getTeam().getName().equals(team.getName())){
+                for(MatchPlayer mp : pl.getPlayers()){
+                    if(mp.isAlive()) {
+                        inventories.put(mp.getPlayer().getName(), new MatchInventory(mp.getPlayer().getPlayer()).getUuid());
+                    }
+                }
+            }
+        }
+
+        sendInventories();
 
         if(ranked){
             int winnerElo = 0;
@@ -246,7 +267,28 @@ public class Match {
             //Player1[990(-10)]
         }
 
-        msg(ChatColor.GOLD+"Elo Changes: "+s);
+        msg(ChatColor.GOLD + "Elo Changes: " + s);
+    }
+
+    private void sendInventories(){
+        FancyMessage fm = new FancyMessage(ChatColor.GOLD+"Inventories: ");
+        for(MatchParticipant pmp : playerManager.getParticipants()){
+            for(MatchPlayer pl : pmp.getPlayers()){
+                if(inventories.containsKey(pl.getPlayer().getName())){
+                    fm.then(pl.getPlayer().getName()).tooltip(ChatColor.BLUE+pl.getPlayer().getName())
+                    .tooltip(ChatColor.GREEN+"View "+pl.getPlayer().getName()+"'s Inventory")
+                    .command("/viewinv "+inventories.get(pl.getPlayer().getName()));
+                    fm.then(" ");
+                }
+            }
+        }
+        for(MatchParticipant pmp : playerManager.getParticipants()){
+            for(MatchPlayer pl : pmp.getPlayers()){
+                if(inventories.containsKey(pl.getPlayer().getName())){
+                    fm.send(pl.getPlayer().getPlayer());
+                }
+            }
+        }
     }
 
     public void msg(String msg){

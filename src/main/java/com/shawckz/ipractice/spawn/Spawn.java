@@ -65,16 +65,21 @@ public class Spawn implements Listener {
                     new QueueSelect(player){
                         @Override
                         public void onSelect(final QueueType type) {
-                            new LadderSelect(player){
+                            new LadderSelect(player, type){
                                 @Override
                                 public void onSelect(final Ladder ladder) {
                                     Queue queue = Practice.getQueueManager().getQueues().get(type);
                                     if(queue != null){
                                         if(queue.canJoin(player)){
                                             queue.addToQueue(player, ladder);
-                                            player.getPlayer().sendMessage(ChatColor.BLUE+"You joined the "+ChatColor.GREEN+
-                                                    WordUtils.capitalizeFully(queue.getType().toString())
-                                                    +ChatColor.BLUE+" queue.");
+                                            player.getPlayer().sendMessage(ChatColor.BLUE + "You joined the " + ChatColor.GREEN +
+                                                    WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_"," "))
+                                                    + ChatColor.BLUE + " queue.");
+                                            player.getPlayer().getInventory().clear();
+                                            player.getPlayer().getInventory().setArmorContents(null);
+                                            player.getPlayer().getInventory().setItem(0, new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.RED+"Leave the queue").build());
+                                            player.getPlayer().updateInventory();
+                                            player.getScoreboard().update();
                                         }
                                         else{
                                             player.getPlayer().sendMessage(ChatColor.RED+"You can't join the queue right now.");
@@ -98,7 +103,7 @@ public class Spawn implements Listener {
                 .name(ChatColor.GOLD + "Host an Event"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().sendMessage(ChatColor.GOLD + "The Event System is currently in development and will be out soon!!");
+                player.getPlayer().sendMessage(ChatColor.GOLD + "The Event System is currently in development and will be out soon!");
             }
         }));
 
@@ -146,7 +151,7 @@ public class Spawn implements Listener {
             }
         }));
 
-        registerItem(new SimpleSpawnItem(4, new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD))
+        registerItem(new SimpleSpawnItem(4, new ItemBuilder(new ItemStack(Material.FIREWORK_CHARGE))
                 .name(ChatColor.GOLD+"Party Kite Practice"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {

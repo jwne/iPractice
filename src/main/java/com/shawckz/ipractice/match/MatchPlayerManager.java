@@ -61,8 +61,10 @@ public class MatchPlayerManager {
 
     public MatchParticipant getParticipant(IPlayer player){
         for(MatchParticipant pmp : participants){
-            if(pmp.getPlayers().contains(player)){
-                return pmp;
+            for(MatchPlayer mp : pmp.getPlayers()){
+                if(mp.getPlayer().getName().equals(player.getName())){
+                    return pmp;
+                }
             }
         }
         return null;

@@ -17,6 +17,6 @@ public class UnrankedQueueRange implements QueueRange {
 
     @Override
     public String rangeToString() {
-        return "[N/A]";
+        return "[Any]";
     }
 }

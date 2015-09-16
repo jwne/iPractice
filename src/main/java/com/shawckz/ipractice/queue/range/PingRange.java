@@ -18,8 +18,13 @@ public class PingRange implements QueueRange {
 
     @Override
     public void incrementRange() {
-        this.minPing -= 10;
-        this.maxPing -= 10;
+        if((this.minPing - 10) < 0 && this.minPing != 0){
+            this.minPing = 0;
+        }
+        else{
+            this.minPing -= 10;
+        }
+        this.maxPing += 10;
     }
 
     @Override
@@ -45,6 +50,6 @@ public class PingRange implements QueueRange {
 
     @Override
     public String rangeToString() {
-        return "["+minPing+"ms -> "+maxPing+"ms]";
+        return "["+minPing+" -> "+maxPing+"]";
     }
 }

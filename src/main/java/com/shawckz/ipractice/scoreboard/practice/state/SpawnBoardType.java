@@ -25,28 +25,28 @@ public class SpawnBoardType implements PracticeBoardType {
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 5, ChatColor.GOLD + "Elo: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 5, ChatColor.GREEN + "ELO: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
                 return ChatColor.AQUA+""+player.getAverageElo();
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 4, ChatColor.GOLD + "Matches: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 4, ChatColor.GREEN + "Matches: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
                 return ChatColor.AQUA+""+player.getTotalMatchesAllLadders();
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.GOLD + "Kills: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.GREEN + "Kills: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
                 return ChatColor.AQUA + "" + player.getKillsAllLadders();
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.GOLD + "Deaths: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.GREEN + "Deaths: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
                 return ChatColor.AQUA + "" + player.getDeathsAllLadders();

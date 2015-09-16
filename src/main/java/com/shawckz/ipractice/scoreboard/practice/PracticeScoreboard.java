@@ -23,7 +23,7 @@ public class PracticeScoreboard {
     public PracticeScoreboard(IPlayer ip) {
         this.ip = ip;
         this.scoreboard = new XScoreboard(
-                ChatColor.GOLD+""+ChatColor.BOLD+"Practice PvP "+ChatColor.RED+"[BETA]");//&6Practice PvP &c[BETA]
+                ChatColor.GOLD+"Practice PvP");//&6Practice PvP
 
         boards.add(new SpawnBoardType(scoreboard, ip));
         boards.add(new KitBuilderBoardType(scoreboard, ip));
@@ -53,21 +53,16 @@ public class PracticeScoreboard {
     }
 
     public void update(){
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Practice.getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                for (PracticeBoardType board : boards) {
-                    if (!board.isApplicable(ip)) {
-                        board.remove(scoreboard);
-                    }
-                }
-                for (PracticeBoardType board : boards) {
-                    if (board.isApplicable(ip)) {
-                        board.update(scoreboard);
-                    }
-                }
+        for (PracticeBoardType board : boards) {
+            if (!board.isApplicable(ip)) {
+                board.remove(scoreboard);
             }
-        });
+        }
+        for (PracticeBoardType board : boards) {
+            if (board.isApplicable(ip)) {
+                board.update(scoreboard);
+            }
+        }
     }
 
 }

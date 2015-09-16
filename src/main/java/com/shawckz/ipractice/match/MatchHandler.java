@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -57,47 +54,37 @@ public class MatchHandler implements Listener{
     }
 
     @EventHandler
-    public void onDrop(final ItemSpawnEvent e){
-        if(e.getEntity().getItemStack().hasItemMeta()){
-            List<String> lore = e.getEntity().getItemStack().getItemMeta().getLore();
-            if(!lore.isEmpty()){
-                for(String s : lore){
-                    if(s.equals(this.match.getId())){
-                        for(Player pl : Bukkit.getOnlinePlayers()){
-                            if(!match.getPlayerManager().hasPlayer(pl)){
-                                Practice.getEntityHider().hideEntity(pl, e.getEntity());
-                            }
-                            new BukkitRunnable(){
-                                @Override
-                                public void run() {
-                                    if(e.getEntity() != null){
-                                        e.getEntity().remove();
-                                    }
-                                }
-                            }.runTaskLater(Practice.getPlugin(), 60L);
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    @EventHandler
     public void onDeath(PlayerDeathEvent e){
         e.setDeathMessage(null);
         final Player p = e.getEntity();
         final IPlayer ip = Practice.getCache().getIPlayer(p);
         if(match.getPlayerManager().hasPlayer(p)){
             List<ItemStack> newDrops = new ArrayList<>();
-            for(ItemStack i : e.getDrops()){
-                ItemMeta im = i.getItemMeta();
-                im.getLore().add(match.getId());
-                i.setItemMeta(im);
-                newDrops.add(i);
-            }
+            newDrops.addAll(e.getDrops());
             e.getDrops().clear();
-            e.getDrops().addAll(newDrops);
+            final Set<Item> items = new HashSet<>();
+            for(ItemStack i : newDrops){
+                Item item = p.getWorld().dropItemNaturally(p.getLocation(), i);
+                items.add(item);
+            }
+
+            for(Player pl : Bukkit.getOnlinePlayers()){
+                if(!match.getPlayerManager().hasPlayer(pl)){
+                    for(Item item : items){
+                        Practice.getEntityHider().hideEntity(pl, item);
+                    }
+                }
+            }
+            new BukkitRunnable(){
+                @Override
+                public void run() {
+                    for(Item item : items){
+                        if(item != null){
+                            item.remove();
+                        }
+                    }
+                }
+            }.runTaskLater(Practice.getPlugin(), 60L);
 
 
             if(p.getKiller() != null){
@@ -158,6 +145,7 @@ public class MatchHandler implements Listener{
                 Player p = (Player) e.getEntity().getShooter();
                 IPlayer ip = Practice.getCache().getIPlayer(p);
                 ip.setEnderpearl(System.currentTimeMillis() + (1000 * 15));
+                ip.getScoreboard().update();
             }
         }
     }

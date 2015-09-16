@@ -47,6 +47,10 @@ public class CommandPDuel implements ICommand {
                             p.sendMessage(ChatColor.RED+"One or more of that party's members are not at spawn.");
                             return;
                         }
+                        if(targetParty.getLeader().equals(party.getLeader())){
+                            p.sendMessage(ChatColor.RED+"You cannot duel your own party.");
+                            return;
+                        }
                         new LadderSelect(ip){
                             @Override
                             public void onSelect(Ladder ladder) {

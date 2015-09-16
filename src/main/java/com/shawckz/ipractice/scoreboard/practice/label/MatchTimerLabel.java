@@ -29,7 +29,15 @@ public class MatchTimerLabel extends XScoreboardTimer {
     private String getTimeString(){
         int minutes = (int)(Math.round(getTime()) % 3600) / 60;
         int seconds = (int) Math.round(getTime()) % 60;
-        return minutes+":"+seconds;
+        String m = ""+minutes;
+        if(minutes < 10){
+            m = "0"+minutes;
+        }
+        String s = ""+seconds;
+        if(seconds < 10){
+            s = "0"+seconds;
+        }
+        return m+":"+s;
     }
 
     @Override

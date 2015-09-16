@@ -43,8 +43,10 @@ public class TeamManager {
 
     public PracticeTeam getTeam(IPlayer player){
         for(MatchParticipant pmp : match.getPlayerManager().getParticipants()){
-            if(pmp.getPlayers().contains(player)){
-                return pmp.getTeam();
+            for(MatchPlayer pl : pmp.getPlayers()){
+                if(pl.getPlayer().getName().equals(player.getName())){
+                    return pmp.getTeam();
+                }
             }
         }
         return null;

@@ -34,7 +34,8 @@ public class MatchManager {
 
     public Match getMatch(IPlayer player){
         for(Match match : matches.values()){
-            if(match.getPlayerManager().hasPlayer(player) && match.getPlayerManager().getPlayer(player).isAlive()){
+            if(player != null && match != null && match.getPlayerManager() != null &&
+                    match.getPlayerManager().hasPlayer(player) && !match.isOver()){
                 return match;
             }
         }

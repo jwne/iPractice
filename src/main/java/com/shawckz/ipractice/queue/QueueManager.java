@@ -8,6 +8,8 @@ import com.shawckz.ipractice.queue.member.QueueMember;
 import com.shawckz.ipractice.queue.member.RankedPartyQueueMember;
 import com.shawckz.ipractice.queue.member.UnrankedPartyQueueMember;
 import com.shawckz.ipractice.queue.type.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -28,8 +30,7 @@ public class QueueManager {
         registerQueue(QueueType.RANKED, new RankedQueue());
         registerQueue(QueueType.UNRANKED_PARTY, new UnrankedPartyQueue());
         registerQueue(QueueType.RANKED_PARTY, new RankedPartyQueue());
-        registerQueue(QueueType.UNRANKED_PING, new UnrankedPingQueue());
-        registerQueue(QueueType.RANKED_PING, new RankedPingQueue());
+        registerQueue(QueueType.PING, new UnrankedPingQueue());
     }
 
     public void run(){

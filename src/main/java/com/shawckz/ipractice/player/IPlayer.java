@@ -93,7 +93,6 @@ public class IPlayer extends CachePlayer {
             if (kitHandler.hasKitSaved(ladder.getName())) {
                 kits.put(ladder, kitHandler.load(ladder.getName()));
             }
-
             if(!elo.containsKey(ladder)){
                 elo.put(ladder, DEFAULT_ELO);
             }
@@ -117,6 +116,7 @@ public class IPlayer extends CachePlayer {
         if(!staffMode){
             for(Player pl : Bukkit.getOnlinePlayers()){
                 IPlayer ipl = Practice.getCache().getIPlayer(pl);
+                if(ipl == null) continue;
 
                 if(getState() == PlayerState.AT_SPAWN){
                     if(ipl.getState() == PlayerState.BUILDING_KIT){
@@ -141,7 +141,9 @@ public class IPlayer extends CachePlayer {
                     //this player is in a match
                     if(ipl.getState() == PlayerState.IN_MATCH){
                         //if both players are in match and are in the same match, we dont want to hide them from eachother
-                        if(Practice.getMatchManager().getMatch(ipl).getId().equals(Practice.getMatchManager().getMatch(this).getId())){
+                        if(Practice.getMatchManager().getMatch(ipl) != null &&
+                                Practice.getMatchManager().getMatch(this) != null &&
+                           Practice.getMatchManager().getMatch(ipl).getId().equals(Practice.getMatchManager().getMatch(this).getId())){
                             Practice.getEntityHider().showEntity(player, pl);
                             Practice.getEntityHider().showEntity(pl, player);
                             pl.showPlayer(player);
@@ -246,6 +248,9 @@ public class IPlayer extends CachePlayer {
     }
 
     public int getElo(Ladder ladder){
+        if(!elo.containsKey(ladder)){
+            elo.put(ladder, DEFAULT_ELO);
+        }
         return elo.get(ladder);
     }
 
@@ -264,9 +269,20 @@ public class IPlayer extends CachePlayer {
     public int getAverageElo(){
         int i = 0;
         int count = 0;
+        for(Ladder l : Ladder.getLadders()){
+            if(!elo.containsKey(l)){
+                elo.put(l, DEFAULT_ELO);
+            }
+        }
         for(Ladder l : elo.keySet()){
             i += elo.get(l);
             count++;
+        }
+        if(i == 0){
+            i = 1;
+        }
+        if(count == 0){
+            count = 1;
         }
         return Math.round(i / count);
     }

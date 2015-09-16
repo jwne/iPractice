@@ -18,6 +18,6 @@ public class TaskAutoSave implements Runnable {
                 saved++;
             }
         }
-        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE+"[AutoSave] Successfully saved "+saved+" players to the database.");
+        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE+"Saved "+saved+" players to the database.");
     }
 }

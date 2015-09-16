@@ -82,7 +82,7 @@ public class XScoreboard {
                     Team team = this.scoreboard.getTeam(key);
                     if (team == null) {
                         team = this.scoreboard.registerNewTeam(key);
-                        team.addPlayer(Bukkit.getOfflinePlayer(key));
+                        team.addPlayer(new FakeOfflinePlayer(key));
                     }
                     team.setSuffix(value);
                 }

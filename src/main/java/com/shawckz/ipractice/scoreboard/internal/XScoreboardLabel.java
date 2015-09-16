@@ -1,8 +1,10 @@
 package com.shawckz.ipractice.scoreboard.internal;
 
+import com.shawckz.ipractice.Practice;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.util.io.netty.util.internal.ConcurrentSet;
+import org.bukkit.Bukkit;
 
 import java.util.Set;
 
