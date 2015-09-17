@@ -38,7 +38,7 @@ public abstract class QueueSelect implements Listener {
                 inv.addItem(new ItemBuilder(queue.getIcon())
                         .name(ChatColor.GOLD + WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " ")))
                         .lore(ChatColor.BLUE + "" + ChatColor.ITALIC + queue.getType().getDescription())
-                        .lore(ChatColor.GRAY + "Players in " + WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_"," "))
+                        .lore(ChatColor.GRAY + "Players in " + WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
                                 + " queue: " + ChatColor.AQUA + queue.getMembers().size())
                         .build());
             }

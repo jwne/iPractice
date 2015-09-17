@@ -53,8 +53,10 @@ public abstract class LadderSelect implements Listener {
                 }
             }
             inv.addItem(new ItemBuilder(ladder.getIcon()).name(ChatColor.AQUA + ladder.getName())
-                    .lore(ChatColor.GRAY + "Players in " + WordUtils.capitalizeFully(queueType.toString().replaceAll("_"," "))
+                    .lore(ChatColor.GRAY + "Players in " + WordUtils.capitalizeFully(queueType.toString().replaceAll("_", " "))
                             + " " + ladder.getName() + " queue: " + ChatColor.AQUA + playersIn)
+                    .lore(ChatColor.GRAY + "Players in " + ladder.getName() + " matches: " + ChatColor.AQUA +
+                            Practice.getMatchManager().getAmountOfPlayersInMatches(ladder))
                     .build());
         }
 

@@ -6,6 +6,9 @@ import com.shawckz.ipractice.player.IPlayer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 /**
  * Created by 360 on 9/7/2015.
  */
@@ -50,6 +53,19 @@ public class MatchManager {
         if(matches.containsKey(match.getId())){
             matches.remove(match.getId());
         }
+    }
+
+    public int getAmountOfPlayersInMatches(Ladder ladder){
+        int i = 0;
+        for(Player pl : Bukkit.getOnlinePlayers()){
+            IPlayer ip = Practice.getCache().getIPlayer(pl);
+            if(inMatch(ip)){
+                if(getMatch(ip).getLadder().getName().equals(ladder.getName())){
+                    i++;
+                }
+            }
+        }
+        return i;
     }
 
 }

@@ -7,6 +7,7 @@ import com.shawckz.ipractice.database.mongo.annotations.MongoColumn;
 import com.shawckz.ipractice.kit.Kit;
 import com.shawckz.ipractice.kit.KitBuilder;
 import com.shawckz.ipractice.kit.KitHandler;
+import com.shawckz.ipractice.kite.KiteRequest;
 import com.shawckz.ipractice.match.DuelRequest;
 import com.shawckz.ipractice.match.Ladder;
 import com.shawckz.ipractice.party.Party;
@@ -79,6 +80,7 @@ public class IPlayer extends CachePlayer {
     @Getter @Setter private long duelRequestCooldown = 0;
 
     @Getter private List<DuelRequest> duelRequests = new ArrayList<>();
+    @Getter private List<KiteRequest> kiteRequests = new ArrayList<>();
 
     @Getter @Setter private KitBuilder kitBuilder;
 

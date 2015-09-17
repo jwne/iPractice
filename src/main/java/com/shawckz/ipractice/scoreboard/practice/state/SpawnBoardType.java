@@ -25,7 +25,7 @@ public class SpawnBoardType implements PracticeBoardType {
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 5, ChatColor.GREEN + "ELO: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 5, ChatColor.GREEN + "Average ELO: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
                 return ChatColor.AQUA+""+player.getAverageElo();
