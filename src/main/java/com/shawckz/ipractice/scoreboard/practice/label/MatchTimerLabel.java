@@ -24,6 +24,7 @@ public class MatchTimerLabel extends XScoreboardTimer {
         if(match.isStarted()){
             setValue(valueBase+getTimeString());
         }
+
     }
 
     private String getTimeString(){

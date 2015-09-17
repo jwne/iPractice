@@ -27,6 +27,10 @@
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>techcable-repo</id>
+            <url>http://repo.techcable.net/content/groups/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -57,6 +61,11 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>net.techcable</groupId>
+            <artifactId>npclib</artifactId>
+            <version>2.0.0-beta2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

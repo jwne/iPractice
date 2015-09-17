@@ -84,16 +84,19 @@ public class MatchBoardType implements PracticeBoardType {
             if(this.matchTimerLabel.isRunning()){
                 this.matchTimerLabel.stop();
             }
+            matchTimerLabel.complete();
         }
         if(this.enderpearlCooldownLabel != null){
             if(this.enderpearlCooldownLabel.isRunning()){
                 this.enderpearlCooldownLabel.stop();
             }
+            enderpearlCooldownLabel.complete();
         }
         if(this.matchCountdownLabel != null){
             if(this.matchCountdownLabel.isRunning()){
                 this.matchCountdownLabel.start();
             }
+            matchCountdownLabel.complete();
         }
         Match match = Practice.getMatchManager().getMatch(player);
         if(match == null || match.isOver() || !match.isStarted()){

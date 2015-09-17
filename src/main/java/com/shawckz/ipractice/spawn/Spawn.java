@@ -2,9 +2,11 @@ package com.shawckz.ipractice.spawn;
 
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.kit.KitBuilder;
-import com.shawckz.ipractice.match.Ladder;
-import com.shawckz.ipractice.match.LadderSelect;
+import com.shawckz.ipractice.kite.KiteSelect;
+import com.shawckz.ipractice.match.*;
 import com.shawckz.ipractice.party.PartiesInv;
+import com.shawckz.ipractice.party.PartyEvent;
+import com.shawckz.ipractice.party.PartyEventSelect;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.queue.Queue;
@@ -111,7 +113,7 @@ public class Spawn implements Listener {
                 .name(ChatColor.GOLD + "Kite Practice"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().sendMessage(ChatColor.GOLD + "Kite Practice is currently in development and will be out soon!");
+                new KiteSelect(player.getPlayer());
             }
         }));
 
@@ -147,7 +149,46 @@ public class Spawn implements Listener {
                 .name(ChatColor.GOLD+"Join a Party Queue"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().sendMessage(ChatColor.GOLD + "Party queues are currently in development and will be out soon!!");
+                if(player.getParty() != null){
+                    if(player.getParty().getLeader().equals(player.getName())){
+                        if(!Practice.getQueueManager().inQueue(player)){
+                            new QueueSelect(player){
+                                @Override
+                                public void onSelect(final QueueType type) {
+                                    new LadderSelect(player){
+                                        @Override
+                                        public void onSelect(Ladder ladder) {
+                                            Queue queue = Practice.getQueueManager().getQueues().get(type);
+                                            Set<IPlayer> players = new HashSet<IPlayer>();
+                                            for(Player pl : player.getParty().getAllPlayers()){
+                                                players.add(Practice.getCache().getIPlayer(pl));
+                                            }
+                                            queue.addToQueue(players, ladder);
+                                            player.getParty().msg(ChatColor.AQUA + "" + ChatColor.BOLD + "(PARTY) " + ChatColor.RESET + "" +
+                                                    ChatColor.BLUE + "Your party joined the " + ChatColor.GREEN +
+                                                    WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
+                                                    + ChatColor.BLUE + " queue.");
+                                            player.getPlayer().getInventory().clear();
+                                            player.getPlayer().getInventory().setArmorContents(null);
+                                            player.getPlayer().getInventory().setItem(0, new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.RED+"Leave the queue").build());
+                                            player.getPlayer().updateInventory();
+                                            player.getScoreboard().update();
+                                        }
+                                    };
+                                }
+                            };
+                        }
+                        else{
+                            player.getPlayer().sendMessage(ChatColor.RED+"You are already in a queue.");
+                        }
+                    }
+                    else{
+                        player.getPlayer().sendMessage(ChatColor.RED+"Only the party leader can do this.");
+                    }
+                }
+                else{
+                    player.getPlayer().sendMessage(ChatColor.RED+"You are not in a party.");
+                }
             }
         }));
 
@@ -155,7 +196,7 @@ public class Spawn implements Listener {
                 .name(ChatColor.GOLD+"Party Kite Practice"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().sendMessage(ChatColor.GOLD + "Kite Practice is currently in development and will be out soon!");
+                player.getPlayer().sendMessage(ChatColor.GOLD + "Party Kite Practice is currently in development and will be out soon!");
             }
         }));
 
@@ -171,7 +212,44 @@ public class Spawn implements Listener {
                 .name(ChatColor.GOLD+"Party Events"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().sendMessage(ChatColor.GOLD + "Party Events are currently in development and will be out soon!");
+                if(player.getParty() != null){
+                    if(player.getParty().getLeader().equals(player.getName())){
+                        new PartyEventSelect(player.getPlayer()){
+                            @Override
+                            public void onSelect(final PartyEvent event) {
+                                new LadderSelect(player){
+                                    @Override
+                                    public void onSelect(Ladder ladder) {
+                                        MatchBuilder mb = Practice.getMatchManager().matchBuilder(ladder);
+                                        if(event == PartyEvent.FFA){
+                                            int x = 0;
+                                            for(Player pl : player.getParty().getAllPlayers()){
+                                                if(x % 2 == 0){
+                                                    mb.registerTeam(new PracticeTeam(pl.getName(), Team.ALPHA));
+                                                }
+                                                else{
+                                                    mb.registerTeam(new PracticeTeam(pl.getName(), Team.BRAVO));
+                                                }
+                                                mb.withPlayer(pl, pl.getName());
+                                                x++;
+                                            }
+                                            mb.build().startMatch(Practice.getMatchManager());
+                                        }
+                                        else if (event == PartyEvent.TWO_TEAMS){
+                                            
+                                        }
+                                        else{
+                                            player.getPlayer().sendMessage(ChatColor.RED+"That party event is not yet supported.");
+                                        }
+                                    }
+                                };
+                            }
+                        };
+                    }
+                    else{
+                        player.getPlayer().sendMessage(ChatColor.RED+"Only the party leader can do this.");
+                    }
+                }
             }
         }));
 

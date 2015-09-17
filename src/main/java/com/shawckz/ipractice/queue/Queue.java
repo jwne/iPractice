@@ -97,6 +97,8 @@ public abstract class Queue {
 
     public abstract void addToQueue(IPlayer player, Ladder ladder);
 
+    public abstract void addToQueue(Set<IPlayer> player, Ladder ladder);
+
     public void removeFromQueue(QueueMember member) {
         if(getMembers().contains(member)){
             getMembers().remove(member);
