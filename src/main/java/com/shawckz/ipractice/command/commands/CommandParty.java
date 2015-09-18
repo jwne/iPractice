@@ -31,6 +31,11 @@ public class CommandParty implements ICommand {
             return;
         }
 
+        if(ip.isStaffMode()){
+            p.sendMessage(ChatColor.RED+"You cannot do this while in staff mode.");
+            return;
+        }
+
         if(ip.getState() != PlayerState.AT_SPAWN){
             p.sendMessage(ChatColor.RED+"You are not at spawn.");
             return;

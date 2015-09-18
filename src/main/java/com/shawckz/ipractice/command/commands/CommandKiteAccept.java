@@ -18,6 +18,10 @@ public class CommandKiteAccept implements ICommand {
     public void onCommand(CmdArgs cmdArgs) {
         Player p = (Player) cmdArgs.getSender();
         IPlayer ip = Practice.getCache().getIPlayer(p);
+        if(ip.isStaffMode()){
+            p.sendMessage(ChatColor.RED+"You cannot do this while in staff mode.");
+            return;
+        }
         if(ip.getState() == PlayerState.AT_SPAWN){
             if(Practice.getQueueManager().inQueue(ip)){
                 p.sendMessage(ChatColor.RED+"You cannot do this while you are in a queue.");

@@ -20,6 +20,10 @@ public class CommandAccept implements ICommand {
     public void onCommand(CmdArgs cmdArgs) {
         Player p = (Player) cmdArgs.getSender();
         IPlayer ip = Practice.getCache().getIPlayer(p);
+        if(ip.isStaffMode()){
+            p.sendMessage(ChatColor.RED+"You cannot do this while in staff mode.");
+            return;
+        }
         if(ip.getState() == PlayerState.AT_SPAWN){
             if(Practice.getQueueManager().inQueue(ip)){
                 p.sendMessage(ChatColor.RED+"You cannot do this while you are in a queue.");
@@ -32,6 +36,10 @@ public class CommandAccept implements ICommand {
                     return;
                 }
                 IPlayer tip = Practice.getCache().getIPlayer(t);
+                if(tip.isStaffMode()){
+                    p.sendMessage(ChatColor.RED+"Could not find player '"+cmdArgs.getArg(0)+"'.");
+                    return;
+                }
                 if(tip.getState() != PlayerState.AT_SPAWN){
                     p.sendMessage(ChatColor.RED+"That player is not at spawn.");
                     return;

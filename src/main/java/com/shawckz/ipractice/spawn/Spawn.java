@@ -122,7 +122,12 @@ public class Spawn implements Listener {
                 .name(ChatColor.GOLD + "Host an Event"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
-                player.getPlayer().sendMessage(ChatColor.GOLD + "The Event System is currently in development and will be out soon!");
+                if(player.getPlayer().hasPermission("practice.events.host")){
+                    player.getPlayer().sendMessage(ChatColor.GOLD+"Events will be available for donators to host very soon!");
+                }
+                else{
+                    player.getPlayer().sendMessage(ChatColor.GOLD+"Only "+ChatColor.LIGHT_PURPLE+"donators"+ChatColor.GOLD+" can host events!");
+                }
             }
         }));
 

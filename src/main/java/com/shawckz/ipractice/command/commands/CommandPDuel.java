@@ -22,6 +22,10 @@ public class CommandPDuel implements ICommand {
         final Player p = (Player) cmdArgs.getSender();
         final IPlayer ip = Practice.getCache().getIPlayer(p);
 
+        if(ip.isStaffMode()){
+            p.sendMessage(ChatColor.RED+"You cannot do this while in staff mode.");
+            return;
+        }
         if(ip.getState() != PlayerState.AT_SPAWN){
             p.sendMessage(ChatColor.RED+"You are not at spawn.");
             return;
