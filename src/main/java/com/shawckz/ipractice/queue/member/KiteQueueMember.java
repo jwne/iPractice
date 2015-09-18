@@ -1,8 +1,10 @@
 package com.shawckz.ipractice.queue.member;
 
+import com.shawckz.ipractice.kite.KiteRole;
 import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.range.QueueRange;
+import com.shawckz.ipractice.queue.range.UnrankedQueueRange;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,11 +15,13 @@ import java.util.Set;
  * Created by 360 on 9/12/2015.
  */
 @RequiredArgsConstructor
-public class RankedQueueMember implements QueueMember {
+@Getter
+public class KiteQueueMember implements QueueMember {
 
-    @Getter private final IPlayer player;
+    private final IPlayer player;
     private final Ladder ladder;
-    @Getter private final QueueRange range;
+    private final KiteRole role;
+    private final UnrankedQueueRange range = new UnrankedQueueRange();
 
     @Override
     public Set<IPlayer> getPlayers() {
@@ -34,5 +38,10 @@ public class RankedQueueMember implements QueueMember {
     @Override
     public String getName() {
         return player.getName();
+    }
+
+    @Override
+    public QueueRange getRange() {
+        return range;
     }
 }

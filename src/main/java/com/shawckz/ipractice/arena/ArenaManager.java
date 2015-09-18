@@ -83,6 +83,23 @@ public class ArenaManager {
         }
     }
 
+    public Arena getNextArena(ArenaType type){
+        if(getArena(arenaIndex+1)!=null){
+            arenaIndex++;
+            return getArena(arenaIndex);
+        }
+        arenaIndex = 0;
+        if(getArena(arenaIndex)!=null){
+            return getArena(arenaIndex);
+        }
+        else{
+            for(Arena arena : arenas){
+                return arena;
+            }
+            return null;
+        }
+    }
+
 
 
 }

@@ -1,6 +1,6 @@
 package com.shawckz.ipractice.listener;
 
-import com.shawckz.ipractice.match.Ladder;
+import com.shawckz.ipractice.ladder.Ladder;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

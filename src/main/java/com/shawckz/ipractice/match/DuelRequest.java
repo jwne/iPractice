@@ -1,5 +1,6 @@
 package com.shawckz.ipractice.match;
 
+import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -37,6 +37,10 @@ public class CommandHandler implements CommandExecutor {
         registerCommand(new CommandParty(), true);
         registerCommand(new CommandPDuel(), true);
         registerCommand(new CommandPAccept(), true);
+        registerCommand(new CommandKiteAccept(), true);
+        registerCommand(new CommandResetElo(), true);
+        registerCommand(new CommandSave(), true);
+        registerCommand(new CommandStaffMode(), true);
     }
 
     private void registerCommand(ICommand cmd,boolean single){

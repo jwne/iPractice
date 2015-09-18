@@ -23,8 +23,24 @@ commands:
     aliases: [viewinventory]
     description: View a match inventory
   party:
-    usage: /<party>
+    usage: /<command>
     aliases: [p]
     description: Party commands
   pduel:
+    usage: /<command>
+    aliases: [partyduel]
   paccept:
+    usage: /<command>
+    aliases: [pdaccept]
+  kiteaccept:
+    usage: /<command>
+    aliases: [kaccept]
+  resetelo:
+    usage: /<command>
+    aliases: [relo]
+  pforcesave:
+    usage: /<command>
+    aliases: [pracsave,psave,save]
+  staffmode:
+    usage: /<command>
+    aliases: [pstaff, pstaffmode, ph, prach, pracstaff, ps, h]

@@ -1,6 +1,6 @@
 package com.shawckz.ipractice.party;
 
-import com.shawckz.ipractice.match.Ladder;
+import com.shawckz.ipractice.ladder.Ladder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

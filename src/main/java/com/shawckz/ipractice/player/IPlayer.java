@@ -9,7 +9,7 @@ import com.shawckz.ipractice.kit.KitBuilder;
 import com.shawckz.ipractice.kit.KitHandler;
 import com.shawckz.ipractice.kite.KiteRequest;
 import com.shawckz.ipractice.match.DuelRequest;
-import com.shawckz.ipractice.match.Ladder;
+import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.party.Party;
 import com.shawckz.ipractice.player.cache.CachePlayer;
 import com.shawckz.ipractice.rating.Elo;
@@ -32,6 +32,8 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @CollectionName(name = "iplayers")
+@Getter
+@Setter
 public class IPlayer extends CachePlayer {
 
     public static final int DEFAULT_ELO = 1000;
@@ -73,18 +75,14 @@ public class IPlayer extends CachePlayer {
     @DatabaseSerializer(serializer = LadderIntegerSerializer.class)
     @Getter private Map<Ladder, Integer> losses = new HashMap<>();
 
-    @Getter @Setter private boolean staffMode = false;
-
-    @Getter @Setter private long enderpearl = 0;
-
-    @Getter @Setter private long duelRequestCooldown = 0;
-
-    @Getter private List<DuelRequest> duelRequests = new ArrayList<>();
-    @Getter private List<KiteRequest> kiteRequests = new ArrayList<>();
-
-    @Getter @Setter private KitBuilder kitBuilder;
-
-    @Getter private PracticeScoreboard scoreboard;
+    private boolean staffMode = false;
+    private long enderpearl = 0;
+    private long duelRequestCooldown = 0;
+    private List<DuelRequest> duelRequests = new ArrayList<>();
+    private List<KiteRequest> kiteRequests = new ArrayList<>();
+    private KitBuilder kitBuilder;
+    private PracticeScoreboard scoreboard;
+    private boolean staffTeleportShuffle = false;
 
     public void setup() {
         if (player == null) {
@@ -168,9 +166,13 @@ public class IPlayer extends CachePlayer {
         }
         else{
             for(Player pl : Bukkit.getOnlinePlayers()){
+                IPlayer tpl = Practice.getCache().getIPlayer(pl);
                 Practice.getEntityHider().showEntity(player, pl);
                 player.showPlayer(pl);
-                Practice.getEntityHider().hideEntity(pl, player);
+                if(!tpl.isStaffMode()){
+                    //Allow staff members to see each other
+                    Practice.getEntityHider().hideEntity(pl, player);
+                }
             }
         }
     }
@@ -197,6 +199,8 @@ public class IPlayer extends CachePlayer {
 
     public void sendToSpawn() {
         this.state = PlayerState.AT_SPAWN;
+        player.setAllowFlight(false);
+        player.setFlying(false);
         player.setGameMode(GameMode.SURVIVAL);
         player.teleport(Practice.getIConfig().getSpawn());
         player.setHealth(20);
@@ -254,6 +258,10 @@ public class IPlayer extends CachePlayer {
             elo.put(ladder, DEFAULT_ELO);
         }
         return elo.get(ladder);
+    }
+
+    public void setElo(Ladder ladder, int elo){
+        this.elo.put(ladder, elo);
     }
 
     public void updateElo(Ladder ladder, int loser, boolean didWin){

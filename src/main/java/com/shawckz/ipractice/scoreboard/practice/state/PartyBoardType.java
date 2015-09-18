@@ -7,6 +7,7 @@ import com.shawckz.ipractice.scoreboard.internal.XLabel;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.practice.label.ValueLabel;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,13 +26,30 @@ public class PartyBoardType implements PracticeBoardType {
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.GOLD + "Party: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.BLUE + "Party: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
                 if(player.getParty() != null){
-                    return ChatColor.AQUA+player.getParty().getLeader();
+                    return ChatColor.GREEN+player.getParty().getLeader();
                 }
-                return ChatColor.AQUA+"None";
+                return ChatColor.GREEN+"None";
+            }
+        }));
+
+        valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.BLUE + "Party ELO: ", new ValueLabel.CallableValue() {
+            @Override
+            public String call(IPlayer player) {
+                if(player.getParty() != null) {
+                    int i = 0;
+                    int x = 0;
+                    for (Player pl : player.getParty().getAllPlayers()) {
+                        IPlayer ipl = Practice.getCache().getIPlayer(pl);
+                        i += ipl.getAverageElo();
+                        x++;
+                    }
+                    return ChatColor.GREEN + "" + (Math.round(i / x));
+                }
+                return ChatColor.GREEN+"None";
             }
         }));
 

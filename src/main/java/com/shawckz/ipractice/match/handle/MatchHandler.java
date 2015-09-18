@@ -1,6 +1,7 @@
-package com.shawckz.ipractice.match;
+package com.shawckz.ipractice.match.handle;
 
 import com.shawckz.ipractice.Practice;
+import com.shawckz.ipractice.match.Match;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.util.AutoRespawn;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,6 +39,15 @@ public class MatchHandler implements Listener{
     @EventHandler
      public void onDrop(final PlayerDropItemEvent e){
         if(match.getPlayerManager().hasPlayer(e.getPlayer())){
+            ItemStack is = e.getItemDrop().getItemStack();
+            ItemMeta im = is.getItemMeta();
+            if(im.getLore() == null){
+                im.setLore(new ArrayList<String>());
+            }
+            im.getLore().add(match.getId());
+            is.setItemMeta(im);
+            e.getItemDrop().setItemStack(is);
+
             for(Player pl : Bukkit.getOnlinePlayers()){
                 if(!match.getPlayerManager().hasPlayer(pl)){
                     Practice.getEntityHider().hideEntity(pl, e.getItemDrop());
@@ -64,6 +75,12 @@ public class MatchHandler implements Listener{
             e.getDrops().clear();
             final Set<Item> items = new HashSet<>();
             for(ItemStack i : newDrops){
+                ItemMeta im = i.getItemMeta();
+                if(im.getLore() == null){
+                    im.setLore(new ArrayList<String>());
+                }
+                im.getLore().add(match.getId());
+                i.setItemMeta(im);
                 Item item = p.getWorld().dropItemNaturally(p.getLocation(), i);
                 items.add(item);
             }
@@ -96,6 +113,38 @@ public class MatchHandler implements Listener{
             }
 
             AutoRespawn.autoRespawn(e);
+        }
+    }
+
+    @EventHandler
+    public void onPickupItem(PlayerPickupItemEvent e){
+        if(!match.getPlayerManager().hasPlayer(e.getPlayer())){
+            ItemStack i = e.getItem().getItemStack();
+            if(i.hasItemMeta()){
+                if(i.getItemMeta().getLore() != null){
+                    if(i.getItemMeta().getLore().contains(match.getId())){
+                        Practice.getEntityHider().hideEntity(e.getPlayer(), e.getItem());
+                        e.setCancelled(true);
+                    }
+                }
+            }
+        }
+        else{
+            ItemStack i = e.getItem().getItemStack();
+            if(i.hasItemMeta()){
+                if(i.getItemMeta().getLore() != null){
+                    if(i.getItemMeta().getLore().contains(match.getId())){
+                        ItemMeta im = i.getItemMeta();
+                        im.getLore().remove(match.getId());
+                        i.setItemMeta(im);
+                        e.getItem().setItemStack(i);
+                    }
+                    else{
+                        Practice.getEntityHider().hideEntity(e.getPlayer(), e.getItem());
+                        e.setCancelled(true);
+                    }
+                }
+            }
         }
     }
 
@@ -188,6 +237,7 @@ public class MatchHandler implements Listener{
                         if(!match.getPlayerManager().hasPlayer(pl)){
                             e.setIntensity(en,0);
                             e.getAffectedEntities().remove(en);
+                            Practice.getEntityHider().hideEntity(pl, e.getEntity());
                         }
                     }
                 }

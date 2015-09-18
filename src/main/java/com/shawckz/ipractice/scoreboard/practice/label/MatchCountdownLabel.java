@@ -19,7 +19,7 @@ public class MatchCountdownLabel extends XScoreboardTimer {
 
     @Override
     public void onUpdate() {
-        setValue(ChatColor.LIGHT_PURPLE+"Starting in: "+ChatColor.GREEN+match.getCountdown());
+        setValue(ChatColor.BLUE+"Starting in: "+ChatColor.GREEN+match.getCountdown());
     }
 
     @Override

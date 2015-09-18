@@ -1,4 +1,4 @@
-package com.shawckz.ipractice.match;
+package com.shawckz.ipractice.match.team;
 
 /**
  * Created by 360 on 9/12/2015.

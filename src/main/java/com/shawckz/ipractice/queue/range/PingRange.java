@@ -24,6 +24,9 @@ public class PingRange implements QueueRange {
         else{
             this.minPing -= 10;
         }
+        if(this.minPing < 0){
+            this.minPing = 0;
+        }
         this.maxPing += 10;
     }
 

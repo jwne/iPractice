@@ -1,7 +1,10 @@
 package com.shawckz.ipractice.queue.type;
 
 import com.shawckz.ipractice.Practice;
+import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.match.*;
+import com.shawckz.ipractice.match.team.PracticeTeam;
+import com.shawckz.ipractice.match.team.Team;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.queue.Queue;

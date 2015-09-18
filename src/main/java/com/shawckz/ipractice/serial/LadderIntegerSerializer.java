@@ -3,7 +3,7 @@ package com.shawckz.ipractice.serial;
 import com.mongodb.util.JSON;
 import com.shawckz.ipractice.configuration.AbstractSerializer;
 import com.shawckz.ipractice.exception.PracticeException;
-import com.shawckz.ipractice.match.Ladder;
+import com.shawckz.ipractice.ladder.Ladder;
 
 import java.util.HashMap;
 import java.util.Map;

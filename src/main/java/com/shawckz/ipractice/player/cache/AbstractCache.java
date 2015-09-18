@@ -59,6 +59,7 @@ public abstract class AbstractCache implements Listener {
         else{
             CachePlayer cp = loadCachePlayer(name);
             if(cp != null){
+                put(cp);
                 return cp;
             }
             else{

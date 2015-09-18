@@ -10,11 +10,11 @@ import org.bukkit.ChatColor;
 import java.util.HashSet;
 import java.util.Set;
 
-public class KitBuilderBoardType implements PracticeBoardType {
+public class StaffModeBoardType implements PracticeBoardType {
 
     private Set<ValueLabel> valueLabels = new HashSet<>();
 
-    public KitBuilderBoardType(XScoreboard scoreboard, IPlayer player) {
+    public StaffModeBoardType(XScoreboard scoreboard, IPlayer player) {
 
         valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.GOLD+""+ ChatColor.GRAY + "" +
                 ChatColor.STRIKETHROUGH +"", new ValueLabel.CallableValue() {
@@ -24,13 +24,15 @@ public class KitBuilderBoardType implements PracticeBoardType {
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.BLUE + "Editing Kit: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.BLUE + "Staff Mode: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
-                if(player.getKitBuilder() != null && player.getKitBuilder().isActive()){
-                    return ChatColor.GREEN+player.getKitBuilder().getLadder().getName();
+                if(player.isStaffMode()){
+                    return ChatColor.GREEN+"enabled";
                 }
-                return ChatColor.AQUA+"None";
+                else{
+                    return ChatColor.RED+"disabled";
+                }
             }
         }));
         valueLabels.add(new ValueLabel(scoreboard, player, 1, ChatColor.GRAY + "" +
@@ -64,6 +66,6 @@ public class KitBuilderBoardType implements PracticeBoardType {
 
     @Override
     public boolean isApplicable(IPlayer player) {
-        return player.getState() == PlayerState.BUILDING_KIT;
+        return player.isStaffMode();
     }
 }

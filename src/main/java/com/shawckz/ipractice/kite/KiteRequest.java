@@ -27,14 +27,19 @@ public class KiteRequest {
     public void send(){
         sender.getPlayer().sendMessage(ChatColor.GOLD + "You sent a kite duel request to " + ChatColor.LIGHT_PURPLE + recipient.getName() + ChatColor.GOLD + ".");
 
-        new FancyMessage(ChatColor.LIGHT_PURPLE+sender.getName()+ChatColor.GOLD
-                +" has sent you a kite duel request.  ")
-                .then(ChatColor.GOLD+"Runner: "+ChatColor.LIGHT_PURPLE+runner.getName()+" ")
-                .then(ChatColor.GOLD+"Chaser: "+ChatColor.LIGHT_PURPLE+chaser.getName())
-                .send(recipient.getPlayer());
+        if(chaser.getName().equalsIgnoreCase(recipient.getName())){
+            new FancyMessage(ChatColor.LIGHT_PURPLE+sender.getName()+ChatColor.GOLD
+                    +" has sent you a chase kite duel request.  ")
+                    .send(recipient.getPlayer());
+        }
+        else{
+            new FancyMessage(ChatColor.LIGHT_PURPLE+sender.getName()+ChatColor.GOLD
+                    +" has sent you a kite duel request.  ")
+                    .send(recipient.getPlayer());
+        }
 
         new FancyMessage(ChatColor.GREEN+""+ChatColor.BOLD+"[CLICK HERE]")
-                .command("/accept "+sender.getName())
+                .command("/kiteaccept "+sender.getName())
                 .tooltip(ChatColor.GOLD+"Accept "+sender.getName()+"'s duel request")
                 .then(ChatColor.GOLD + " to accept.")
                 .send(recipient.getPlayer());

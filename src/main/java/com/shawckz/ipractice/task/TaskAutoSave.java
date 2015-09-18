@@ -18,6 +18,11 @@ public class TaskAutoSave implements Runnable {
                 saved++;
             }
         }
-        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE+"Saved "+saved+" players to the database.");
+        for(Player pl : Bukkit.getOnlinePlayers()){
+            if(pl.isOp() || pl.hasPermission("practice.verbose")){
+                pl.sendMessage(ChatColor.DARK_PURPLE+"Saved "+saved+" players to the database.");
+            }
+        }
+        Bukkit.getLogger().info(ChatColor.DARK_PURPLE+"Saved "+saved+" players to the database.");
     }
 }

@@ -25,7 +25,7 @@ public class EnderpearlCooldownLabel extends XScoreboardTimer {
     public void onUpdate() {
         if(player.getEnderpearl() > System.currentTimeMillis()){
             setVisible(true);
-            setValue(ChatColor.LIGHT_PURPLE+"Enderpearl: "+ChatColor.GREEN+((player.getEnderpearl() - System.currentTimeMillis())/1000)+"s");
+            setValue(ChatColor.BLUE+"Enderpearl: "+ChatColor.GREEN+((player.getEnderpearl() - System.currentTimeMillis())/1000)+"s");
         }
         else{
             setVisible(false);

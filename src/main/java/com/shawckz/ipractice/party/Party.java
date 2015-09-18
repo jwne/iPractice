@@ -1,7 +1,7 @@
 package com.shawckz.ipractice.party;
 
 import com.shawckz.ipractice.Practice;
-import com.shawckz.ipractice.match.Ladder;
+import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import lombok.*;

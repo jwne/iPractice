@@ -3,23 +3,31 @@ package com.shawckz.ipractice.match;
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.arena.Arena;
 import com.shawckz.ipractice.exception.PracticeException;
+import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.match.handle.MatchHandler;
+import com.shawckz.ipractice.match.handle.MatchManager;
+import com.shawckz.ipractice.match.participant.MatchParticipant;
+import com.shawckz.ipractice.match.participant.MatchPlayer;
+import com.shawckz.ipractice.match.participant.MatchPlayerManager;
+import com.shawckz.ipractice.match.team.PracticeTeam;
+import com.shawckz.ipractice.match.team.Team;
+import com.shawckz.ipractice.match.team.TeamManager;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import lombok.Getter;
 import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by 360 on 9/7/2015.
  */
 @Getter
-public class Match {
+public class Match implements PracticeMatch {
 
     @Setter private Arena arena = null;
     private final String id;
@@ -50,6 +58,7 @@ public class Match {
         }
         matchManager.registerMatch(this);
         matchHandler.register();
+
 
         String versus = "";
         for(PracticeTeam team : teamManager.getTeams().values()){
@@ -299,4 +308,8 @@ public class Match {
         }
     }
 
+    @Override
+    public Set<Player> getPlayers() {
+        return playerManager.getAllPlayers();
+    }
 }

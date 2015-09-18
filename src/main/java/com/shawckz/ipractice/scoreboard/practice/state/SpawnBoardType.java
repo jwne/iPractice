@@ -25,31 +25,31 @@ public class SpawnBoardType implements PracticeBoardType {
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 5, ChatColor.GREEN + "Average ELO: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 5, ChatColor.BLUE + "Average ELO: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
-                return ChatColor.AQUA+""+player.getAverageElo();
+                return ChatColor.GREEN+""+player.getAverageElo();
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 4, ChatColor.GREEN + "Matches: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 4, ChatColor.BLUE + "Matches: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
-                return ChatColor.AQUA+""+player.getTotalMatchesAllLadders();
+                return ChatColor.GREEN+""+player.getTotalMatchesAllLadders();
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.GREEN + "Kills: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.BLUE + "Kills: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
-                return ChatColor.AQUA + "" + player.getKillsAllLadders();
+                return ChatColor.GREEN + "" + player.getKillsAllLadders();
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.GREEN + "Deaths: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.BLUE + "Deaths: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
-                return ChatColor.AQUA + "" + player.getDeathsAllLadders();
+                return ChatColor.GREEN + "" + player.getDeathsAllLadders();
             }
         }));
 
@@ -86,6 +86,7 @@ public class SpawnBoardType implements PracticeBoardType {
 
     @Override
     public boolean isApplicable(IPlayer player) {
-        return player.getState() == PlayerState.AT_SPAWN && !Practice.getQueueManager().inQueue(player) && player.getParty() == null;
+        return player.getState() == PlayerState.AT_SPAWN && !Practice.getQueueManager().inQueue(player) &&
+                player.getParty() == null && !player.isStaffMode();
     }
 }

@@ -3,6 +3,9 @@ package com.shawckz.ipractice.match;
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.arena.Arena;
 import com.shawckz.ipractice.exception.PracticeException;
+import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.match.team.PracticeTeam;
+import com.shawckz.ipractice.match.team.Team;
 import com.shawckz.ipractice.party.Party;
 import org.bukkit.entity.Player;
 

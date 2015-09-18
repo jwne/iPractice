@@ -12,7 +12,7 @@ public class MatchTimerLabel extends XScoreboardTimer {
 
     private final Match match;
 
-    private final String valueBase = ChatColor.LIGHT_PURPLE+"Duration: "+ChatColor.GREEN;
+    private final String valueBase = ChatColor.BLUE+"Duration: "+ChatColor.GREEN;
 
     public MatchTimerLabel(XScoreboard scoreboard, int score, Match match) {
         super(scoreboard, score, "", 0, 20);

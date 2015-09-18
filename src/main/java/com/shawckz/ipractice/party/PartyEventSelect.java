@@ -1,6 +1,6 @@
 package com.shawckz.ipractice.party;
 
-import com.shawckz.ipractice.match.Ladder;
+import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.util.ItemBuilder;
 
 import org.bukkit.Bukkit;
@@ -30,6 +30,8 @@ public abstract class PartyEventSelect implements Listener{
             inv.addItem(new ItemBuilder(event.getIcon()).name(ChatColor.GOLD+event.getName()).build());
         }
 
+        player.openInventory(inv);
+        Bukkit.getPluginManager().registerEvents(this, Practice.getPlugin());
     }
 
     @EventHandler

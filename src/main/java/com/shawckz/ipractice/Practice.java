@@ -9,9 +9,10 @@ import com.shawckz.ipractice.database.DBManager;
 import com.shawckz.ipractice.event.EventManager;
 import com.shawckz.ipractice.listener.ChatListener;
 import com.shawckz.ipractice.listener.KitInvClose;
+import com.shawckz.ipractice.listener.StaffModeListener;
 import com.shawckz.ipractice.listener.WorldListener;
-import com.shawckz.ipractice.match.Ladder;
-import com.shawckz.ipractice.match.MatchManager;
+import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.match.handle.MatchManager;
 import com.shawckz.ipractice.party.PartiesInv;
 import com.shawckz.ipractice.party.PartyManager;
 import com.shawckz.ipractice.player.ICache;
@@ -25,7 +26,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class Practice extends JavaPlugin {
 
@@ -42,6 +42,7 @@ public class Practice extends JavaPlugin {
     @Getter private static EntityHider entityHider;
     @Getter private static EventManager eventManager;
     @Getter private static QueueManager queueManager;
+    @Getter private static TaskAutoSave taskAutoSave;
 
     @Override
     public void onEnable(){
@@ -62,15 +63,17 @@ public class Practice extends JavaPlugin {
         Ladder.loadLadders(this);
 
         getServer().getPluginManager().registerEvents(new KitInvClose(), this);
-        getServer().getPluginManager().registerEvents(new WorldListener(),this);
+        getServer().getPluginManager().registerEvents(new WorldListener(), this);
         getServer().getPluginManager().registerEvents(new ChatListener(),this);
         getServer().getPluginManager().registerEvents(new PartiesInv(),this);
-
-        getServer().getScheduler().runTaskTimerAsynchronously(this, new TaskAutoSave(), 18000, 18000);//Every 15 minutes
+        getServer().getPluginManager().registerEvents(new StaffModeListener(), this);
+        taskAutoSave = new TaskAutoSave();
+        getServer().getScheduler().runTaskTimerAsynchronously(this, taskAutoSave, 15000, 15000);
     }
 
     @Override
     public void onDisable(){
+        taskAutoSave.run();
         if(!eventManager.canStartEvent()){
             eventManager.endEvent();
         }
@@ -78,8 +81,9 @@ public class Practice extends JavaPlugin {
             if(queueManager.inQueue(Practice.getCache().getIPlayer(pl))){
                 queueManager.removeFromQueue(Practice.getCache().getIPlayer(pl));
             }
-            IPlayer ip = getCache().getIPlayer(pl);
-            ip.update();
+            //IPlayer ip = getCache().getIPlayer(pl);
+            //ip.update();
+            // -- Handled by TaskAutoSave ^^
         }
 
         cache.clearCache();

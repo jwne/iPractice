@@ -2,11 +2,13 @@ package com.shawckz.ipractice.command.commands;
 
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.arena.Arena;
+import com.shawckz.ipractice.arena.ArenaType;
 import com.shawckz.ipractice.arena.BasicArena;
+import com.shawckz.ipractice.arena.KiteArena;
 import com.shawckz.ipractice.command.CmdArgs;
 import com.shawckz.ipractice.command.Command;
 import com.shawckz.ipractice.command.ICommand;
-import com.shawckz.ipractice.match.Ladder;
+import com.shawckz.ipractice.ladder.Ladder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,16 +25,23 @@ public class CommandPractice implements ICommand {
 
         if(args.length == 0){
             p.sendMessage(ChatColor.AQUA+"Practice Help");
+            p.sendMessage(ChatColor.GRAY+"*** Ladders ***");
             p.sendMessage(ChatColor.YELLOW+"/practice addladder <name> <icon(material)> <editable(true/false)>");
             p.sendMessage(ChatColor.YELLOW+"/practice delladder <name>");
+            p.sendMessage(ChatColor.GRAY+"*** Spawns ***");
             p.sendMessage(ChatColor.YELLOW+"/practice setspawn");
             p.sendMessage(ChatColor.YELLOW+"/practice setkitspawn");
+            p.sendMessage(ChatColor.GRAY+"*** Kits ***");
             p.sendMessage(ChatColor.YELLOW+"/practice setkitinv <ladder>");
             p.sendMessage(ChatColor.YELLOW+"/practice setdefaultkit <ladder>");
+            p.sendMessage(ChatColor.GRAY+"*** Arenas ***");
             p.sendMessage(ChatColor.YELLOW+"/practice createarena <arena name>");
             p.sendMessage(ChatColor.YELLOW+"/practice delarena <arena name>");
             p.sendMessage(ChatColor.YELLOW+"/practice setarenaspawn <arena name> <a|b>");
             p.sendMessage(ChatColor.YELLOW+"/practice listarenas");
+            p.sendMessage(ChatColor.GRAY+"*** Kite Arenas ***");
+            p.sendMessage(ChatColor.YELLOW+"/practice createkitearena <arena name>");
+            p.sendMessage(ChatColor.YELLOW+"/practice setkitearenaspawn <arena name> <a|b|end>");
             return;
         }
 
@@ -199,8 +208,70 @@ public class CommandPractice implements ICommand {
             }
             else{
                 for(Arena arena : Practice.getArenaManager().getArenas()){
-                    p.sendMessage(ChatColor.GRAY+" - "+ChatColor.AQUA+arena.getName());
+                    p.sendMessage(ChatColor.GRAY+" - "+ChatColor.AQUA+arena.getName() + ChatColor.GREEN+" ("+arena.getType().toString()+")");
                 }
+            }
+        }
+        //KITE ARENAS
+        else if (key.equalsIgnoreCase("createkitearena")){
+            if(args.length >= 2){
+                if(Practice.getArenaManager().getArena(args[1].replaceAll("_", " ")) != null){
+                    p.sendMessage(ChatColor.RED+"An arena by that name already exists.");
+                    return;
+                }
+                String name = args[1];
+                name = name.replaceAll("_"," ");
+
+                KiteArena arena = new KiteArena(Practice.getPlugin(), name, p.getLocation(), p.getLocation(), p.getLocation());
+                Practice.getArenaManager().registerArena(arena);
+                arena.save();
+                p.sendMessage(ChatColor.GREEN+"Created kite arena '"+name+"'.  Set it's spawns with /prac setkitearenaspawn.");
+            }
+            else{
+                p.sendMessage(ChatColor.RED+"Incorrect usage.");
+            }
+        }
+        else if (key.equalsIgnoreCase("setkitearenaspawn")){
+            if(args.length >= 3){
+                if(Practice.getArenaManager().getArena(args[1].replaceAll("_", " ")) == null){
+                    p.sendMessage(ChatColor.RED+"An arena by that name does not exist.");
+                    return;
+                }
+                String name = args[1];
+                name = name.replaceAll("_"," ");
+
+                Arena a = Practice.getArenaManager().getArena(name);
+
+                if(a.getType() != ArenaType.KITE){
+                    p.sendMessage(ChatColor.RED+"That arena is not a kite arena.");
+                    return;
+                }
+
+                KiteArena arena = (KiteArena) a;
+
+
+
+                if(args[2].equalsIgnoreCase("a")){
+                    arena.setSpawnAlpha(p.getLocation());
+                    arena.save();
+                    p.sendMessage(ChatColor.GREEN+"Set spawn ALPHA for kite arena '"+arena.getName()+"'.");
+                }
+                else if (args[2].equalsIgnoreCase("b")){
+                    arena.setSpawnBravo(p.getLocation());
+                    arena.save();
+                    p.sendMessage(ChatColor.GREEN + "Set spawn BRAVO for kite arena '" + arena.getName() + "'.");
+                }
+                else if (args[2].equalsIgnoreCase("end")){
+                    arena.setEnd(p.getLocation());
+                    arena.save();
+                    p.sendMessage(ChatColor.GREEN + "Set END location for kite arena '"+arena.getName()+"'.");
+                }
+                else{
+                    p.sendMessage(ChatColor.RED+"Incorrect usage.");
+                }
+            }
+            else{
+                p.sendMessage(ChatColor.RED+"Incorrect usage.");
             }
         }
         else{

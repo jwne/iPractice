@@ -1,4 +1,4 @@
-package com.shawckz.ipractice.match;
+package com.shawckz.ipractice.match.participant;
 
 import com.shawckz.ipractice.player.IPlayer;
 import lombok.Data;

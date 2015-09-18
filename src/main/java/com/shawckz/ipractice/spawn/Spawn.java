@@ -3,7 +3,11 @@ package com.shawckz.ipractice.spawn;
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.kit.KitBuilder;
 import com.shawckz.ipractice.kite.KiteSelect;
+import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.ladder.LadderSelect;
 import com.shawckz.ipractice.match.*;
+import com.shawckz.ipractice.match.team.PracticeTeam;
+import com.shawckz.ipractice.match.team.Team;
 import com.shawckz.ipractice.party.PartiesInv;
 import com.shawckz.ipractice.party.PartyEvent;
 import com.shawckz.ipractice.party.PartyEventSelect;
@@ -23,6 +27,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -75,9 +80,23 @@ public class Spawn implements Listener {
                                     if (queue != null) {
                                         if (queue.canJoin(player)) {
                                             queue.addToQueue(player, ladder);
-                                            player.getPlayer().sendMessage(ChatColor.BLUE + "You joined the " + ChatColor.GREEN +
-                                                    WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
-                                                    + ChatColor.BLUE + " queue.");
+                                            if(queue.getType() == QueueType.RANKED){
+                                                player.getPlayer().sendMessage(ChatColor.BLUE + "You joined the " + ChatColor.GREEN +
+                                                        WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
+                                                        + ChatColor.BLUE + " queue with "+
+                                                        ChatColor.GOLD+player.getElo(ladder)+" ELO"+ ChatColor.BLUE+".");
+                                            }
+                                            else if (queue.getType() == QueueType.PING){
+                                                player.getPlayer().sendMessage(ChatColor.BLUE + "You joined the " + ChatColor.GREEN +
+                                                        WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
+                                                        + ChatColor.BLUE + " queue with "+
+                                                        ChatColor.GOLD+((CraftPlayer)player.getPlayer()).getHandle().ping+" ping"+ ChatColor.BLUE+".");
+                                            }
+                                            else{
+                                                player.getPlayer().sendMessage(ChatColor.BLUE + "You joined the " + ChatColor.GREEN +
+                                                        WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
+                                                        + ChatColor.BLUE + " queue.");
+                                            }
                                             player.getPlayer().getInventory().clear();
                                             player.getPlayer().getInventory().setArmorContents(null);
                                             player.getPlayer().getInventory().setItem(0, new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.RED + "Leave the queue").build());
@@ -209,37 +228,58 @@ public class Spawn implements Listener {
             public void onClick(final IPlayer player) {
                 if (player.getParty() != null) {
                     if (player.getParty().getLeader().equals(player.getName())) {
-                        new PartyEventSelect(player.getPlayer()) {
-                            @Override
-                            public void onSelect(final PartyEvent event) {
-                                new LadderSelect(player) {
-                                    @Override
-                                    public void onSelect(Ladder ladder) {
-                                        MatchBuilder mb = Practice.getMatchManager().matchBuilder(ladder);
-                                        if (event == PartyEvent.FFA) {
-                                            int x = 0;
-                                            for (Player pl : player.getParty().getAllPlayers()) {
-                                                if (x % 2 == 0) {
-                                                    mb.registerTeam(new PracticeTeam(pl.getName(), Team.ALPHA));
-                                                } else {
-                                                    mb.registerTeam(new PracticeTeam(pl.getName(), Team.BRAVO));
+                        if(player.getParty().getAllPlayers().size() >= 2) {
+                            new PartyEventSelect(player.getPlayer()) {
+                                @Override
+                                public void onSelect(final PartyEvent event) {
+                                    new LadderSelect(player) {
+                                        @Override
+                                        public void onSelect(Ladder ladder) {
+                                            MatchBuilder mb = Practice.getMatchManager().matchBuilder(ladder);
+                                            if (event == PartyEvent.FFA) {
+                                                int x = 0;
+                                                for (Player pl : player.getParty().getAllPlayers()) {
+                                                    if (x % 2 == 0) {
+                                                        mb.registerTeam(new PracticeTeam(pl.getName(), Team.ALPHA));
+                                                    } else {
+                                                        mb.registerTeam(new PracticeTeam(pl.getName(), Team.BRAVO));
+                                                    }
+                                                    mb.withPlayer(pl, pl.getName());
+                                                    x++;
                                                 }
-                                                mb.withPlayer(pl, pl.getName());
-                                                x++;
+                                                mb.build().startMatch(Practice.getMatchManager());
+                                            } else if (event == PartyEvent.TWO_TEAMS) {
+                                                mb.registerTeam(new PracticeTeam("Team A", Team.ALPHA));
+                                                mb.registerTeam(new PracticeTeam("Team B", Team.BRAVO));
+                                                int x = 0;
+                                                for(Player pl : player.getParty().getAllPlayers()){
+                                                    if(x % 2 == 0){
+                                                        mb.withPlayer(pl, "Team A");
+                                                        pl.sendMessage(ChatColor.GOLD + "You are on " + ChatColor.AQUA + "Team A");
+                                                    }
+                                                    else{
+                                                        mb.withPlayer(pl, "Team B");
+                                                        pl.sendMessage(ChatColor.GOLD+"You are on "+ChatColor.AQUA+"Team B");
+                                                    }
+                                                }
+                                                mb.build().startMatch(Practice.getMatchManager());
+                                            } else {
+                                                player.getPlayer().sendMessage(ChatColor.RED + "That party event is not yet supported.");
                                             }
-                                            mb.build().startMatch(Practice.getMatchManager());
-                                        } else if (event == PartyEvent.TWO_TEAMS) {
-
-                                        } else {
-                                            player.getPlayer().sendMessage(ChatColor.RED + "That party event is not yet supported.");
                                         }
-                                    }
-                                };
-                            }
-                        };
+                                    };
+                                }
+                            };
+                        }
+                        else{
+                            player.getPlayer().sendMessage(ChatColor.RED+"You must have at least 2 players in your party to do this.");
+                        }
                     } else {
                         player.getPlayer().sendMessage(ChatColor.RED + "Only the party leader can do this.");
                     }
+                }
+                else{
+                    player.getPlayer().sendMessage(ChatColor.RED+"You are not in a party.");
                 }
             }
         }));

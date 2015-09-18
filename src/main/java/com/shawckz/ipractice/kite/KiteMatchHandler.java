@@ -20,11 +20,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 @RequiredArgsConstructor
@@ -69,6 +67,12 @@ public class KiteMatchHandler implements Listener {
             e.getDrops().clear();
             final Set<Item> items = new HashSet<>();
             for(ItemStack i : newDrops){
+                ItemMeta im = i.getItemMeta();
+                if(im.getLore() == null){
+                    im.setLore(new ArrayList<String>());
+                }
+                im.getLore().add(match.getId());
+                i.setItemMeta(im);
                 Item item = p.getWorld().dropItemNaturally(p.getLocation(), i);
                 items.add(item);
             }
@@ -98,6 +102,38 @@ public class KiteMatchHandler implements Listener {
     }
 
     @EventHandler
+    public void onPickupItem(PlayerPickupItemEvent e){
+        if(!match.contains(e.getPlayer())){
+            ItemStack i = e.getItem().getItemStack();
+            if(i.hasItemMeta()){
+                if(i.getItemMeta().getLore() != null){
+                    if(i.getItemMeta().getLore().contains(match.getId())){
+                        Practice.getEntityHider().hideEntity(e.getPlayer(), e.getItem());
+                        e.setCancelled(true);
+                    }
+                }
+            }
+        }
+        else{
+            ItemStack i = e.getItem().getItemStack();
+            if(i.hasItemMeta()){
+                if(i.getItemMeta().getLore() != null){
+                    if(i.getItemMeta().getLore().contains(match.getId())){
+                        ItemMeta im = i.getItemMeta();
+                        im.getLore().remove(match.getId());
+                        i.setItemMeta(im);
+                        e.getItem().setItemStack(i);
+                    }
+                    else{
+                        Practice.getEntityHider().hideEntity(e.getPlayer(), e.getItem());
+                        e.setCancelled(true);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onQuit(PlayerQuitEvent e){
         Player p = e.getPlayer();
         if(match.contains(p)){
@@ -117,6 +153,11 @@ public class KiteMatchHandler implements Listener {
                 if(match.getRunnerCountdown() > 0){
                     e.setTo(e.getFrom());
                 }
+                else{
+                    if(e.getTo().distance(match.getArena().getEnd()) <= 3){
+                        match.eliminatePlayer(match.getChaser().getPlayer());
+                    }
+                }
             }
             else{
                 if(match.getChaserCountdown() > 0){
@@ -134,7 +175,7 @@ public class KiteMatchHandler implements Listener {
             if(match.contains(p)){
                 if(match.contains(d)){
                     if (match.getRole(d) == KiteRole.RUNNER){
-                        e.setCancelled(true);
+                        e.setDamage(0.0);
                         d.sendMessage(ChatColor.RED+"You cannot attack as the runner!");
                     }
                     else if(match.getRole(d) == KiteRole.CHASER){

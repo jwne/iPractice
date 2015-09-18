@@ -1,6 +1,8 @@
-package com.shawckz.ipractice.match;
+package com.shawckz.ipractice.ladder;
 
 import com.shawckz.ipractice.Practice;
+import com.shawckz.ipractice.kite.KiteMatch;
+import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.QueueType;
 import com.shawckz.ipractice.queue.member.QueueMember;
@@ -33,6 +35,8 @@ public abstract class LadderSelect implements Listener {
         inv = Bukkit.createInventory(null, 9, ChatColor.BLUE+"Select a Ladder");
 
         for(Ladder ladder : Ladder.getLadders()){
+            if(ladder.getName().equalsIgnoreCase(KiteMatch.KITE_LADDER_CHASER)
+                    || ladder.getName().equalsIgnoreCase(KiteMatch.KITE_LADDER_RUNNER)) continue;
             inv.addItem(new ItemBuilder(ladder.getIcon()).name(ChatColor.AQUA+ladder.getName()).build());
         }
 
@@ -46,6 +50,8 @@ public abstract class LadderSelect implements Listener {
         inv = Bukkit.createInventory(null, 9, ChatColor.BLUE+"Select a Ladder");
 
         for(Ladder ladder : Ladder.getLadders()){
+            if(ladder.getName().equalsIgnoreCase(KiteMatch.KITE_LADDER_CHASER)
+                    || ladder.getName().equalsIgnoreCase(KiteMatch.KITE_LADDER_RUNNER)) continue;
             int playersIn = 0;
             for(QueueMember queueMember : Practice.getQueueManager().getQueues().get(queueType).getMembers()){
                 if(queueMember.getLadder().getName().equalsIgnoreCase(ladder.getName())){

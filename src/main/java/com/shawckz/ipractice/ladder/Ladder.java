@@ -1,9 +1,11 @@
-package com.shawckz.ipractice.match;
+package com.shawckz.ipractice.ladder;
 
+import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.configuration.Configuration;
 import com.shawckz.ipractice.configuration.annotations.ConfigData;
 import com.shawckz.ipractice.configuration.annotations.ConfigSerializer;
 import com.shawckz.ipractice.kit.Kit;
+import com.shawckz.ipractice.kite.KiteMatch;
 import com.shawckz.ipractice.serial.InventorySerializer;
 import com.shawckz.ipractice.serial.KitSerializer;
 import com.shawckz.ipractice.serial.MaterialSerializer;
@@ -44,6 +46,16 @@ public class Ladder extends Configuration {
                 Ladder ladder = new Ladder(plugin, name);
                 ladders.put(ladder.getName(), ladder);
             }
+        }
+        if(!ladders.containsKey(KiteMatch.KITE_LADDER_CHASER)){
+            Ladder ladder = new Ladder(Practice.getPlugin(), KiteMatch.KITE_LADDER_CHASER, Material.ENDER_PEARL, false);
+            ladder.register();
+            ladder.save();
+        }
+        if(!ladders.containsKey(KiteMatch.KITE_LADDER_RUNNER)){
+            Ladder ladder = new Ladder(Practice.getPlugin(), KiteMatch.KITE_LADDER_RUNNER, Material.ENDER_PEARL, false);
+            ladder.register();
+            ladder.save();
         }
     }
 

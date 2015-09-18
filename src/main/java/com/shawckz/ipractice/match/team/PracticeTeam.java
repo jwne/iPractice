@@ -1,4 +1,4 @@
-package com.shawckz.ipractice.match;
+package com.shawckz.ipractice.match.team;
 
 import lombok.Data;
 

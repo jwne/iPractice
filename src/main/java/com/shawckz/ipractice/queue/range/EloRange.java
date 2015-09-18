@@ -20,6 +20,12 @@ public class EloRange implements QueueRange {
     public void incrementRange() {
         this.minElo = this.minElo - 50;
         this.maxElo = this.maxElo + 50;
+        if(this.minElo < 0){
+            this.minElo = 0;
+        }
+        if(this.maxElo > 5000){
+            this.maxElo = 5000;
+        }
     }
 
     @Override

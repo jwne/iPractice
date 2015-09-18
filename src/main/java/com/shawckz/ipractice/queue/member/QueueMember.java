@@ -1,6 +1,6 @@
 package com.shawckz.ipractice.queue.member;
 
-import com.shawckz.ipractice.match.Ladder;
+import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.range.QueueRange;
 

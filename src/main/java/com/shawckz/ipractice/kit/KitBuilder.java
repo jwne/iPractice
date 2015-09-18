@@ -1,7 +1,7 @@
 package com.shawckz.ipractice.kit;
 
 import com.shawckz.ipractice.Practice;
-import com.shawckz.ipractice.match.Ladder;
+import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import lombok.Getter;
@@ -49,7 +49,7 @@ public class KitBuilder implements Listener {
         player.setFoodLevel(20);
         Practice.getCache().getIPlayer(player).equipKit(ladder);
         for(Player pl : Bukkit.getOnlinePlayers()){
-            player.hidePlayer(pl);
+            Practice.getEntityHider().hideEntity(player, pl);
         }
         active = true;
         Practice.getCache().getIPlayer(player).getScoreboard().update();
@@ -61,7 +61,7 @@ public class KitBuilder implements Listener {
     public void exit(){
         HandlerList.unregisterAll(this);
         for(Player pl : Bukkit.getOnlinePlayers()){
-            player.showPlayer(pl);
+            Practice.getEntityHider().showEntity(player, pl);
         }
         active = false;
     }

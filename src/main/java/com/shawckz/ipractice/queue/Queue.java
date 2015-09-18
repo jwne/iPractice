@@ -1,8 +1,8 @@
 package com.shawckz.ipractice.queue;
 
 import com.shawckz.ipractice.Practice;
-import com.shawckz.ipractice.match.Ladder;
-import com.shawckz.ipractice.match.Match;
+import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.match.PracticeMatch;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.member.QueueMember;
 import lombok.Getter;
@@ -103,7 +103,7 @@ public abstract class Queue {
         }
     }
 
-    public abstract Match createMatch(QueueMatchSet set);
+    public abstract PracticeMatch createMatch(QueueMatchSet set);
 
     public abstract Material getIcon();
 

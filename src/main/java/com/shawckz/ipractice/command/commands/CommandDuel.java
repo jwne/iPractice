@@ -5,8 +5,8 @@ import com.shawckz.ipractice.command.CmdArgs;
 import com.shawckz.ipractice.command.Command;
 import com.shawckz.ipractice.command.ICommand;
 import com.shawckz.ipractice.match.DuelRequest;
-import com.shawckz.ipractice.match.Ladder;
-import com.shawckz.ipractice.match.LadderSelect;
+import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.ladder.LadderSelect;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import org.bukkit.ChatColor;
@@ -19,6 +19,11 @@ public class CommandDuel implements ICommand {
     public void onCommand(CmdArgs cmdArgs) {
         Player p = (Player) cmdArgs.getSender();
         final IPlayer ip = Practice.getCache().getIPlayer(p);
+
+        if(ip.isStaffMode()){
+            p.sendMessage(ChatColor.RED+"You cannot do this while in staff mode.");
+            return;
+        }
 
         if(ip.getState() == PlayerState.AT_SPAWN){
             if(ip.getDuelRequestCooldown() < System.currentTimeMillis()){
@@ -39,6 +44,10 @@ public class CommandDuel implements ICommand {
                         return;
                     }
                     final IPlayer tip = Practice.getCache().getIPlayer(t);
+                    if(tip.isStaffMode()){
+                        p.sendMessage(ChatColor.RED+"Could not find player '"+cmdArgs.getArg(0)+"'.");
+                        return;
+                    }
                     if(tip.getState() != PlayerState.AT_SPAWN){
                         p.sendMessage(ChatColor.RED+"That player is not at spawn.");
                         return;

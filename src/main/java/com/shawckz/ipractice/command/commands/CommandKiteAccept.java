@@ -4,17 +4,15 @@ import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.command.CmdArgs;
 import com.shawckz.ipractice.command.Command;
 import com.shawckz.ipractice.command.ICommand;
-import com.shawckz.ipractice.match.DuelRequest;
-import com.shawckz.ipractice.match.Match;
-import com.shawckz.ipractice.match.team.PracticeTeam;
-import com.shawckz.ipractice.match.team.Team;
+import com.shawckz.ipractice.kite.KiteMatch;
+import com.shawckz.ipractice.kite.KiteRequest;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-@Command(name = "accept", usage = "/accept <player>", minArgs = 1, playerOnly = true)
-public class CommandAccept implements ICommand {
+@Command(name = "kiteaccept", usage = "/kiteaccept <player>", minArgs = 1, playerOnly = true)
+public class CommandKiteAccept implements ICommand {
 
     @Override
     public void onCommand(CmdArgs cmdArgs) {
@@ -45,9 +43,9 @@ public class CommandAccept implements ICommand {
                     return;
                 }
 
-                DuelRequest req = null;
+                KiteRequest req = null;
 
-                for(DuelRequest request : ip.getDuelRequests()){
+                for(KiteRequest request : ip.getKiteRequests()){
                     if(request.getSender().getName().equalsIgnoreCase(t.getName())){
                         if(request.getExpiry() >= System.currentTimeMillis()){
                             req = request;
@@ -57,15 +55,10 @@ public class CommandAccept implements ICommand {
                 }
 
                 if(req != null){
-                    ip.getDuelRequests().remove(req);
-                    Match match = Practice.getMatchManager().matchBuilder(req.getLadder())
-                            .registerTeam(new PracticeTeam(req.getSender().getName(), Team.ALPHA))
-                            .registerTeam(new PracticeTeam(req.getRecipient().getName(), Team.BRAVO))
-                            .withPlayer(req.getSender().getPlayer(), req.getSender().getName())
-                            .withPlayer(req.getRecipient().getPlayer(), req.getRecipient().getName())
-                            .setRanked(false)
-                            .build();
+                    ip.getKiteRequests().remove(req);
 
+                    KiteMatch match = new KiteMatch(Practice.getCache().getIPlayer(req.getRunner())
+                                                    ,Practice.getCache().getIPlayer(req.getChaser()));
                     match.startMatch(Practice.getMatchManager());
                 }
                 else{

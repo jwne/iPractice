@@ -30,6 +30,7 @@ public class PracticeScoreboard {
         boards.add(new QueueBoardType(scoreboard, ip));
         boards.add(new PartyBoardType(scoreboard, ip));
         boards.add(new MatchBoardType(scoreboard, ip));
+        boards.add(new StaffModeBoardType(scoreboard, ip));
 
         scoreboard.send(ip.getPlayer());
         scoreboard.update();

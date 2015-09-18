@@ -1,19 +1,17 @@
 package com.shawckz.ipractice.queue.type;
 
 import com.shawckz.ipractice.Practice;
+import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.match.*;
+import com.shawckz.ipractice.match.team.PracticeTeam;
+import com.shawckz.ipractice.match.team.Team;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.queue.Queue;
 import com.shawckz.ipractice.queue.QueueMatchSet;
 import com.shawckz.ipractice.queue.QueueType;
-import com.shawckz.ipractice.queue.member.QueueMember;
 import com.shawckz.ipractice.queue.member.RankedPartyQueueMember;
-import com.shawckz.ipractice.queue.member.UnrankedPartyQueueMember;
 import com.shawckz.ipractice.queue.range.EloRange;
-import com.shawckz.ipractice.queue.range.UnrankedQueueRange;
-
-import java.util.Set;
 
 import org.bukkit.Material;
 

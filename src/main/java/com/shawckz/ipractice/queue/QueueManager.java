@@ -31,6 +31,7 @@ public class QueueManager {
         registerQueue(QueueType.UNRANKED_PARTY, new UnrankedPartyQueue());
         registerQueue(QueueType.RANKED_PARTY, new RankedPartyQueue());
         registerQueue(QueueType.PING, new UnrankedPingQueue());
+        registerQueue(QueueType.KITE, new KiteQueue());
     }
 
     public void run(){
@@ -52,6 +53,10 @@ public class QueueManager {
 
     public void registerQueue(QueueType type, Queue queue){
         queues.put(type, queue);
+    }
+
+    public Queue getQueue(QueueType type){
+        return queues.get(type);
     }
 
     public boolean inQueue(IPlayer player){

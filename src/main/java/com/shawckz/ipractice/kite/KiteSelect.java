@@ -2,9 +2,15 @@ package com.shawckz.ipractice.kite;
 
 
 import com.shawckz.ipractice.Practice;
+import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.player.IPlayer;
+import com.shawckz.ipractice.queue.Queue;
+import com.shawckz.ipractice.queue.QueueType;
+import com.shawckz.ipractice.queue.type.KiteQueue;
 import com.shawckz.ipractice.util.ItemBuilder;
 import com.shawckz.ipractice.util.chatlisten.ChatListenCallback;
 
+import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -41,7 +47,7 @@ public class KiteSelect implements Listener{
                     .build());
         }
         {
-            duelInventory = Bukkit.createInventory(null, 9, mainInventoryName);
+            duelInventory = Bukkit.createInventory(null, 9, duelInventoryName);
             duelInventory.setItem(2, new ItemBuilder(Material.GOLD_INGOT)
                     .name(ChatColor.GOLD + "Challenge a player to chase you").build());
             duelInventory.setItem(6, new ItemBuilder(Material.DIAMOND)
@@ -89,10 +95,32 @@ public class KiteSelect implements Listener{
                         e.setResult(Event.Result.DENY);
                         player.closeInventory();
                         if(m == Material.GOLD_INGOT){
-                            player.sendMessage(ChatColor.GOLD+"Kite Queues coming soon!");
+                            IPlayer ip = Practice.getCache().getIPlayer(player);
+                            //Runner
+                            KiteQueue queue = (KiteQueue) Practice.getQueueManager().getQueue(QueueType.KITE);
+                            queue.addToQueue(ip, Ladder.getLadder("Kite"), KiteRole.RUNNER);
+                            player.sendMessage(ChatColor.BLUE + "You joined the " + ChatColor.GREEN +
+                                    WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
+                                    + ChatColor.BLUE + " runner queue. Please wait for a chaser to join the queue.");
+                            player.getInventory().clear();
+                            player.getInventory().setArmorContents(null);
+                            player.getInventory().setItem(0, new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.RED + "Leave the queue").build());
+                            player.updateInventory();
+                            ip.getScoreboard().update();
                         }
                         else if (m == Material.DIAMOND){
-                            player.sendMessage(ChatColor.GOLD+"Kite Queues coming soon!");
+                            IPlayer ip = Practice.getCache().getIPlayer(player);
+                            //Chaser
+                            KiteQueue queue = (KiteQueue) Practice.getQueueManager().getQueue(QueueType.KITE);
+                            queue.addToQueue(ip, Ladder.getLadder("Kite"), KiteRole.CHASER);
+                            player.sendMessage(ChatColor.BLUE + "You joined the " + ChatColor.GREEN +
+                                    WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
+                                    + ChatColor.BLUE + " chaser queue. Please wait for a runner to join the queue.");
+                            player.getInventory().clear();
+                            player.getInventory().setArmorContents(null);
+                            player.getInventory().setItem(0, new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.RED + "Leave the queue").build());
+                            player.updateInventory();
+                            ip.getScoreboard().update();
                         }
                     }
                     else if (e.getInventory().getName().equalsIgnoreCase(duelInventoryName)){
@@ -106,6 +134,10 @@ public class KiteSelect implements Listener{
                                 public void callback(String message) {
                                     Player target = Bukkit.getPlayer(message);
                                     if(target != null){
+                                        if(target.getName().equals(player.getName())){
+                                            player.sendMessage(ChatColor.RED+"You cannot duel yourself.");
+                                            return;
+                                        }
                                         unregister();
                                         new KiteRequest(Practice.getCache().getIPlayer(player), Practice.getCache().getIPlayer(target), player, target)
                                                 .send();
@@ -123,6 +155,10 @@ public class KiteSelect implements Listener{
                                 public void callback(String message) {
                                     Player target = Bukkit.getPlayer(message);
                                     if(target != null){
+                                        if(target.getName().equals(player.getName())){
+                                            player.sendMessage(ChatColor.RED+"You cannot duel yourself.");
+                                            return;
+                                        }
                                         unregister();
                                         new KiteRequest(Practice.getCache().getIPlayer(player), Practice.getCache().getIPlayer(target), target, player)
                                                 .send();
@@ -134,8 +170,6 @@ public class KiteSelect implements Listener{
                             };
                         }
                     }
-
-                    HandlerList.unregisterAll(this);
                 }
             }
         }
@@ -146,9 +180,9 @@ public class KiteSelect implements Listener{
         if(e.getPlayer() instanceof Player){
             Player p = (Player) e.getPlayer();
             if(this.player.getName().equals(p.getName())){
-                if(e.getInventory().getName().equalsIgnoreCase(duelInventoryName)
+                if(e.getInventory().getName().equalsIgnoreCase(mainInventoryName) ||
+                        e.getInventory().getName().equalsIgnoreCase(duelInventoryName)
                         || e.getInventory().getName().equalsIgnoreCase(queueInventoryName)){
-                    player.sendMessage("Unregistered");
                     HandlerList.unregisterAll(this);
                 }
             }

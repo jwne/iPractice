@@ -1,6 +1,8 @@
-package com.shawckz.ipractice.match;
+package com.shawckz.ipractice.match.participant;
 
 import com.shawckz.ipractice.Practice;
+import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.match.team.PracticeTeam;
 import com.shawckz.ipractice.party.Party;
 import com.shawckz.ipractice.player.IPlayer;
 import lombok.Getter;
