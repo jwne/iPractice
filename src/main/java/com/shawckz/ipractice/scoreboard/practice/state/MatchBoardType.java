@@ -2,14 +2,17 @@ package com.shawckz.ipractice.scoreboard.practice.state;
 
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.match.Match;
+import com.shawckz.ipractice.match.MatchType;
+import com.shawckz.ipractice.match.PracticeMatch;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
 import com.shawckz.ipractice.scoreboard.internal.XLabel;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.internal.label.BasicLabel;
 import com.shawckz.ipractice.scoreboard.practice.label.EnderpearlCooldownLabel;
-import com.shawckz.ipractice.scoreboard.practice.label.MatchCountdownLabel;
 import com.shawckz.ipractice.scoreboard.practice.label.MatchTimerLabel;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.util.HashSet;
@@ -21,7 +24,6 @@ public class MatchBoardType implements PracticeBoardType {
 
     private MatchTimerLabel matchTimerLabel = null;
     private EnderpearlCooldownLabel enderpearlCooldownLabel = null;
-    private MatchCountdownLabel matchCountdownLabel = null;
     private final IPlayer player;
 
     public MatchBoardType(XScoreboard scoreboard, IPlayer player) {
@@ -31,46 +33,44 @@ public class MatchBoardType implements PracticeBoardType {
     @Override
     public void update(XScoreboard scoreboard) {
         remove(scoreboard);
-        Match match = Practice.getMatchManager().getMatch(player);
+        PracticeMatch practiceMatch = Practice.getMatchManager().getMatch(player);
 
-        labels.add(new BasicLabel(scoreboard, 5, ChatColor.GRAY + "" +
-                ChatColor.STRIKETHROUGH + "-------------------" + ChatColor.GREEN + "" + ChatColor.YELLOW));
+        if(practiceMatch != null) {
 
-        labels.add(new BasicLabel(scoreboard, 1, ChatColor.GRAY + "" +
-                ChatColor.STRIKETHROUGH + "-------------------" + ChatColor.RED));
+            if (practiceMatch.getType() == MatchType.NORMAL || practiceMatch.getType() == MatchType.KITE) {
 
+                if (this.matchTimerLabel == null) {
+                    this.matchTimerLabel = new MatchTimerLabel(scoreboard, 4, practiceMatch);
+                    labels.add(matchTimerLabel);
+                }
+                if (this.enderpearlCooldownLabel == null) {
+                    this.enderpearlCooldownLabel = new EnderpearlCooldownLabel(scoreboard, 2, player);
+                    labels.add(enderpearlCooldownLabel);
+                }
 
-        if(this.matchTimerLabel == null){
-            this.matchTimerLabel = new MatchTimerLabel(scoreboard, 4, match);
-            labels.add(matchTimerLabel);
-        }
-        if(this.matchCountdownLabel == null){
-            this.matchCountdownLabel = new MatchCountdownLabel(scoreboard, 3, match);
-            labels.add(matchCountdownLabel);
-        }
-        if(this.enderpearlCooldownLabel == null){
-            this.enderpearlCooldownLabel = new EnderpearlCooldownLabel(scoreboard, 2, player);
-            labels.add(enderpearlCooldownLabel);
-        }
+           //     if((this.enderpearlCooldownLabel.isVisible() && this.enderpearlCooldownLabel.isRunning())
+          //              || (this.matchTimerLabel.isVisible() && this.matchTimerLabel.isRunning() && !this.matchTimerLabel.isComplete())) {
+                    labels.add(new BasicLabel(scoreboard, 5, ChatColor.GRAY + "" +
+                            ChatColor.STRIKETHROUGH + "-------------------" + ChatColor.GREEN + "" + ChatColor.YELLOW));
 
-        for(XLabel label : labels){
-            label.setVisible(true);
-            label.update();
-        }
+                    labels.add(new BasicLabel(scoreboard, 1, ChatColor.GRAY + "" +
+                            ChatColor.STRIKETHROUGH + "-------------------" + ChatColor.RED));
+           //     }
 
-        if(match.isStarted() && !match.isOver()){
-            if(!matchTimerLabel.isRunning()) {
-                matchTimerLabel.start();
+                for (XLabel label : labels) {
+                    label.setVisible(true);
+                    label.update();
+                }
+
+                if (practiceMatch.isStarted() && !practiceMatch.isOver()) {
+                    if (!matchTimerLabel.isRunning()) {
+                        matchTimerLabel.start();
+                    }
+                }
+                if (!this.enderpearlCooldownLabel.isRunning()) {
+                    this.enderpearlCooldownLabel.start();
+                }
             }
-        }
-        if(!match.isStarted() && match.getCountdown() > 0){
-            if(!matchCountdownLabel.isRunning()){
-                this.matchCountdownLabel.start();
-            }
-        }
-
-        if(!this.enderpearlCooldownLabel.isRunning()){
-            this.enderpearlCooldownLabel.start();
         }
     }
 
@@ -79,36 +79,30 @@ public class MatchBoardType implements PracticeBoardType {
         for(XLabel label : labels){
             scoreboard.removeLabel(label);
         }
+        PracticeMatch practiceMatch = Practice.getMatchManager().getMatch(player);
         //labels.clear(); Going to remove this so that they will be removed (hopefully) properly
-        if(this.matchTimerLabel != null){
-            if(this.matchTimerLabel.isRunning()){
-                this.matchTimerLabel.stop();
+        if(practiceMatch != null && (practiceMatch.getType() == MatchType.NORMAL || practiceMatch.getType() == MatchType.KITE)) {
+            if (this.matchTimerLabel != null) {
+                if (this.matchTimerLabel.isRunning()) {
+                    this.matchTimerLabel.stop();
+                }
+                matchTimerLabel.complete();
             }
-            matchTimerLabel.complete();
-        }
-        if(this.enderpearlCooldownLabel != null){
-            if(this.enderpearlCooldownLabel.isRunning()){
-                this.enderpearlCooldownLabel.stop();
+            if (this.enderpearlCooldownLabel != null) {
+                if (this.enderpearlCooldownLabel.isRunning()) {
+                    this.enderpearlCooldownLabel.stop();
+                }
+                enderpearlCooldownLabel.complete();
             }
-            enderpearlCooldownLabel.complete();
-        }
-        if(this.matchCountdownLabel != null){
-            if(this.matchCountdownLabel.isRunning()){
-                this.matchCountdownLabel.start();
-            }
-            matchCountdownLabel.complete();
-        }
-        Match match = Practice.getMatchManager().getMatch(player);
-        if(match == null || match.isOver() || !match.isStarted()){
             labels.clear();
             this.matchTimerLabel = null;
             this.enderpearlCooldownLabel = null;
-            this.matchCountdownLabel = null;
         }
     }
 
     @Override
     public boolean isApplicable(IPlayer player) {
-        return player.getState() == PlayerState.IN_MATCH;
+        return player.getState() == PlayerState.IN_MATCH && Practice.getMatchManager().inMatch(player)
+                && Practice.getMatchManager().getMatch(player).isStarted();
     }
 }

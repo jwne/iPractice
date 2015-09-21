@@ -10,11 +10,14 @@ import com.shawckz.ipractice.kit.KitHandler;
 import com.shawckz.ipractice.kite.KiteRequest;
 import com.shawckz.ipractice.match.DuelRequest;
 import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.match.Match;
 import com.shawckz.ipractice.party.Party;
 import com.shawckz.ipractice.player.cache.CachePlayer;
 import com.shawckz.ipractice.rating.Elo;
 import com.shawckz.ipractice.scoreboard.practice.PracticeScoreboard;
 import com.shawckz.ipractice.serial.LadderIntegerSerializer;
+import com.shawckz.ipractice.util.nametag.NametagManager;
+import com.shawckz.ipractice.util.nametag.NametagPlayer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -123,11 +126,15 @@ public class IPlayer extends CachePlayer {
                         //this player is @ spawn, other player is building kit
                         ipl.getPlayer().hidePlayer(player);
                         player.showPlayer(pl);
+                        Practice.getEntityHider().hideEntity(ipl.getPlayer(), pl);
+                        Practice.getEntityHider().showEntity(player, pl);
                     }
                     else if (ipl.getState() == PlayerState.IN_MATCH){
                         //this player is @ spawn, other player is in match
                         Practice.getEntityHider().hideEntity(player, pl);
                         Practice.getEntityHider().hideEntity(pl, player);
+                        player.hidePlayer(pl);
+                        pl.hidePlayer(player);
                     }
                     else if (ipl.getState() == PlayerState.AT_SPAWN){
                         //both players are at spawn
@@ -143,7 +150,7 @@ public class IPlayer extends CachePlayer {
                         //if both players are in match and are in the same match, we dont want to hide them from eachother
                         if(Practice.getMatchManager().getMatch(ipl) != null &&
                                 Practice.getMatchManager().getMatch(this) != null &&
-                           Practice.getMatchManager().getMatch(ipl).getId().equals(Practice.getMatchManager().getMatch(this).getId())){
+                           Practice.getMatchManager().getMatch(ipl).getId().equalsIgnoreCase(Practice.getMatchManager().getMatch(this).getId())){
                             Practice.getEntityHider().showEntity(player, pl);
                             Practice.getEntityHider().showEntity(pl, player);
                             pl.showPlayer(player);
@@ -152,15 +159,20 @@ public class IPlayer extends CachePlayer {
                         else{
                             Practice.getEntityHider().hideEntity(player, pl);
                             Practice.getEntityHider().hideEntity(pl, player);
+                            player.hidePlayer(pl);
+                            pl.hidePlayer(player);
                         }
                     }
                     else{
                         Practice.getEntityHider().hideEntity(player, pl);
                         Practice.getEntityHider().hideEntity(pl, player);
+                        player.hidePlayer(pl);
+                        pl.hidePlayer(player);
                     }
                 }
                 else if (getState() == PlayerState.BUILDING_KIT){
                     player.hidePlayer(pl);
+                    Practice.getEntityHider().hideEntity(player, pl);
                 }
             }
         }
@@ -172,6 +184,7 @@ public class IPlayer extends CachePlayer {
                 if(!tpl.isStaffMode()){
                     //Allow staff members to see each other
                     Practice.getEntityHider().hideEntity(pl, player);
+                    pl.hidePlayer(player);
                 }
             }
         }
@@ -181,20 +194,43 @@ public class IPlayer extends CachePlayer {
         return Practice.getPartyManager().getParty(player);
     }
 
+    public void incrementWins(Ladder ladder){
+        if(!wins.containsKey(ladder)){
+            wins.put(ladder, 0);
+        }
+        wins.put(ladder, (wins.get(ladder)+1));
+    }
+
+    public void incrementLosses(Ladder ladder){
+        if(!losses.containsKey(ladder)){
+            losses.put(ladder, 0);
+        }
+        losses.put(ladder, (losses.get(ladder)+1));
+    }
+
     public void sendToSpawnNoTp() {
         this.state = PlayerState.AT_SPAWN;
+        player.setAllowFlight(false);
+        player.setFlying(false);
         player.setGameMode(GameMode.SURVIVAL);
-        //player.teleport(Practice.getIConfig().getSpawn());
+       // player.teleport(Practice.getIConfig().getSpawn());
         player.setHealth(20);
         player.setFoodLevel(20);
-        for(PotionEffect po : player.getActivePotionEffects())
+        for(PotionEffect po : player.getActivePotionEffects()) {
             player.removePotionEffect(po.getType());
+        }
+        player.getActivePotionEffects().clear();
 
         player.getInventory().clear();
-        player.getInventory().setArmorContents(null);
+        player.getInventory().setHelmet(null);
+        player.getInventory().setChestplate(null);
+        player.getInventory().setLeggings(null);
+        player.getInventory().setBoots(null);
         Practice.getSpawn().giveItems(this);
         player.updateInventory();
+        player.getInventory().setContents(player.getInventory().getContents());
         scoreboard.update();
+        handlePlayerVisibility();
     }
 
     public void sendToSpawn() {
@@ -205,13 +241,19 @@ public class IPlayer extends CachePlayer {
         player.teleport(Practice.getIConfig().getSpawn());
         player.setHealth(20);
         player.setFoodLevel(20);
-        for(PotionEffect po : player.getActivePotionEffects())
+        for(PotionEffect po : player.getActivePotionEffects()) {
             player.removePotionEffect(po.getType());
+        }
+        player.getActivePotionEffects().clear();
 
         player.getInventory().clear();
-        player.getInventory().setArmorContents(null);
+        player.getInventory().setHelmet(null);
+        player.getInventory().setChestplate(null);
+        player.getInventory().setLeggings(null);
+        player.getInventory().setBoots(null);
         Practice.getSpawn().giveItems(this);
         player.updateInventory();
+        player.getInventory().setContents(player.getInventory().getContents());
         scoreboard.update();
         handlePlayerVisibility();
     }
@@ -228,27 +270,33 @@ public class IPlayer extends CachePlayer {
     }
 
     public void equipKit(Ladder ladder){
-        if(kits.containsKey(ladder)){
-            player.getInventory().clear();
-            player.getInventory().setArmorContents(new ItemStack[0]);
-
+        if(kits.containsKey(ladder) && ladder.isEditable()){
             Kit kit = kits.get(ladder);
-            player.getInventory().setArmorContents(kit.getArmor());
-            player.getInventory().setContents(kit.getInventory());
+            player.setHealth(20);
+            player.setFoodLevel(20);
+            for(PotionEffect po : player.getActivePotionEffects())
+                player.removePotionEffect(po.getType());
 
-            player.getInventory().setContents(player.getInventory().getContents());
-            player.updateInventory();
+            player.getInventory().setHelmet(kit.getArmor()[3]);
+            player.getInventory().setChestplate(kit.getArmor()[2]);
+            player.getInventory().setLeggings(kit.getArmor()[1]);
+            player.getInventory().setBoots(kit.getArmor()[0]);
+
+            player.getInventory().setContents(kit.getInventory());
         }
         else {
             Kit kit = ladder.getDefaultKit();
-            player.getInventory().clear();
-            player.getInventory().setArmorContents(new ItemStack[0]);
+            player.setHealth(20);
+            player.setFoodLevel(20);
+            for(PotionEffect po : player.getActivePotionEffects())
+                player.removePotionEffect(po.getType());
 
-            player.getInventory().setArmorContents(kit.getArmor());
+            player.getInventory().setHelmet(kit.getArmor()[3]);
+            player.getInventory().setChestplate(kit.getArmor()[2]);
+            player.getInventory().setLeggings(kit.getArmor()[1]);
+            player.getInventory().setBoots(kit.getArmor()[0]);
+
             player.getInventory().setContents(kit.getInventory());
-
-            player.getInventory().setContents(player.getInventory().getContents());
-            player.updateInventory();
         }
         player.setGameMode(GameMode.SURVIVAL);
     }
@@ -313,7 +361,7 @@ public class IPlayer extends CachePlayer {
         if(!losses.containsKey(ladder)){
             losses.put(ladder, 0);
         }
-        return wins.get(ladder) + losses.get(ladder);
+        return (wins.get(ladder) + losses.get(ladder));
     }
 
     public int getTotalMatchesAllLadders(){

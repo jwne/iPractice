@@ -38,22 +38,16 @@ public class KiteQueue extends Queue {
         while(it.hasNext()){
             QueueMember search = it.next();
             KiteQueueMember alpha = (KiteQueueMember) search;
-            if(search.getLadder().getName().equals(ladder.getName())) {
-                if (it.hasNext()) {
-                    QueueMember found = it.next();
-                    KiteQueueMember bravo = (KiteQueueMember) found;
-                    if(alpha.getRole() == KiteRole.CHASER && bravo.getRole() == KiteRole.RUNNER){
-                        QueueMatchSet set = new QueueMatchSet(ladder, bravo, alpha);
-                        results.add(set);
-                    }
-                    else if (alpha.getRole() == KiteRole.RUNNER && bravo.getRole() == KiteRole.CHASER){
-                        QueueMatchSet set = new QueueMatchSet(ladder, alpha, bravo);
-                        results.add(set);
-                    }
-                } else {
-                    if (search.getLadder().getName().equals(ladder.getName())) {
-                        incrementRange(search);
-                    }
+            if (it.hasNext()) {
+                QueueMember found = it.next();
+                KiteQueueMember bravo = (KiteQueueMember) found;
+                if(alpha.getRole() == KiteRole.CHASER && bravo.getRole() == KiteRole.RUNNER){
+                    QueueMatchSet set = new QueueMatchSet(ladder, bravo, alpha);
+                    results.add(set);
+                }
+                else if (alpha.getRole() == KiteRole.RUNNER && bravo.getRole() == KiteRole.CHASER){
+                    QueueMatchSet set = new QueueMatchSet(ladder, alpha, bravo);
+                    results.add(set);
                 }
             }
         }
@@ -70,12 +64,18 @@ public class KiteQueue extends Queue {
 
     @Override
     public void addToQueue(IPlayer runner, Ladder ladder) {
-        addToQueue(runner, ladder, KiteRole.RUNNER);
+        addToQueue(runner, KiteRole.RUNNER);
     }
 
-    public void addToQueue(IPlayer player, Ladder ladder, KiteRole role) {
-        KiteQueueMember queueMember = new KiteQueueMember(player, ladder, role);
-        getMembers().add(queueMember);
+    public void addToQueue(IPlayer player, KiteRole role) {
+        if(role == KiteRole.CHASER){
+            KiteQueueMember queueMember = new KiteQueueMember(player, Ladder.getLadder(KiteMatch.KITE_LADDER_CHASER), role);
+            getMembers().add(queueMember);
+        }
+        else{
+            KiteQueueMember queueMember = new KiteQueueMember(player, Ladder.getLadder(KiteMatch.KITE_LADDER_RUNNER), role);
+            getMembers().add(queueMember);
+        }
     }
 
     @Override

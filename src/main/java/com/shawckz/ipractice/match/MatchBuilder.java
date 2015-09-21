@@ -2,6 +2,7 @@ package com.shawckz.ipractice.match;
 
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.arena.Arena;
+import com.shawckz.ipractice.arena.BasicArena;
 import com.shawckz.ipractice.exception.PracticeException;
 import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.match.team.PracticeTeam;
@@ -67,7 +68,7 @@ public class MatchBuilder {
         return this;
     }
 
-    public MatchBuilder setArena(Arena arena){
+    public MatchBuilder setArena(BasicArena arena){
         match.setArena(arena);
         return this;
     }

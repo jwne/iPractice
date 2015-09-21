@@ -35,7 +35,7 @@ public class KiteArena extends Arena {
     private Location end;
 
     public KiteArena(Plugin plugin, String name, Location spawnAlpha, Location spawnBravo, Location end) {
-        super(plugin, "arenas" + File.separator + name+".yml");
+        super(plugin, "kitearenas" + File.separator + name+".yml");
         this.name = name;
         this.spawnAlpha = spawnAlpha;
         this.spawnBravo = spawnBravo;
@@ -47,7 +47,7 @@ public class KiteArena extends Arena {
     }
 
     public KiteArena(Plugin plugin, String name) {
-        super(plugin, "arenas" + File.separator + name + ".yml");
+        super(plugin, "kitearenas" + File.separator + name + ".yml");
         this.name = name;
         load();
     }

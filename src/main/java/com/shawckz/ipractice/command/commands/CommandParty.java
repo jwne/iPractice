@@ -66,15 +66,22 @@ public class CommandParty implements ICommand {
                 }
 
                 if(party.getLeader().equalsIgnoreCase(p.getName())){
-                    resetPlayers(party);
                     party.msg(ChatColor.AQUA + "" + ChatColor.BOLD + "(PARTY) " + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + p.getName() + ChatColor.GOLD + " deleted the party.");
                     Practice.getPartyManager().unregister(party);
                     ip.sendToSpawn();
+                    for(Player pl : party.getAllPlayers()){
+                        IPlayer ipl = Practice.getCache().getIPlayer(pl);
+                        if(ipl.getState() == PlayerState.AT_SPAWN){
+                            ipl.getPlayer().getInventory().clear();
+                            ipl.getPlayer().getInventory().setContents(ipl.getPlayer().getInventory().getContents());
+                            ipl.sendToSpawn();
+                        }
+                    }
                 }
                 else{
                     party.msg(ChatColor.AQUA+""+ChatColor.BOLD+"(PARTY) "+ChatColor.RESET+""+ChatColor.LIGHT_PURPLE + p.getName() + ChatColor.GOLD + " left the party.");
                     party.getMembers().remove(p.getName());
-                    ip.sendToSpawnNoTp();
+                    ip.sendToSpawn();
                 }
 
             }
@@ -97,13 +104,14 @@ public class CommandParty implements ICommand {
                             if(!party.getInvites().contains(t.getName())){
                                 party.getInvites().add(t.getName());
                                 FancyMessage fm = new FancyMessage("");
-                                fm.then(ChatColor.AQUA+""+ChatColor.BOLD+"(PARTY) "+ChatColor.RESET+""+ChatColor.AQUA+p.getName()+ChatColor.GOLD+" has invited you to their party.");
-                                fm.then(ChatColor.GREEN+""+ChatColor.BOLD+"[CLICK HERE]")
+                                fm.then(ChatColor.AQUA + "" + ChatColor.BOLD + "(PARTY) " + ChatColor.RESET + "" + ChatColor.AQUA + p.getName() + ChatColor.GOLD + " has invited you to their party.");
+                                fm.send(t);
+                                new FancyMessage(ChatColor.GREEN+""+ChatColor.BOLD+"[CLICK HERE]")
                                         .command("/party join "+p.getName())
                                         .tooltip(ChatColor.GOLD + "Click to join " + ChatColor.AQUA + p.getName()
-                                                + ChatColor.GOLD + "'s Party");
-                                fm.then(ChatColor.GOLD+" to accept.");
-                                fm.send(t);
+                                                + ChatColor.GOLD + "'s Party")
+                                        .then(ChatColor.GOLD+" to accept.")
+                                        .send(t);
                                 party.msg(ChatColor.AQUA+""+ChatColor.BOLD+"(PARTY) "+ChatColor.RESET+""+ChatColor.LIGHT_PURPLE+p.getName()+ChatColor.GOLD+" invited "+ChatColor.AQUA
                                             +t.getName()+ChatColor.GOLD+" to the party.");
                             }
@@ -142,9 +150,9 @@ public class CommandParty implements ICommand {
                             if(party.getInvites().contains(p.getName())){
                                 party.getInvites().remove(p.getName());
                                 party.getMembers().add(p.getName());
-                                tip.sendToSpawnNoTp();
                                 party.msg(ChatColor.AQUA+""+ChatColor.BOLD+"(PARTY) "+ChatColor.RESET+""+ChatColor.AQUA
                                         +p.getName()+ChatColor.GOLD+" has joined the party.");
+                                ip.sendToSpawn();
                             }
                             else{
                                 p.sendMessage(ChatColor.RED+"You have not been invited to this party.");
@@ -201,11 +209,21 @@ public class CommandParty implements ICommand {
                 if(t != null){
                     IPlayer tip = Practice.getCache().getIPlayer(t);
                     if(tip.getParty() != null){
-                        if(tip.getParty().getLeader().equalsIgnoreCase(party.getLeader())){
-                            party.getMembers().remove(t.getName());
+                        if(tip.getParty().getLeader().equalsIgnoreCase(party.getLeader())) {
+                            tip.getPlayer().sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "(PARTY) "
+                                    + ChatColor.RESET + "" + ChatColor.GOLD+" You were kicked from the party.");
+                            party.msg(ChatColor.AQUA + "" + ChatColor.BOLD + "(PARTY) " + ChatColor.RESET + "" + ChatColor.AQUA +
+                                    t.getName() + ChatColor.GOLD + " was kicked from the party.");
+                            if (tip.getParty().getLeader().equalsIgnoreCase(party.getLeader())) {
+                                party.getMembers().remove(t.getName());
+                            }
+                            if (tip.getState() == PlayerState.AT_SPAWN) {
+                                tip.sendToSpawn();
+                            }
                         }
-                        party.msg(ChatColor.AQUA+""+ChatColor.BOLD+"(PARTY) "+ChatColor.RESET+""+ChatColor.AQUA+
-                                t.getName()+ChatColor.GOLD+" was kicked from the party.");
+                        else{
+                            p.sendMessage(ChatColor.RED+t.getName()+" is not in your party.");
+                        }
                     }
                     else{
                         p.sendMessage(ChatColor.RED+t.getName()+" is not in a party.");

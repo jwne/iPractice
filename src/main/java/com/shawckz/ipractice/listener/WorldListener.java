@@ -3,6 +3,8 @@ package com.shawckz.ipractice.listener;
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
+import com.shawckz.ipractice.util.nametag.NametagManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -26,6 +28,7 @@ public class WorldListener implements Listener {
         Player p = e.getPlayer();
         IPlayer ip = Practice.getCache().getIPlayer(p);
         ip.handlePlayerVisibility();
+        NametagManager.setup(p);
     }
 
     @EventHandler
@@ -45,6 +48,7 @@ public class WorldListener implements Listener {
         if(ip.getParty() != null){
             p.performCommand("party leave");
         }
+        NametagManager.remove(p);
     }
 
     @EventHandler

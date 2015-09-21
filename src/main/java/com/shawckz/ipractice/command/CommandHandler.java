@@ -62,7 +62,12 @@ public class CommandHandler implements CommandExecutor {
                 Command command = pCmd.getClass().getAnnotation(Command.class);
                 if(command.name().equalsIgnoreCase(cmd.getName())) {
                     if (!sender.hasPermission(command.permission()) && !command.permission().equals("")) {
-                        sender.sendMessage(command.noPerm());
+                        if(!command.noPerm().equals("")){
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', command.noPerm()));
+                        }
+                        else{
+                            sender.sendMessage(ChatColor.RED+"No permission.");
+                        }
                         return true;
                     }
                     if (args.length < command.minArgs()) {
@@ -73,7 +78,6 @@ public class CommandHandler implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + "This is a player only command.");
                         return true;
                     }
-
                     pCmd.onCommand(new CmdArgs(sender, args));
                     return true;
                 }

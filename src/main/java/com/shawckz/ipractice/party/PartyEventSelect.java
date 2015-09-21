@@ -46,7 +46,7 @@ public abstract class PartyEventSelect implements Listener{
                         player.closeInventory();
                         ItemStack i = e.getCurrentItem();
                         if(i.hasItemMeta() && i.getItemMeta().getDisplayName() != null){
-                            String name = ChatColor.stripColor(i.getItemMeta().getDisplayName());
+                            String name = ChatColor.stripColor(i.getItemMeta().getDisplayName().replaceAll(" ","_"));
                             if(PartyEvent.fromString(name) != null){
                                 onSelect(PartyEvent.fromString(name));
                                 HandlerList.unregisterAll(this);

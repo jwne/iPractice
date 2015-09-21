@@ -10,6 +10,8 @@ public abstract class Arena extends Configuration {
         super(plugin, filename);
     }
 
+    private boolean hasMatch = false;
+
     public abstract String getName();
 
     public abstract Location getSpawnAlpha();
@@ -24,4 +26,11 @@ public abstract class Arena extends Configuration {
 
     public abstract void setSpawnBravo(Location loc);
 
+    public boolean isHasMatch() {
+        return hasMatch;
+    }
+
+    public void setHasMatch(boolean hasMatch) {
+        this.hasMatch = hasMatch;
+    }
 }

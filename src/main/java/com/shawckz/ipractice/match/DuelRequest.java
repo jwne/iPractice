@@ -44,13 +44,17 @@ public class DuelRequest {
 
             new FancyMessage(ChatColor.LIGHT_PURPLE+p.getName()+ChatColor.GOLD
                     +" has sent you a duel request with ladder "+ChatColor.AQUA+
-                    ladder.getName()+ChatColor.GOLD+".  "+ChatColor.GOLD
-                    +"Type "+ChatColor.GREEN+"/accept "+p.getName()+ChatColor.GOLD+" or ")
+                    ladder.getName()+ChatColor.GOLD+".")
+                    .send(t);
+
+
+            new FancyMessage("Type "+ChatColor.GREEN+"/accept "+p.getName()+ChatColor.GOLD+" or ")
                     .then(ChatColor.GREEN+""+ChatColor.BOLD+"[CLICK HERE]")
                     .command("/accept "+p.getName())
                     .tooltip(ChatColor.GOLD+"Accept "+p.getName()+"'s duel request")
                     .then(ChatColor.GOLD+" to accept.")
                     .send(t);
+
             t.sendMessage(ChatColor.GRAY+"This request will time out in 15 seconds.");
 
             expiry = System.currentTimeMillis() + (15 * 1000);

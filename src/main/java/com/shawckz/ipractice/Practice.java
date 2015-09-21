@@ -7,10 +7,7 @@ import com.shawckz.ipractice.command.CommandHandler;
 import com.shawckz.ipractice.configuration.IConfig;
 import com.shawckz.ipractice.database.DBManager;
 import com.shawckz.ipractice.event.EventManager;
-import com.shawckz.ipractice.listener.ChatListener;
-import com.shawckz.ipractice.listener.KitInvClose;
-import com.shawckz.ipractice.listener.StaffModeListener;
-import com.shawckz.ipractice.listener.WorldListener;
+import com.shawckz.ipractice.listener.*;
 import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.match.handle.MatchManager;
 import com.shawckz.ipractice.party.PartiesInv;
@@ -20,6 +17,7 @@ import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.queue.QueueManager;
 import com.shawckz.ipractice.spawn.Spawn;
 import com.shawckz.ipractice.task.TaskAutoSave;
+import com.shawckz.ipractice.task.TaskClearEntities;
 import com.shawckz.ipractice.util.EntityHider;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -67,8 +65,10 @@ public class Practice extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatListener(),this);
         getServer().getPluginManager().registerEvents(new PartiesInv(),this);
         getServer().getPluginManager().registerEvents(new StaffModeListener(), this);
+        getServer().getPluginManager().registerEvents(new Soup(), this);
         taskAutoSave = new TaskAutoSave();
         getServer().getScheduler().runTaskTimerAsynchronously(this, taskAutoSave, 15000, 15000);
+        getServer().getScheduler().runTaskTimer(this, new TaskClearEntities(), 600, 600);
     }
 
     @Override

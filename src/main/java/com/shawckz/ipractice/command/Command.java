@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.bukkit.ChatColor;
+
 /**
  * Created by 360 on 5/28/2015.
  */
@@ -53,7 +55,7 @@ public @interface Command {
      * The message sent to the command sender if the permission is not met
      * @return The no permission message
      */
-    String noPerm() default "§cNo permission.";
+    String noPerm() default ("&cNo permission.");
 
     /**
      * Whether or not this command allows flags (arguments starting with '-')

@@ -4,6 +4,8 @@ import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.practice.state.*;
+import lombok.Getter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -20,10 +22,22 @@ public class PracticeScoreboard {
 
     private Set<PracticeBoardType> boards = new HashSet<>();
 
+    public Set<PracticeBoardType> getBoards() {
+        return boards;
+    }
+
+    public IPlayer getIp() {
+        return ip;
+    }
+
+    public XScoreboard getScoreboard() {
+        return scoreboard;
+    }
+
     public PracticeScoreboard(IPlayer ip) {
         this.ip = ip;
         this.scoreboard = new XScoreboard(
-                ChatColor.GOLD+"Practice PvP");//&6Practice PvP
+                ChatColor.GOLD+"Practice PvP "+ChatColor.RED+"[BETA]");//&6Practice PvP
 
         boards.add(new SpawnBoardType(scoreboard, ip));
         boards.add(new KitBuilderBoardType(scoreboard, ip));

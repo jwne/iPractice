@@ -34,6 +34,21 @@ public class ArenaManager {
                 }
             }
         }
+        {
+            File dir = new File(plugin.getDataFolder(), "kitearenas");
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    String name = FilenameUtils.removeExtension(f.getName());
+                    KiteArena arena = new KiteArena(plugin, name);
+                    arenas.add(arena);
+                    arenaIndex++;
+                }
+            }
+        }
     }
 
     public void registerArena(Arena arena){
@@ -67,37 +82,21 @@ public class ArenaManager {
     @Getter @Setter private int arenaIndex = 0;
 
     public Arena getNextArena(){
-        if(getArena(arenaIndex+1)!=null){
-            arenaIndex++;
-            return getArena(arenaIndex);
-        }
-        arenaIndex = 0;
-        if(getArena(arenaIndex)!=null){
-            return getArena(arenaIndex);
-        }
-        else{
-            for(Arena arena : arenas){
+        for(Arena arena : arenas){
+            if(arena != null && !arena.isHasMatch()){
                 return arena;
             }
-            return null;
         }
+        return null;
     }
 
     public Arena getNextArena(ArenaType type){
-        if(getArena(arenaIndex+1)!=null){
-            arenaIndex++;
-            return getArena(arenaIndex);
-        }
-        arenaIndex = 0;
-        if(getArena(arenaIndex)!=null){
-            return getArena(arenaIndex);
-        }
-        else{
-            for(Arena arena : arenas){
+        for(Arena arena : arenas){
+            if(arena != null && !arena.isHasMatch() && arena.getType() == type){
                 return arena;
             }
-            return null;
         }
+        return null;
     }
 
 

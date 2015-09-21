@@ -4,6 +4,8 @@ import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.exception.PracticeException;
 import com.shawckz.ipractice.player.cache.AbstractCache;
 import com.shawckz.ipractice.player.cache.CachePlayer;
+import com.shawckz.ipractice.util.nametag.NametagManager;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;

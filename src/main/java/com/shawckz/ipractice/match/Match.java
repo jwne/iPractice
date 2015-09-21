@@ -2,6 +2,8 @@ package com.shawckz.ipractice.match;
 
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.arena.Arena;
+import com.shawckz.ipractice.arena.ArenaType;
+import com.shawckz.ipractice.arena.BasicArena;
 import com.shawckz.ipractice.exception.PracticeException;
 import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.match.handle.MatchHandler;
@@ -14,6 +16,9 @@ import com.shawckz.ipractice.match.team.Team;
 import com.shawckz.ipractice.match.team.TeamManager;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
+import com.shawckz.ipractice.scoreboard.practice.state.MatchBoardType;
+import com.shawckz.ipractice.scoreboard.practice.state.PracticeBoardType;
+import com.shawckz.ipractice.util.nametag.Nametag;
 import lombok.Getter;
 import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
@@ -29,7 +34,9 @@ import java.util.*;
 @Getter
 public class Match implements PracticeMatch {
 
-    @Setter private Arena arena = null;
+    public static final Nametag FRIENDLY_FIRE = new Nametag("noff", "", "", false, false);
+
+    @Setter private BasicArena arena = null;
     private final String id;
     private boolean started = false;
     @Setter private boolean ranked = false;
@@ -54,11 +61,10 @@ public class Match implements PracticeMatch {
         this.matchManager = matchManager;
         teamManager.checkPerquisites();
         if(arena == null){
-            arena = Practice.getArenaManager().getNextArena();
+            arena = (BasicArena) Practice.getArenaManager().getNextArena(ArenaType.NORMAL);
         }
         matchManager.registerMatch(this);
         matchHandler.register();
-
 
         String versus = "";
         for(PracticeTeam team : teamManager.getTeams().values()){
@@ -67,7 +73,19 @@ public class Match implements PracticeMatch {
         versus = versus.substring(0, versus.length() - 5);
         msg(versus);
 
+        this.over = false;
+
+
         countdown = 5;
+        for(MatchParticipant pmp : playerManager.getParticipants()){
+            for(MatchPlayer pmmp : pmp.getPlayers()){
+                IPlayer ip = pmmp.getPlayer();
+                ip.equipKit(ladder);
+                ip.setState(PlayerState.IN_MATCH);
+                ip.getScoreboard().update();
+            }
+        }
+
         for(MatchParticipant pmp : playerManager.getParticipants()){
             for(MatchPlayer pmmp : pmp.getPlayers()){
                 IPlayer ip = pmmp.getPlayer();
@@ -80,21 +98,25 @@ public class Match implements PracticeMatch {
                 else{
                     throw new PracticeException("Unknown Team enumeration: "+pmp.getTeam().getSpawn().toString());
                 }
-                ip.equipKit(ladder);
-                ip.setState(PlayerState.IN_MATCH);
                 ip.handlePlayerVisibility();
-                ip.getScoreboard().update();
             }
         }
+
+
 
         new BukkitRunnable(){
             @Override
             public void run() {
+                if(over) {
+                    cancel();
+                    return;
+                }
                 if(countdown > 0){
                     msg(ChatColor.GOLD+"Starting in "+ChatColor.LIGHT_PURPLE+countdown+ChatColor.GOLD+"...");
                     countdown--;
                 }
                 else{
+                    countdown = 0;
                     started = true;
                     over = false;
                     msg(ChatColor.GREEN+"Go!");
@@ -112,17 +134,25 @@ public class Match implements PracticeMatch {
     }
 
     public void endMatch(){
-        if(!started){
-            throw new PracticeException("Could not end match: Match has not started");
-        }
-
+        this.over = true;
         new BukkitRunnable(){
             @Override
             public void run() {
                 for(MatchParticipant pl : playerManager.getParticipants()){
                     for(MatchPlayer p : pl.getPlayers()){
                         if(p.isAlive()){
+                            if(ranked){
+                                p.getPlayer().incrementWins(ladder);
+                            }
                             p.getPlayer().sendToSpawn();
+                        }
+                        else{
+                            if(ranked){
+                                p.getPlayer().incrementLosses(ladder);
+                            }
+                            if(!started){
+                                p.getPlayer().sendToSpawn();
+                            }
                         }
                     }
                 }
@@ -131,22 +161,18 @@ public class Match implements PracticeMatch {
 
         matchHandler.unregister();
         matchManager.unregisterMatch(this);
-        this.over = true;
     }
 
     public void eliminatePlayer(IPlayer player, IPlayer killer){
         MatchParticipant participant = playerManager.getParticipant(player);
         if(participant != null){
-            if(!playerManager.getPlayer(player).isAlive()){
-                throw new PracticeException("Tried to eliminate player that is already eliminated: "+player.getName());
-            }
             playerManager.getPlayer(player).setAlive(false);
 
             if(killer != null){
-                msg(ChatColor.BLUE+player.getName()+ChatColor.GOLD+" was killed by "+ChatColor.BLUE+killer.getName());
+                msg(ChatColor.BLUE+player.getName()+ChatColor.GOLD+" was killed by "+ChatColor.BLUE+killer.getName()+ChatColor.GOLD+".");
             }
             else{
-                msg(ChatColor.BLUE+player.getName()+ChatColor.GOLD+" was killed");
+                msg(ChatColor.BLUE+player.getName()+ChatColor.GOLD+" was killed.");
             }
 
             inventories.put(player.getName(), new MatchInventory(player.getPlayer()).getUuid());
@@ -271,16 +297,16 @@ public class Match implements PracticeMatch {
             s += ChatColor.LIGHT_PURPLE+k+ChatColor.DARK_GRAY+"["+ChatColor.BLUE+elo+
                     ChatColor.YELLOW+"("+(difference >= 0 ? ChatColor.GREEN+"+"+
                     difference : ChatColor.RED+""+difference)
-                    +")"+ChatColor.DARK_GRAY+"] ";
+                    +ChatColor.YELLOW+")"+ChatColor.DARK_GRAY+"] ";
             //Player1[1010(+10)]
-            //Player1[990(-10)]
+            //Player2[990(-10)]
         }
 
         msg(ChatColor.GOLD + "Elo Changes: " + s);
     }
 
     private void sendInventories(){
-        FancyMessage fm = new FancyMessage(ChatColor.GOLD+"Inventories: ");
+        FancyMessage fm = new FancyMessage(ChatColor.GOLD+"Inventories(Click to view): ");
         for(MatchParticipant pmp : playerManager.getParticipants()){
             for(MatchPlayer pl : pmp.getPlayers()){
                 if(inventories.containsKey(pl.getPlayer().getName())){
@@ -311,5 +337,10 @@ public class Match implements PracticeMatch {
     @Override
     public Set<Player> getPlayers() {
         return playerManager.getAllPlayers();
+    }
+
+    @Override
+    public MatchType getType() {
+        return MatchType.NORMAL;
     }
 }

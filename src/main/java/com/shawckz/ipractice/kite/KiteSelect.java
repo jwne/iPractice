@@ -27,14 +27,18 @@ import org.bukkit.inventory.ItemStack;
 public class KiteSelect implements Listener{
 
     private final Player player;
-    private static final String mainInventoryName = ChatColor.BLUE+"Kite Practice";
-    private static final String duelInventoryName = ChatColor.BLUE+"Kite Duel";
-    private static final String queueInventoryName = ChatColor.BLUE+"Kite Queue";
+    private final String mainInventoryName = ChatColor.BLUE+"Kite Practice";
+    private final String duelInventoryName = ChatColor.BLUE+"Kite Duel";
+    private final String queueInventoryName = ChatColor.BLUE+"Kite Queue";
 
-    private static final Inventory mainInventory;
-    private static final Inventory queueInventory;
-    private static final Inventory duelInventory;
-    static {
+    private final Inventory mainInventory;
+    private final Inventory queueInventory;
+    private final Inventory duelInventory;
+
+    public KiteSelect(Player player){
+        this.player = player;
+        Bukkit.getPluginManager().registerEvents(this, Practice.getPlugin());
+
         {
             mainInventory = Bukkit.createInventory(null, 9, mainInventoryName);
             mainInventory.setItem(2, new ItemBuilder(Material.BLAZE_ROD)
@@ -60,11 +64,6 @@ public class KiteSelect implements Listener{
             queueInventory.setItem(6, new ItemBuilder(Material.DIAMOND)
                     .name(ChatColor.GOLD + "Join the Kite " + ChatColor.LIGHT_PURPLE + "Chaser " + ChatColor.GOLD + "Queue").build());
         }
-    }
-
-    public KiteSelect(Player player){
-        this.player = player;
-        Bukkit.getPluginManager().registerEvents(this, Practice.getPlugin());
 
         player.openInventory(mainInventory);
     }
@@ -98,7 +97,7 @@ public class KiteSelect implements Listener{
                             IPlayer ip = Practice.getCache().getIPlayer(player);
                             //Runner
                             KiteQueue queue = (KiteQueue) Practice.getQueueManager().getQueue(QueueType.KITE);
-                            queue.addToQueue(ip, Ladder.getLadder("Kite"), KiteRole.RUNNER);
+                            queue.addToQueue(ip, KiteRole.RUNNER);
                             player.sendMessage(ChatColor.BLUE + "You joined the " + ChatColor.GREEN +
                                     WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
                                     + ChatColor.BLUE + " runner queue. Please wait for a chaser to join the queue.");
@@ -112,7 +111,7 @@ public class KiteSelect implements Listener{
                             IPlayer ip = Practice.getCache().getIPlayer(player);
                             //Chaser
                             KiteQueue queue = (KiteQueue) Practice.getQueueManager().getQueue(QueueType.KITE);
-                            queue.addToQueue(ip, Ladder.getLadder("Kite"), KiteRole.CHASER);
+                            queue.addToQueue(ip, KiteRole.CHASER);
                             player.sendMessage(ChatColor.BLUE + "You joined the " + ChatColor.GREEN +
                                     WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
                                     + ChatColor.BLUE + " chaser queue. Please wait for a runner to join the queue.");

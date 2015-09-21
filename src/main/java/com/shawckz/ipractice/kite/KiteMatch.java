@@ -5,6 +5,7 @@ import com.shawckz.ipractice.arena.ArenaType;
 import com.shawckz.ipractice.arena.KiteArena;
 import com.shawckz.ipractice.exception.PracticeException;
 import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.match.MatchType;
 import com.shawckz.ipractice.match.handle.MatchManager;
 import com.shawckz.ipractice.match.PracticeMatch;
 import com.shawckz.ipractice.player.IPlayer;
@@ -34,7 +35,7 @@ public class KiteMatch implements PracticeMatch{
     private boolean started = false;
     private boolean over = false;
     private int runnerCountdown = 5;
-    private int chaserCountdown = 8;
+    private int chaserCountdown = 6;
     private KiteMatchHandler matchHandler;
     @Setter private KiteArena arena;
 
@@ -57,42 +58,64 @@ public class KiteMatch implements PracticeMatch{
             throw new PracticeException("KiteMatch: There are no kite arenas registered");
         }
 
+        matchManager.registerMatch(this);
+
         runner.getPlayer().teleport(arena.getSpawnAlpha());
         chaser.getPlayer().teleport(arena.getSpawnBravo());
 
         runner.setState(PlayerState.IN_MATCH);
         chaser.setState(PlayerState.IN_MATCH);
 
+        runner.getScoreboard().update();
+        chaser.getScoreboard().update();
+
         runner.equipKit(Ladder.getLadder(KITE_LADDER_RUNNER));
         chaser.equipKit(Ladder.getLadder(KITE_LADDER_CHASER));
 
+        runner.handlePlayerVisibility();
+        chaser.handlePlayerVisibility();
+
         matchHandler = new KiteMatchHandler(this);
         matchHandler.register();
+
+        runner.getPlayer().sendMessage(ChatColor.GOLD + "You are the " + ChatColor.GREEN + "runner" + ChatColor.GOLD + ".");
+        runner.getPlayer().sendMessage(ChatColor.GOLD + "To Win: " + ChatColor.YELLOW + "Reach the beacon and don't let the chaser kill you.");
+
+        chaser.getPlayer().sendMessage(ChatColor.GOLD + "You are the " + ChatColor.GREEN + "chaser" + ChatColor.GOLD + ".");
+        chaser.getPlayer().sendMessage(ChatColor.GOLD + "To Win: " + ChatColor.YELLOW + "Kill the runner before they reach the beacon.");
+
+        runner.getPlayer().sendMessage(ChatColor.GOLD+"Beacon location: "+ChatColor.GREEN+arena.getEnd().getBlockX()
+                +", "+arena.getEnd().getBlockY()+", "+arena.getEnd().getBlockZ());
+        chaser.getPlayer().sendMessage(ChatColor.GOLD+"Beacon location: "+ChatColor.GREEN+arena.getEnd().getBlockX()
+                +", "+arena.getEnd().getBlockY()+", "+arena.getEnd().getBlockZ());
+
+        Practice.getEntityHider().showEntity(runner.getPlayer(), chaser.getPlayer());
+        Practice.getEntityHider().showEntity(chaser.getPlayer(), runner.getPlayer());
+        runner.getPlayer().showPlayer(chaser.getPlayer());
+        chaser.getPlayer().showPlayer(runner.getPlayer());
+
         new BukkitRunnable(){
             @Override
             public void run() {
                 if(runnerCountdown > 0){
-                    runnerCountdown--;
                     runner.getPlayer().sendMessage(ChatColor.GOLD + "Start Kiting in " +
                             ChatColor.LIGHT_PURPLE + runnerCountdown + ChatColor.GOLD + "...");
+                    runnerCountdown--;
                 }
-                else{
+                else if (runnerCountdown == 0){
                     runner.getPlayer().sendMessage(ChatColor.GREEN + "Go!");
+                    runnerCountdown = -1;
                 }
 
                 if(chaserCountdown > 0){
-                    chaserCountdown--;
                     chaser.getPlayer().sendMessage(ChatColor.GOLD + "You can start chasing in " +
                             ChatColor.LIGHT_PURPLE + chaserCountdown + ChatColor.GOLD + "...");
-                    if(runnerCountdown <= 0){
-                        runner.getPlayer().sendMessage(ChatColor.BLUE+chaser.getName()+ChatColor.GOLD+
-                                " will start chasing you in "
-                                +ChatColor.LIGHT_PURPLE+chaserCountdown+ChatColor.GOLD+"...");
-                    }
+                    chaserCountdown--;
                 }
-                else{
+                else if (chaserCountdown == 0){
                     chaser.getPlayer().sendMessage(ChatColor.GREEN + "Go!");
                     started = true;
+                    cancel();
                 }
 
             }
@@ -158,5 +181,15 @@ public class KiteMatch implements PracticeMatch{
         players.add(runner.getPlayer());
         players.add(chaser.getPlayer());
         return players;
+    }
+
+    @Override
+    public MatchType getType() {
+        return MatchType.KITE;
+    }
+
+    @Override
+    public Ladder getLadder() {
+        return Ladder.getLadder(KITE_LADDER_RUNNER);
     }
 }

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,13 +16,13 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.*;
+import org.bukkit.util.Vector;
 
 import java.awt.event.ItemEvent;
 import java.util.*;
@@ -179,7 +180,7 @@ public class MatchHandler implements Listener{
                         IPlayer ip = Practice.getCache().getIPlayer(p);
                         if(ip.getEnderpearl() > System.currentTimeMillis()){
                             e.setCancelled(true);
-                            p.sendMessage(ChatColor.RED+"Enderpearl Cooldown: "+ChatColor.GOLD+((ip.getEnderpearl() - System.currentTimeMillis())/1000));
+                            p.sendMessage(ChatColor.RED+"Still on Ender Pearl cooldown for "+((ip.getEnderpearl() - System.currentTimeMillis())/1000)+" seconds.");
                         }
                     }
                 }
@@ -193,8 +194,22 @@ public class MatchHandler implements Listener{
             if(e.getEntity().getShooter() instanceof Player && e.getEntity() instanceof EnderPearl){
                 Player p = (Player) e.getEntity().getShooter();
                 IPlayer ip = Practice.getCache().getIPlayer(p);
+
                 ip.setEnderpearl(System.currentTimeMillis() + (1000 * 15));
-                ip.getScoreboard().update();
+                //ip.getScoreboard().update();
+            }
+        }
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent e){
+        if(e.getEntity() instanceof Player){
+            Player p = (Player) e.getEntity();
+            if(match.getPlayerManager().hasPlayer(p)){
+                if(!match.isStarted()){
+                    e.setCancelled(true);
+                    e.setDamage(0.0);
+                }
             }
         }
     }
@@ -212,6 +227,14 @@ public class MatchHandler implements Listener{
                         e.setDamage(0.0);
                         d.sendMessage(ChatColor.RED+"You cannot attack until the match has started!");
                     }
+                    else{
+                        if(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(p)).getName()
+                                .equalsIgnoreCase(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(d)).getName())){
+                            e.setCancelled(true);
+                            e.setDamage(0.0);
+                            d.sendMessage(ChatColor.RED+p.getName()+" is on your team!");
+                        }
+                    }
                 }
                 else{
                     //Attempted to damage someone who is not in their match
@@ -219,6 +242,50 @@ public class MatchHandler implements Listener{
                     e.setDamage(0.0);
                 }
             }
+            else{
+                if(match.getPlayerManager().hasPlayer(p)){
+                    e.setCancelled(true);
+                    e.setDamage(0.0);
+                }
+            }
+        }
+        else if (e.getEntity() instanceof Player && e.getDamager() instanceof Projectile){
+            Projectile pd = (Projectile) e.getDamager();
+            Player p = (Player) e.getEntity();
+
+            if(pd.getShooter() != null && pd.getShooter() instanceof Player){
+                Player d = (Player) pd.getShooter();
+                if(d.getName().equals(p.getName())) return;
+                if(match.getPlayerManager().hasPlayer(d)){
+                    if(match.getPlayerManager().hasPlayer(p)){
+                        if(!match.isStarted()){
+                            e.setCancelled(true);
+                            e.setDamage(0.0);
+                            d.sendMessage(ChatColor.RED+"You cannot attack until the match has started!");
+                        }
+                        else{
+                            if(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(p)).getName()
+                                    .equalsIgnoreCase(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(d)).getName())){
+                                e.setCancelled(true);
+                                e.setDamage(0.0);
+                                d.sendMessage(ChatColor.RED+p.getName()+" is on your team!");
+                            }
+                        }
+                    }
+                    else{
+                        //Attempted to damage someone who is not in their match
+                        e.setCancelled(true);
+                        e.setDamage(0.0);
+                    }
+                }
+                else{
+                    if(match.getPlayerManager().hasPlayer(p)){
+                        e.setCancelled(true);
+                        e.setDamage(0.0);
+                    }
+                }
+            }
+
         }
     }
 
@@ -235,7 +302,7 @@ public class MatchHandler implements Listener{
                     if(en instanceof Player){
                         Player pl = (Player) en;
                         if(!match.getPlayerManager().hasPlayer(pl)){
-                            e.setIntensity(en,0);
+                            e.setIntensity(en, 0);
                             e.getAffectedEntities().remove(en);
                             Practice.getEntityHider().hideEntity(pl, e.getEntity());
                         }

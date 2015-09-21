@@ -24,6 +24,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.*;
 
 @RequiredArgsConstructor
 public class KiteMatchHandler implements Listener {
@@ -208,7 +209,7 @@ public class KiteMatchHandler implements Listener {
                         IPlayer ip = Practice.getCache().getIPlayer(p);
                         if(ip.getEnderpearl() > System.currentTimeMillis()){
                             e.setCancelled(true);
-                            p.sendMessage(ChatColor.RED+"Enderpearl Cooldown: "+ChatColor.GOLD+((ip.getEnderpearl() - System.currentTimeMillis())/1000));
+                            p.sendMessage(ChatColor.RED+"Still on Ender Pearl cooldown for "+((ip.getEnderpearl() - System.currentTimeMillis())/1000)+" seconds.");
                         }
                     }
                 }
@@ -223,7 +224,7 @@ public class KiteMatchHandler implements Listener {
                 Player p = (Player) e.getEntity().getShooter();
                 IPlayer ip = Practice.getCache().getIPlayer(p);
                 ip.setEnderpearl(System.currentTimeMillis() + (1000 * 15));
-                ip.getScoreboard().update();
+               // ip.getScoreboard().update();
             }
         }
     }

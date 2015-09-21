@@ -72,11 +72,12 @@ public class CommandPDuel implements ICommand {
                                             .then(ChatColor.LIGHT_PURPLE+p.getName()+"'s Party "+ChatColor.GOLD+" has " +
                                                     "requested to duel you with "+ChatColor.AQUA+
                                                     ladder.getName()+ChatColor.GOLD+".");
-                                    fm.then(ChatColor.GREEN+""+ChatColor.BOLD+" [CLICK HERE] "+ChatColor.GOLD+" to accept.")
-                                            .tooltip(ChatColor.GOLD+"Accept duel request from "+
-                                                    ChatColor.LIGHT_PURPLE+p.getName()+"'s Party")
-                                            .command("/paccept "+p.getName());
                                     fm.send(t);
+                                    new FancyMessage(ChatColor.GREEN+""+ChatColor.BOLD+" [CLICK HERE] "+ChatColor.GOLD+" to accept.")
+                                            .tooltip(ChatColor.GOLD + "Accept duel request from " +
+                                                    ChatColor.LIGHT_PURPLE + p.getName() + "'s Party")
+                                            .command("/paccept " + p.getName())
+                                    .send(t);
                                 }
                                 FancyMessage fm = new FancyMessage("");
                                 fm.then((ChatColor.AQUA + "" + ChatColor.BOLD + "(PARTY) " + ChatColor.RESET + ""))

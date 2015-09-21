@@ -4,6 +4,7 @@ import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.match.Match;
 import com.shawckz.ipractice.match.MatchBuilder;
+import com.shawckz.ipractice.match.PracticeMatch;
 import com.shawckz.ipractice.player.IPlayer;
 
 import java.util.HashMap;
@@ -24,31 +25,31 @@ public class MatchManager {
         return new MatchBuilder(ladder);
     }
 
-    private final Map<String, Match> matches = new HashMap<>();//Id, Match
+    private final Map<String, PracticeMatch> matches = new HashMap<>();//Id, Match
 
-    public Match getMatch(String id){
+    public PracticeMatch getMatch(String id){
         return matches.get(id);
     }
 
     public boolean inMatch(IPlayer player){
-        Match match = getMatch(player);
+        PracticeMatch match = getMatch(player);
         if(match != null){
             return true;
         }
         return false;
     }
 
-    public Match getMatch(IPlayer player){
-        for(Match match : matches.values()){
-            if(player != null && match != null && match.getPlayerManager() != null &&
-                    match.getPlayerManager().hasPlayer(player) && !match.isOver()){
+    public PracticeMatch getMatch(IPlayer player){
+        for(PracticeMatch match : matches.values()){
+            if(player != null && match != null && match.getPlayers().contains(player.getPlayer())
+                    && !match.isOver()){
                 return match;
             }
         }
         return null;
     }
 
-    public void registerMatch(Match match){
+    public void registerMatch(PracticeMatch match){
         matches.put(match.getId(), match);
     }
 

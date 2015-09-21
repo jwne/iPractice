@@ -43,7 +43,7 @@ public class CommandPAccept implements ICommand {
                                         .registerTeam(new PracticeTeam(duel.getSender().getLeader()+"'s Party", Team.ALPHA))
                                         .registerTeam(new PracticeTeam(duel.getRecipient().getLeader()+"'s Party", Team.BRAVO))
                                         .withParty(duel.getSender(), duel.getSender().getLeader()+"'s Party")
-                                        .withParty(duel.getRecipient(), duel.getSender().getLeader()+"'s Party")
+                                        .withParty(duel.getRecipient(), duel.getRecipient().getLeader()+"'s Party")
                                         .setRanked(false)
                                         .build();
 

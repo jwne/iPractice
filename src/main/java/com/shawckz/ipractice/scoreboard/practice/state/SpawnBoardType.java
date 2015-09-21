@@ -32,21 +32,21 @@ public class SpawnBoardType implements PracticeBoardType {
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 4, ChatColor.BLUE + "Matches: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 4, ChatColor.BLUE + "Ranked Matches: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
                 return ChatColor.GREEN+""+player.getTotalMatchesAllLadders();
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.BLUE + "Kills: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 3, ChatColor.BLUE + "Ranked Kills: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
                 return ChatColor.GREEN + "" + player.getKillsAllLadders();
             }
         }));
 
-        valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.BLUE + "Deaths: ", new ValueLabel.CallableValue() {
+        valueLabels.add(new ValueLabel(scoreboard, player, 2, ChatColor.BLUE + "Ranked Deaths: ", new ValueLabel.CallableValue() {
             @Override
             public String call(IPlayer player) {
                 return ChatColor.GREEN + "" + player.getDeathsAllLadders();

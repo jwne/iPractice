@@ -1,6 +1,7 @@
 package com.shawckz.ipractice.scoreboard.practice.label;
 
 import com.shawckz.ipractice.match.Match;
+import com.shawckz.ipractice.match.PracticeMatch;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.internal.XScoreboardTimer;
 import org.bukkit.ChatColor;
@@ -10,11 +11,11 @@ import org.bukkit.ChatColor;
  */
 public class MatchTimerLabel extends XScoreboardTimer {
 
-    private final Match match;
+    private final PracticeMatch match;
 
     private final String valueBase = ChatColor.BLUE+"Duration: "+ChatColor.GREEN;
 
-    public MatchTimerLabel(XScoreboard scoreboard, int score, Match match) {
+    public MatchTimerLabel(XScoreboard scoreboard, int score, PracticeMatch match) {
         super(scoreboard, score, "", 0, 20);
         this.match = match;
     }
@@ -24,7 +25,6 @@ public class MatchTimerLabel extends XScoreboardTimer {
         if(match.isStarted()){
             setValue(valueBase+getTimeString());
         }
-
     }
 
     private String getTimeString(){

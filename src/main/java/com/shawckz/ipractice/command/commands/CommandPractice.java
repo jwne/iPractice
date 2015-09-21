@@ -41,7 +41,7 @@ public class CommandPractice implements ICommand {
             p.sendMessage(ChatColor.YELLOW+"/practice listarenas");
             p.sendMessage(ChatColor.GRAY+"*** Kite Arenas ***");
             p.sendMessage(ChatColor.YELLOW+"/practice createkitearena <arena name>");
-            p.sendMessage(ChatColor.YELLOW+"/practice setkitearenaspawn <arena name> <a|b|end>");
+            p.sendMessage(ChatColor.YELLOW+"/practice setkitearenaspawn <arena name> <runner|chaser|end>");
             return;
         }
 
@@ -249,14 +249,12 @@ public class CommandPractice implements ICommand {
 
                 KiteArena arena = (KiteArena) a;
 
-
-
-                if(args[2].equalsIgnoreCase("a")){
+                if(args[2].equalsIgnoreCase("runner")){
                     arena.setSpawnAlpha(p.getLocation());
                     arena.save();
                     p.sendMessage(ChatColor.GREEN+"Set spawn ALPHA for kite arena '"+arena.getName()+"'.");
                 }
-                else if (args[2].equalsIgnoreCase("b")){
+                else if (args[2].equalsIgnoreCase("chaser")){
                     arena.setSpawnBravo(p.getLocation());
                     arena.save();
                     p.sendMessage(ChatColor.GREEN + "Set spawn BRAVO for kite arena '" + arena.getName() + "'.");
