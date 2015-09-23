@@ -4,6 +4,7 @@ version: 1.0.0
 author: Shawckz
 description: The iPractice plugin, made for the iPvP.org Network by Shawckz
 website: http://shawckz.com
+depend: [WorldEdit]
 
 commands:
   practice:

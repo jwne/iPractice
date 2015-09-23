@@ -9,6 +9,8 @@ import com.shawckz.ipractice.command.CmdArgs;
 import com.shawckz.ipractice.command.Command;
 import com.shawckz.ipractice.command.ICommand;
 import com.shawckz.ipractice.ladder.Ladder;
+import com.shawckz.ipractice.task.ArenaDupeTask;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,15 +21,15 @@ import org.bukkit.inventory.Inventory;
 public class CommandPractice implements ICommand {
 
     @Override
-    public void onCommand(CmdArgs cmdArgs) {
-        Player p = (Player) cmdArgs.getSender();
-        String[] args = cmdArgs.getArgs();
+    public void onCommand(final CmdArgs cmdArgs) {
+        final Player p = (Player) cmdArgs.getSender();
+        final String[] args = cmdArgs.getArgs();
 
         if(args.length == 0){
             p.sendMessage(ChatColor.AQUA+"Practice Help");
             p.sendMessage(ChatColor.GRAY+"*** Ladders ***");
             p.sendMessage(ChatColor.YELLOW+"/practice addladder <name> <icon(material)> <editable(true/false)>");
-            p.sendMessage(ChatColor.YELLOW+"/practice delladder <name>");
+            p.sendMessage(ChatColor.YELLOW+"/practice delladder <id>");
             p.sendMessage(ChatColor.GRAY+"*** Spawns ***");
             p.sendMessage(ChatColor.YELLOW+"/practice setspawn");
             p.sendMessage(ChatColor.YELLOW+"/practice setkitspawn");
@@ -37,11 +39,12 @@ public class CommandPractice implements ICommand {
             p.sendMessage(ChatColor.GRAY+"*** Arenas ***");
             p.sendMessage(ChatColor.YELLOW+"/practice createarena <arena name>");
             p.sendMessage(ChatColor.YELLOW+"/practice delarena <arena name>");
-            p.sendMessage(ChatColor.YELLOW+"/practice setarenaspawn <arena name> <a|b>");
+            p.sendMessage(ChatColor.YELLOW+"/practice setarenaspawn <id> <a|b>");
             p.sendMessage(ChatColor.YELLOW+"/practice listarenas");
+            p.sendMessage(ChatColor.YELLOW+"/practice dupearena <id> <offsetX> <offsetZ>");
             p.sendMessage(ChatColor.GRAY+"*** Kite Arenas ***");
             p.sendMessage(ChatColor.YELLOW+"/practice createkitearena <arena name>");
-            p.sendMessage(ChatColor.YELLOW+"/practice setkitearenaspawn <arena name> <runner|chaser|end>");
+            p.sendMessage(ChatColor.YELLOW+"/practice setkitearenaspawn <id> <runner|chaser|end>");
             return;
         }
 
@@ -138,17 +141,20 @@ public class CommandPractice implements ICommand {
         }
         else if (key.equalsIgnoreCase("createarena")){
             if(args.length >= 2){
-                if(Practice.getArenaManager().getArena(args[1].replaceAll("_", " ")) != null){
-                    p.sendMessage(ChatColor.RED+"An arena by that name already exists.");
-                    return;
-                }
                 String name = args[1];
                 name = name.replaceAll("_"," ");
 
-                BasicArena arena = new BasicArena(Practice.getPlugin(), name, p.getLocation(), p.getLocation());
-                Practice.getArenaManager().registerArena(arena);
-                arena.save();
-                p.sendMessage(ChatColor.GREEN+"Created arena '"+name+"'.  Set it's spawns with /prac setarenaspawn.");
+                Selection selection = Practice.getWorldEdit().getSelection(p);
+                if(selection != null) {
+                    BasicArena arena = new BasicArena(Practice.getPlugin(), name, p.getLocation(), p.getLocation(),
+                            selection.getMinimumPoint(), selection.getMaximumPoint());
+                    Practice.getArenaManager().registerArena(arena);
+                    arena.save();
+                    p.sendMessage(ChatColor.GREEN + "Created arena "+arena.getId()+" '" + name + "'.  Set it's spawns with /prac setarenaspawn.");
+                }
+                else{
+                    p.sendMessage(ChatColor.RED+"Make a WorldEdit selection around the arena first.");
+                }
             }
             else{
                 p.sendMessage(ChatColor.RED+"Incorrect usage.");
@@ -156,17 +162,22 @@ public class CommandPractice implements ICommand {
         }
         else if (key.equalsIgnoreCase("delarena")){
             if(args.length >= 2){
-                if(Practice.getArenaManager().getArena(args[1].replaceAll("_", " ")) == null){
-                    p.sendMessage(ChatColor.RED+"An arena by that name does not exist.");
-                    return;
-                }
-                String name = args[1];
-                name = name.replaceAll("_"," ");
+                try {
+                    int id = Integer.parseInt(args[1]);
 
-                Arena arena = Practice.getArenaManager().getArena(name);
-                Practice.getArenaManager().unregisterArena(arena);
-                arena.deleteFile();
-                p.sendMessage(ChatColor.GREEN+"Deleted arena '"+name+"'.");
+                    Arena arena = Practice.getArenaManager().getArena(id);
+                    if(arena != null) {
+                        Practice.getArenaManager().unregisterArena(arena);
+                        arena.deleteFile();
+                        p.sendMessage(ChatColor.GREEN + "Deleted arena " + arena.getId() + " '" + arena.getName() + "'.");
+                    }
+                    else{
+                        p.sendMessage(ChatColor.RED+"Arena by ID "+id+" does not exist.");
+                    }
+                }
+                catch (NumberFormatException expected){
+                    p.sendMessage(ChatColor.RED+"The ID must be a number.");
+                }
             }
             else{
                 p.sendMessage(ChatColor.RED+"Incorrect usage.");
@@ -174,27 +185,31 @@ public class CommandPractice implements ICommand {
         }
         else if (key.equalsIgnoreCase("setarenaspawn")){
             if(args.length >= 3){
-                if(Practice.getArenaManager().getArena(args[1].replaceAll("_", " ")) == null){
-                    p.sendMessage(ChatColor.RED+"An arena by that name does not exist.");
-                    return;
-                }
-                String name = args[1];
-                name = name.replaceAll("_"," ");
+                try {
+                    int id = Integer.parseInt(args[1]);
 
-                Arena arena = Practice.getArenaManager().getArena(name);
+                    Arena arena = Practice.getArenaManager().getArena(id);
 
-                if(args[2].equalsIgnoreCase("a")){
-                    arena.setSpawnAlpha(p.getLocation());
-                    arena.save();
-                    p.sendMessage(ChatColor.GREEN+"Set spawn ALPHA for arena '"+arena.getName()+"'.");
+                    if(arena != null) {
+
+                        if (args[2].equalsIgnoreCase("a")) {
+                            arena.setSpawnAlpha(p.getLocation());
+                            arena.save();
+                            p.sendMessage(ChatColor.GREEN + "Set spawn ALPHA for arena ID " + arena.getId() + " '" + arena.getName() + "'.");
+                        } else if (args[2].equalsIgnoreCase("b")) {
+                            arena.setSpawnBravo(p.getLocation());
+                            arena.save();
+                            p.sendMessage(ChatColor.GREEN + "Set spawn BRAVO for arena ID " + arena.getId() + " '" + arena.getName() + "'.");
+                        } else {
+                            p.sendMessage(ChatColor.RED + "Incorrect usage.");
+                        }
+                    }
+                    else{
+                        p.sendMessage(ChatColor.RED+"Arena by ID "+id+" does not exist.");
+                    }
                 }
-                else if (args[2].equalsIgnoreCase("b")){
-                    arena.setSpawnBravo(p.getLocation());
-                    arena.save();
-                    p.sendMessage(ChatColor.GREEN + "Set spawn BRAVO for arena '" + arena.getName() + "'.");
-                }
-                else{
-                    p.sendMessage(ChatColor.RED+"Incorrect usage.");
+                catch (NumberFormatException expected){
+                    p.sendMessage(ChatColor.RED+"The arena ID must be a number.");
                 }
             }
             else{
@@ -208,24 +223,28 @@ public class CommandPractice implements ICommand {
             }
             else{
                 for(Arena arena : Practice.getArenaManager().getArenas()){
-                    p.sendMessage(ChatColor.GRAY+" - "+ChatColor.AQUA+arena.getName() + ChatColor.GREEN+" ("+arena.getType().toString()+")");
+                    p.sendMessage(ChatColor.GRAY+" - "+ChatColor.AQUA+"#"+arena.getId()+" "+arena.getName() + ChatColor.GREEN+" ("+arena.getType().toString()+")");
                 }
             }
         }
         //KITE ARENAS
         else if (key.equalsIgnoreCase("createkitearena")){
             if(args.length >= 2){
-                if(Practice.getArenaManager().getArena(args[1].replaceAll("_", " ")) != null){
-                    p.sendMessage(ChatColor.RED+"An arena by that name already exists.");
-                    return;
-                }
                 String name = args[1];
                 name = name.replaceAll("_"," ");
 
-                KiteArena arena = new KiteArena(Practice.getPlugin(), name, p.getLocation(), p.getLocation(), p.getLocation());
-                Practice.getArenaManager().registerArena(arena);
-                arena.save();
-                p.sendMessage(ChatColor.GREEN+"Created kite arena '"+name+"'.  Set it's spawns with /prac setkitearenaspawn.");
+                Selection selection = Practice.getWorldEdit().getSelection(p);
+                if(selection != null) {
+
+                    KiteArena arena = new KiteArena(Practice.getPlugin(), name, p.getLocation(), p.getLocation(),
+                            p.getLocation(), selection.getMinimumPoint(), selection.getMaximumPoint());
+                    Practice.getArenaManager().registerArena(arena);
+                    arena.save();
+                    p.sendMessage(ChatColor.GREEN + "Created kite arena "+arena.getId()+" '" + name + "'.  Set it's spawns with /prac setkitearenaspawn.");
+                }
+                else{
+                    p.sendMessage(ChatColor.RED+"Make a WorldEdit selection around the arena first.");
+                }
             }
             else{
                 p.sendMessage(ChatColor.RED+"Incorrect usage.");
@@ -233,39 +252,80 @@ public class CommandPractice implements ICommand {
         }
         else if (key.equalsIgnoreCase("setkitearenaspawn")){
             if(args.length >= 3){
-                if(Practice.getArenaManager().getArena(args[1].replaceAll("_", " ")) == null){
-                    p.sendMessage(ChatColor.RED+"An arena by that name does not exist.");
-                    return;
-                }
-                String name = args[1];
-                name = name.replaceAll("_"," ");
+                try {
+                    int id = Integer.parseInt(args[1]);
 
-                Arena a = Practice.getArenaManager().getArena(name);
+                    Arena a = Practice.getArenaManager().getArena(id);
 
-                if(a.getType() != ArenaType.KITE){
-                    p.sendMessage(ChatColor.RED+"That arena is not a kite arena.");
-                    return;
-                }
+                    if(a != null) {
 
-                KiteArena arena = (KiteArena) a;
+                        if (a.getType() != ArenaType.KITE) {
+                            p.sendMessage(ChatColor.RED + "That arena is not a kite arena.");
+                            return;
+                        }
 
-                if(args[2].equalsIgnoreCase("runner")){
-                    arena.setSpawnAlpha(p.getLocation());
-                    arena.save();
-                    p.sendMessage(ChatColor.GREEN+"Set spawn ALPHA for kite arena '"+arena.getName()+"'.");
+                        KiteArena arena = (KiteArena) a;
+
+                        if (args[2].equalsIgnoreCase("runner")) {
+                            arena.setSpawnAlpha(p.getLocation());
+                            arena.save();
+                            p.sendMessage(ChatColor.GREEN + "Set spawn ALPHA for kite arena '" + arena.getName() + "'.");
+                        } else if (args[2].equalsIgnoreCase("chaser")) {
+                            arena.setSpawnBravo(p.getLocation());
+                            arena.save();
+                            p.sendMessage(ChatColor.GREEN + "Set spawn BRAVO for kite arena '" + arena.getName() + "'.");
+                        } else if (args[2].equalsIgnoreCase("end")) {
+                            arena.setEnd(p.getLocation());
+                            arena.save();
+                            p.sendMessage(ChatColor.GREEN + "Set END location for kite arena '" + arena.getName() + "'.");
+                        } else {
+                            p.sendMessage(ChatColor.RED + "Incorrect usage.");
+                        }
+                    }
+                    else{
+                        p.sendMessage(ChatColor.RED+"Arena by ID "+id+" does not exist.");
+                    }
                 }
-                else if (args[2].equalsIgnoreCase("chaser")){
-                    arena.setSpawnBravo(p.getLocation());
-                    arena.save();
-                    p.sendMessage(ChatColor.GREEN + "Set spawn BRAVO for kite arena '" + arena.getName() + "'.");
+                catch (NumberFormatException expected){
+                    p.sendMessage(ChatColor.RED+"The arena ID must be a number.");
                 }
-                else if (args[2].equalsIgnoreCase("end")){
-                    arena.setEnd(p.getLocation());
-                    arena.save();
-                    p.sendMessage(ChatColor.GREEN + "Set END location for kite arena '"+arena.getName()+"'.");
+            }
+            else{
+                p.sendMessage(ChatColor.RED+"Incorrect usage.");
+            }
+        }
+        else if (key.equalsIgnoreCase("dupearena")){//prac dupearena id offset offset
+            if(args.length >= 4){
+                try{
+                    int id = Integer.parseInt(args[1]);
+                    final int offsetX = Integer.parseInt(args[2]);
+                    final int offsetZ = Integer.parseInt(args[3]);
+                    final Arena arena = Practice.getArenaManager().getArena(id);
+                    if(arena != null){
+                        try {
+                            ArenaDupeTask task = new ArenaDupeTask(arena, offsetX, offsetZ) {
+                                @Override
+                                public void onComplete() {
+                                    Arena dupe = arena.duplicate(offsetX, offsetZ);
+                                    Practice.getArenaManager().registerArena(dupe);
+                                    p.sendMessage(ChatColor.GREEN+"Arena dupe complete.  New arena ID: "+dupe.getId());
+                                    p.teleport(dupe.getSpawnAlpha());
+                                }
+                            };
+                            p.sendMessage(ChatColor.GREEN+"Scheduled Arena Dupe Task.");
+                            Bukkit.getScheduler().runTaskLater(Practice.getPlugin(), task, 2L);
+                        }
+                        catch (Exception ex){
+                            ex.printStackTrace();
+                            p.sendMessage(ChatColor.RED+"An error occurred.");
+                        }
+                    }
+                    else{
+                        p.sendMessage(ChatColor.RED+"Arena by ID "+id+" does not exist.");
+                    }
                 }
-                else{
-                    p.sendMessage(ChatColor.RED+"Incorrect usage.");
+                catch (NumberFormatException expected){
+                    p.sendMessage(ChatColor.RED+"The arena ID/offsetX/offsetZ must be a number(integer).");
                 }
             }
             else{

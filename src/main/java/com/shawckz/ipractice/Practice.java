@@ -19,6 +19,7 @@ import com.shawckz.ipractice.spawn.Spawn;
 import com.shawckz.ipractice.task.TaskAutoSave;
 import com.shawckz.ipractice.task.TaskClearEntities;
 import com.shawckz.ipractice.util.EntityHider;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -41,6 +42,7 @@ public class Practice extends JavaPlugin {
     @Getter private static EventManager eventManager;
     @Getter private static QueueManager queueManager;
     @Getter private static TaskAutoSave taskAutoSave;
+    @Getter private static WorldEditPlugin worldEdit;
 
     @Override
     public void onEnable(){
@@ -59,6 +61,7 @@ public class Practice extends JavaPlugin {
         queueManager = new QueueManager(this);
         queueManager.run();
         Ladder.loadLadders(this);
+        worldEdit = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");
 
         getServer().getPluginManager().registerEvents(new KitInvClose(), this);
         getServer().getPluginManager().registerEvents(new WorldListener(), this);

@@ -63,6 +63,7 @@ public class Match implements PracticeMatch {
         if(arena == null){
             arena = (BasicArena) Practice.getArenaManager().getNextArena(ArenaType.NORMAL);
         }
+        arena.setHasMatch(true);
         matchManager.registerMatch(this);
         matchHandler.register();
 
@@ -158,6 +159,8 @@ public class Match implements PracticeMatch {
                 }
             }
         }.runTaskLater(Practice.getPlugin(), 100L);
+
+        arena.setHasMatch(false);
 
         matchHandler.unregister();
         matchManager.unregisterMatch(this);

@@ -34,12 +34,22 @@ public class KiteArena extends Arena {
     @ConfigSerializer(serializer = LocationSerializer.class)
     private Location end;
 
-    public KiteArena(Plugin plugin, String name, Location spawnAlpha, Location spawnBravo, Location end) {
+    @ConfigData("points.min")
+    @ConfigSerializer(serializer = LocationSerializer.class)
+    private Location min;
+
+    @ConfigData("points.max")
+    @ConfigSerializer(serializer = LocationSerializer.class)
+    private Location max;
+
+    public KiteArena(Plugin plugin, String name, Location spawnAlpha, Location spawnBravo, Location end, Location min, Location max) {
         super(plugin, "kitearenas" + File.separator + name+".yml");
         this.name = name;
         this.spawnAlpha = spawnAlpha;
         this.spawnBravo = spawnBravo;
         this.end = end;
+        this.min = min;
+        this.max = max;
         this.id = (Practice.getArenaManager().getArenaIndex()+1);
         Practice.getArenaManager().setArenaIndex((id+1));
         load();
@@ -56,4 +66,17 @@ public class KiteArena extends Arena {
     public ArenaType getType() {
         return ArenaType.KITE;
     }
+
+    @Override
+    public KiteArena duplicate(int offsetX, int offsetZ) {
+        KiteArena arena = new KiteArena(Practice.getPlugin(), name, spawnAlpha, spawnBravo, end, min, max);
+        arena.setSpawnAlpha(spawnAlpha.clone().add(offsetX, 0, offsetZ));
+        arena.setSpawnBravo(spawnBravo.clone().add(offsetX, 0, offsetZ));
+        arena.setMin(min.clone().add(offsetX, 0, offsetZ));
+        arena.setMax(max.clone().add(offsetX, 0, offsetZ));
+        arena.setEnd(end.clone().add(offsetX, 0, offsetX));
+        arena.setHasMatch(false);
+        return arena;
+    }
+
 }

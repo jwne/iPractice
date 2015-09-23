@@ -30,11 +30,21 @@ public class BasicArena extends Arena {
     @ConfigSerializer(serializer = LocationSerializer.class)
     private Location spawnBravo;
 
-    public BasicArena(Plugin plugin, String name, Location spawnAlpha, Location spawnBravo) {
+    @ConfigData("points.min")
+    @ConfigSerializer(serializer = LocationSerializer.class)
+    private Location min;
+
+    @ConfigData("points.max")
+    @ConfigSerializer(serializer = LocationSerializer.class)
+    private Location max;
+
+    public BasicArena(Plugin plugin, String name, Location spawnAlpha, Location spawnBravo, Location min, Location max) {
         super(plugin, "arenas" + File.separator + name+".yml");
         this.name = name;
         this.spawnAlpha = spawnAlpha;
         this.spawnBravo = spawnBravo;
+        this.min = min;
+        this.max = max;
         this.id = (Practice.getArenaManager().getArenaIndex()+1);
         Practice.getArenaManager().setArenaIndex((id+1));
         load();
@@ -50,5 +60,16 @@ public class BasicArena extends Arena {
     @Override
     public ArenaType getType() {
         return ArenaType.NORMAL;
+    }
+
+    @Override
+    public Arena duplicate(int offsetX, int offsetZ) {
+        Arena arena = new BasicArena(Practice.getPlugin(), name, spawnAlpha, spawnBravo, min, max);
+        arena.setSpawnAlpha(spawnAlpha.clone().add(offsetX, 0, offsetZ));
+        arena.setSpawnBravo(spawnBravo.clone().add(offsetX, 0, offsetZ));
+        arena.setMin(min.clone().add(offsetX, 0, offsetZ));
+        arena.setMax(max.clone().add(offsetX, 0, offsetZ));
+        arena.setHasMatch(false);
+        return arena;
     }
 }

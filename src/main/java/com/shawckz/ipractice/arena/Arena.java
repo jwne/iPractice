@@ -33,4 +33,16 @@ public abstract class Arena extends Configuration {
     public void setHasMatch(boolean hasMatch) {
         this.hasMatch = hasMatch;
     }
+
+    public abstract Location getMax();
+
+    public abstract Location getMin();
+
+    public abstract Arena duplicate(int offsetX, int offsetZ);
+
+    public abstract void setMin(Location min);
+
+    public abstract void setMax(Location max);
+
+
 }
