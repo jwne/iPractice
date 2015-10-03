@@ -12,11 +12,17 @@ public enum QueueType {
     RANKED("Pairs you with players with similar elo."),
     PING("Pairs you with players with similar ping."),
     UNRANKED_PARTY("Pairs you with random parties."),
+    UNRANKED_PARTY_SIZE("Unranked Party (Size)", "Pairs you with parties that have the same amount of players as your party."),
     RANKED_PARTY("Pairs you with parties with similar average elo."),
     KITE("Pairs you with random players.");
 
     private final String description;
     private final String name;
+
+    QueueType(String name, String description) {
+        this.description = description;
+        this.name = name;
+    }
 
     QueueType(String description) {
         this.description = description;

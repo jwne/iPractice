@@ -96,7 +96,7 @@ public class CommandPractice implements ICommand {
             }
         }
         else if (key.equalsIgnoreCase("setspawn")){
-            Practice.getIConfig().setSpawn(p.getLocation());
+            Practice.getIConfig().setSpawn(p.getLocation().getBlock().getLocation());
             Practice.getIConfig().save();
             p.sendMessage(ChatColor.GREEN+"Spawn set to your location.");
         }
@@ -146,7 +146,7 @@ public class CommandPractice implements ICommand {
 
                 Selection selection = Practice.getWorldEdit().getSelection(p);
                 if(selection != null) {
-                    BasicArena arena = new BasicArena(Practice.getPlugin(), name, p.getLocation(), p.getLocation(),
+                    BasicArena arena = new BasicArena(Practice.getPlugin(), Practice.getArenaManager().getNextArenaIndex(), name, p.getLocation(), p.getLocation(),
                             selection.getMinimumPoint(), selection.getMaximumPoint());
                     Practice.getArenaManager().registerArena(arena);
                     arena.save();
@@ -236,7 +236,7 @@ public class CommandPractice implements ICommand {
                 Selection selection = Practice.getWorldEdit().getSelection(p);
                 if(selection != null) {
 
-                    KiteArena arena = new KiteArena(Practice.getPlugin(), name, p.getLocation(), p.getLocation(),
+                    KiteArena arena = new KiteArena(Practice.getPlugin(), Practice.getArenaManager().getNextArenaIndex(), name, p.getLocation(), p.getLocation(),
                             p.getLocation(), selection.getMinimumPoint(), selection.getMaximumPoint());
                     Practice.getArenaManager().registerArena(arena);
                     arena.save();
@@ -303,17 +303,16 @@ public class CommandPractice implements ICommand {
                     final Arena arena = Practice.getArenaManager().getArena(id);
                     if(arena != null){
                         try {
-                            ArenaDupeTask task = new ArenaDupeTask(arena, offsetX, offsetZ) {
+                            ArenaDupeTask task = new ArenaDupeTask(arena, offsetX, offsetZ, 10, offsetX,offsetZ) {
                                 @Override
-                                public void onComplete() {
-                                    Arena dupe = arena.duplicate(offsetX, offsetZ);
+                                public void onComplete(Arena dupe) {
                                     Practice.getArenaManager().registerArena(dupe);
+                                    dupe.save();
                                     p.sendMessage(ChatColor.GREEN+"Arena dupe complete.  New arena ID: "+dupe.getId());
                                     p.teleport(dupe.getSpawnAlpha());
                                 }
                             };
-                            p.sendMessage(ChatColor.GREEN+"Scheduled Arena Dupe Task.");
-                            Bukkit.getScheduler().runTaskLater(Practice.getPlugin(), task, 2L);
+                            task.run();
                         }
                         catch (Exception ex){
                             ex.printStackTrace();

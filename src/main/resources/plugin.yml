@@ -45,3 +45,6 @@ commands:
   staffmode:
     usage: /<command>
     aliases: [pstaff, pstaffmode, ph, prach, pracstaff, ps, h]
+  watch:
+    usage: /<command>
+    aliases: [w]

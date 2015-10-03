@@ -3,61 +3,57 @@ package com.shawckz.ipractice.match.handle;
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.match.Match;
 import com.shawckz.ipractice.player.IPlayer;
-import com.shawckz.ipractice.util.AutoRespawn;
 import lombok.RequiredArgsConstructor;
+
+import java.util.*;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.player.*;
-import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.*;
-import org.bukkit.util.Vector;
-
-import java.awt.event.ItemEvent;
-import java.util.*;
 
 /**
  * Created by 360 on 9/13/2015.
  */
 @RequiredArgsConstructor
-public class MatchHandler implements Listener{
+public class MatchHandler implements Listener {
 
     private final Match match;
 
-    private Map<String,String> lastDamages = new HashMap<>();
+    private Map<String, String> lastDamages = new HashMap<>();
 
     @EventHandler
-     public void onDrop(final PlayerDropItemEvent e){
-        if(match.getPlayerManager().hasPlayer(e.getPlayer())){
+    public void onDrop(final PlayerDropItemEvent e) {
+        if (match.getPlayerManager().hasPlayer(e.getPlayer())) {
             ItemStack is = e.getItemDrop().getItemStack();
             ItemMeta im = is.getItemMeta();
-            if(im.getLore() == null){
+            if (im.getLore() == null) {
                 im.setLore(new ArrayList<String>());
             }
             im.getLore().add(match.getId());
             is.setItemMeta(im);
             e.getItemDrop().setItemStack(is);
 
-            for(Player pl : Bukkit.getOnlinePlayers()){
-                if(!match.getPlayerManager().hasPlayer(pl)){
-                    Practice.getEntityHider().hideEntity(pl, e.getItemDrop());
-                }
-            }
-            new BukkitRunnable(){
+            new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if(e.getItemDrop() != null){
+                    if (e.getItemDrop() != null) {
                         e.getItemDrop().remove();
                     }
                 }
@@ -65,83 +61,75 @@ public class MatchHandler implements Listener{
         }
     }
 
-    @EventHandler
-    public void onDeath(PlayerDeathEvent e){
-        e.setDeathMessage(null);
-        final Player p = e.getEntity();
+    private void fakeDeath(Player p, Player killer, boolean dropItems) {
         final IPlayer ip = Practice.getCache().getIPlayer(p);
-        if(match.getPlayerManager().hasPlayer(p)){
-            List<ItemStack> newDrops = new ArrayList<>();
-            newDrops.addAll(e.getDrops());
-            e.getDrops().clear();
-            final Set<Item> items = new HashSet<>();
-            for(ItemStack i : newDrops){
-                ItemMeta im = i.getItemMeta();
-                if(im.getLore() == null){
-                    im.setLore(new ArrayList<String>());
-                }
-                im.getLore().add(match.getId());
-                i.setItemMeta(im);
-                Item item = p.getWorld().dropItemNaturally(p.getLocation(), i);
-                items.add(item);
-            }
-
-            for(Player pl : Bukkit.getOnlinePlayers()){
-                if(!match.getPlayerManager().hasPlayer(pl)){
-                    for(Item item : items){
-                        Practice.getEntityHider().hideEntity(pl, item);
+        if (match.getPlayerManager().hasPlayer(p)) {
+            if(dropItems){
+                final Set<Item> items = new HashSet<>();
+                for (ItemStack i : p.getInventory().getContents()) {
+                    ItemMeta im = i.getItemMeta();
+                    if (im.getLore() == null) {
+                        im.setLore(new ArrayList<String>());
                     }
+                    im.getLore().add(match.getId());
+                    i.setItemMeta(im);
+                    Item item = p.getWorld().dropItemNaturally(p.getLocation(), i);
+                    items.add(item);
                 }
-            }
-            new BukkitRunnable(){
-                @Override
-                public void run() {
-                    for(Item item : items){
-                        if(item != null){
-                            item.remove();
+                for (ItemStack i : p.getInventory().getArmorContents()) {
+                    ItemMeta im = i.getItemMeta();
+                    if (im.getLore() == null) {
+                        im.setLore(new ArrayList<String>());
+                    }
+                    im.getLore().add(match.getId());
+                    i.setItemMeta(im);
+                    Item item = p.getWorld().dropItemNaturally(p.getLocation(), i);
+                    items.add(item);
+                }
+
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        for (Item item : items) {
+                            if (item != null) {
+                                item.remove();
+                            }
                         }
                     }
-                }
-            }.runTaskLater(Practice.getPlugin(), 60L);
-
-
-            if(p.getKiller() != null){
-                IPlayer kip = Practice.getCache().getIPlayer(p.getKiller());
-                match.eliminatePlayer(ip, kip);
+                }.runTaskLater(Practice.getPlugin(), 60L);
             }
-            else{
+
+
+            if (killer != null) {
+                IPlayer kip = Practice.getCache().getIPlayer(killer);
+                match.eliminatePlayer(ip, kip);
+            } else {
                 match.eliminatePlayer(ip, null);
             }
-
-            AutoRespawn.autoRespawn(e);
         }
     }
 
     @EventHandler
-    public void onPickupItem(PlayerPickupItemEvent e){
-        if(!match.getPlayerManager().hasPlayer(e.getPlayer())){
+    public void onPickupItem(PlayerPickupItemEvent e) {
+        if (!match.getPlayerManager().hasPlayer(e.getPlayer())) {
             ItemStack i = e.getItem().getItemStack();
-            if(i.hasItemMeta()){
-                if(i.getItemMeta().getLore() != null){
-                    if(i.getItemMeta().getLore().contains(match.getId())){
-                        Practice.getEntityHider().hideEntity(e.getPlayer(), e.getItem());
+            if (i.hasItemMeta()) {
+                if (i.getItemMeta().getLore() != null) {
+                    if (i.getItemMeta().getLore().contains(match.getId())) {
                         e.setCancelled(true);
                     }
                 }
             }
-        }
-        else{
+        } else {
             ItemStack i = e.getItem().getItemStack();
-            if(i.hasItemMeta()){
-                if(i.getItemMeta().getLore() != null){
-                    if(i.getItemMeta().getLore().contains(match.getId())){
+            if (i.hasItemMeta()) {
+                if (i.getItemMeta().getLore() != null) {
+                    if (i.getItemMeta().getLore().contains(match.getId())) {
                         ItemMeta im = i.getItemMeta();
                         im.getLore().remove(match.getId());
                         i.setItemMeta(im);
                         e.getItem().setItemStack(i);
-                    }
-                    else{
-                        Practice.getEntityHider().hideEntity(e.getPlayer(), e.getItem());
+                    } else {
                         e.setCancelled(true);
                     }
                 }
@@ -150,37 +138,35 @@ public class MatchHandler implements Listener{
     }
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent e){
+    public void onQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        if(match.getPlayerManager().hasPlayer(p)){
+        if (match.getPlayerManager().hasPlayer(p)) {
             IPlayer ip = Practice.getCache().getIPlayer(p);
-            if(p.getKiller() != null){
+            if (p.getKiller() != null) {
                 IPlayer kip = Practice.getCache().getIPlayer(p.getKiller());
                 match.eliminatePlayer(ip, kip);
-            }
-            else{
+            } else {
                 match.eliminatePlayer(ip, null);
             }
         }
     }
 
     @EventHandler
-    public void onInteract(PlayerInteractEvent e){
+    public void onInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
-        if(match.getPlayerManager().hasPlayer(p)){
-            if(!match.isStarted()){
-                if(p.getItemInHand().getType() == Material.ENDER_PEARL){
+        if (match.getPlayerManager().hasPlayer(p)) {
+            if (!match.isStarted()) {
+                if (p.getItemInHand().getType() == Material.ENDER_PEARL) {
                     e.setCancelled(true);
-                    p.sendMessage(ChatColor.RED+"You cannot do this until the match has started.");
+                    p.sendMessage(ChatColor.RED + "You cannot do this until the match has started.");
                 }
-            }
-            else{
-                if(p.getItemInHand().getType() == Material.ENDER_PEARL){
-                    if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK){
+            } else {
+                if (p.getItemInHand().getType() == Material.ENDER_PEARL) {
+                    if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
                         IPlayer ip = Practice.getCache().getIPlayer(p);
-                        if(ip.getEnderpearl() > System.currentTimeMillis()){
+                        if (ip.getEnderpearl() > System.currentTimeMillis()) {
                             e.setCancelled(true);
-                            p.sendMessage(ChatColor.RED+"Still on Ender Pearl cooldown for "+((ip.getEnderpearl() - System.currentTimeMillis())/1000)+" seconds.");
+                            p.sendMessage(ChatColor.RED + "Still on Ender Pearl cooldown for " + ((ip.getEnderpearl() - System.currentTimeMillis()) / 1000) + " seconds.");
                         }
                     }
                 }
@@ -189,9 +175,9 @@ public class MatchHandler implements Listener{
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPearl(ProjectileLaunchEvent e){
-        if(!e.isCancelled()){
-            if(e.getEntity().getShooter() instanceof Player && e.getEntity() instanceof EnderPearl){
+    public void onPearl(ProjectileLaunchEvent e) {
+        if (!e.isCancelled()) {
+            if (e.getEntity().getShooter() instanceof Player && e.getEntity() instanceof EnderPearl) {
                 Player p = (Player) e.getEntity().getShooter();
                 IPlayer ip = Practice.getCache().getIPlayer(p);
 
@@ -202,84 +188,87 @@ public class MatchHandler implements Listener{
     }
 
     @EventHandler
-    public void onDamage(EntityDamageEvent e){
-        if(e.getEntity() instanceof Player){
+    public void onDamage(EntityDamageEvent e) {
+        if (e.getEntity() instanceof Player) {
             Player p = (Player) e.getEntity();
-            if(match.getPlayerManager().hasPlayer(p)){
-                if(!match.isStarted()){
+            if (match.getPlayerManager().hasPlayer(p)) {
+                if (!match.isStarted()) {
                     e.setCancelled(true);
                     e.setDamage(0.0);
+                }
+                else{
+                    if(p.getHealth() - e.getDamage() <= 0){
+                        fakeDeath(p, null, match.getRemainingPlayers() > 2);
+                    }
                 }
             }
         }
     }
 
     @EventHandler
-    public void onDamage(EntityDamageByEntityEvent e){
-        if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
+    public void onDamage(EntityDamageByEntityEvent e) {
+        if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
             Player p = (Player) e.getEntity();
             Player d = (Player) e.getDamager();
 
-            if(match.getPlayerManager().hasPlayer(d)){
-                if(match.getPlayerManager().hasPlayer(p)){
-                    if(!match.isStarted()){
+            if (match.getPlayerManager().hasPlayer(d)) {
+                if (match.getPlayerManager().hasPlayer(p)) {
+                    if (!match.isStarted()) {
                         e.setCancelled(true);
                         e.setDamage(0.0);
-                        d.sendMessage(ChatColor.RED+"You cannot attack until the match has started!");
-                    }
-                    else{
-                        if(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(p)).getName()
-                                .equalsIgnoreCase(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(d)).getName())){
+                        d.sendMessage(ChatColor.RED + "You cannot attack until the match has started!");
+                    } else {
+                        if (match.getTeamManager().getTeam(Practice.getCache().getIPlayer(p)).getName()
+                                .equalsIgnoreCase(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(d)).getName())) {
                             e.setCancelled(true);
                             e.setDamage(0.0);
-                            d.sendMessage(ChatColor.RED+p.getName()+" is on your team!");
+                            d.sendMessage(ChatColor.RED + p.getName() + " is on your team!");
+                        }
+                        else{
+                            if(p.getHealth() - e.getDamage() <= 0){
+                                fakeDeath(p, d, match.getRemainingPlayers() > 2);
+                            }
                         }
                     }
-                }
-                else{
+                } else {
                     //Attempted to damage someone who is not in their match
                     e.setCancelled(true);
                     e.setDamage(0.0);
                 }
-            }
-            else{
-                if(match.getPlayerManager().hasPlayer(p)){
+            } else {
+                if (match.getPlayerManager().hasPlayer(p)) {
                     e.setCancelled(true);
                     e.setDamage(0.0);
                 }
             }
-        }
-        else if (e.getEntity() instanceof Player && e.getDamager() instanceof Projectile){
+        } else if (e.getEntity() instanceof Player && e.getDamager() instanceof Projectile) {
             Projectile pd = (Projectile) e.getDamager();
             Player p = (Player) e.getEntity();
 
-            if(pd.getShooter() != null && pd.getShooter() instanceof Player){
+            if (pd.getShooter() != null && pd.getShooter() instanceof Player) {
                 Player d = (Player) pd.getShooter();
-                if(d.getName().equals(p.getName())) return;
-                if(match.getPlayerManager().hasPlayer(d)){
-                    if(match.getPlayerManager().hasPlayer(p)){
-                        if(!match.isStarted()){
+                if (d.getName().equals(p.getName())) return;
+                if (match.getPlayerManager().hasPlayer(d)) {
+                    if (match.getPlayerManager().hasPlayer(p)) {
+                        if (!match.isStarted()) {
                             e.setCancelled(true);
                             e.setDamage(0.0);
-                            d.sendMessage(ChatColor.RED+"You cannot attack until the match has started!");
-                        }
-                        else{
-                            if(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(p)).getName()
-                                    .equalsIgnoreCase(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(d)).getName())){
+                            d.sendMessage(ChatColor.RED + "You cannot attack until the match has started!");
+                        } else {
+                            if (match.getTeamManager().getTeam(Practice.getCache().getIPlayer(p)).getName()
+                                    .equalsIgnoreCase(match.getTeamManager().getTeam(Practice.getCache().getIPlayer(d)).getName())) {
                                 e.setCancelled(true);
                                 e.setDamage(0.0);
-                                d.sendMessage(ChatColor.RED+p.getName()+" is on your team!");
+                                d.sendMessage(ChatColor.RED + p.getName() + " is on your team!");
                             }
                         }
-                    }
-                    else{
+                    } else {
                         //Attempted to damage someone who is not in their match
                         e.setCancelled(true);
                         e.setDamage(0.0);
                     }
-                }
-                else{
-                    if(match.getPlayerManager().hasPlayer(p)){
+                } else {
+                    if (match.getPlayerManager().hasPlayer(p)) {
                         e.setCancelled(true);
                         e.setDamage(0.0);
                     }
@@ -290,21 +279,20 @@ public class MatchHandler implements Listener{
     }
 
     @EventHandler
-    public void onSplash(PotionSplashEvent e){
-        if(e.getPotion().getShooter() instanceof Player){
+    public void onSplash(PotionSplashEvent e) {
+        if (e.getPotion().getShooter() instanceof Player) {
             Player p = (Player) e.getPotion().getShooter();
-            if(match.getPlayerManager().hasPlayer(p)){
+            if (match.getPlayerManager().hasPlayer(p)) {
                 //IPlayer ip = Practice.getCache().getIPlayer(p);
                 Iterator<LivingEntity> li = e.getAffectedEntities().iterator();
 
-                while(li.hasNext()){
+                while (li.hasNext()) {
                     LivingEntity en = li.next();
-                    if(en instanceof Player){
+                    if (en instanceof Player) {
                         Player pl = (Player) en;
-                        if(!match.getPlayerManager().hasPlayer(pl)){
+                        if (!match.getPlayerManager().hasPlayer(pl)) {
                             e.setIntensity(en, 0);
                             e.getAffectedEntities().remove(en);
-                            Practice.getEntityHider().hideEntity(pl, e.getEntity());
                         }
                     }
                 }
@@ -312,29 +300,11 @@ public class MatchHandler implements Listener{
         }
     }
 
-    @EventHandler
-    public void onLaunch(ProjectileLaunchEvent e){
-        Projectile proj = e.getEntity();
-        if(proj.getShooter() != null){
-            if(proj.getShooter() instanceof Player){
-                Player p = (Player) proj.getShooter();
-
-                if(match.getPlayerManager().hasPlayer(p)){
-                    for(Player pl : Bukkit.getOnlinePlayers()){
-                        if(!match.getPlayerManager().hasPlayer(pl)){
-                            Practice.getEntityHider().hideEntity(pl,proj);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public final void register(){
+    public final void register() {
         Bukkit.getServer().getPluginManager().registerEvents(this, Practice.getPlugin());
     }
 
-    public final void unregister(){
+    public final void unregister() {
         HandlerList.unregisterAll(this);
     }
 

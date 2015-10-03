@@ -4,6 +4,8 @@ import java.util.Set;
 
 import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.match.handle.MatchManager;
+import com.shawckz.ipractice.player.IPlayer;
+
 import org.bukkit.entity.Player;
 
 public interface PracticeMatch {
@@ -23,5 +25,7 @@ public interface PracticeMatch {
     MatchType getType();
 
     Ladder getLadder();
+
+    String getOpponent(IPlayer player);
 
 }

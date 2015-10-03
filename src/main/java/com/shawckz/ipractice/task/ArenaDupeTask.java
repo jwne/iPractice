@@ -1,8 +1,8 @@
 package com.shawckz.ipractice.task;
 
+import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.arena.Arena;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -10,19 +10,33 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by 360 on 9/22/2015.
  */
 @Getter
-@RequiredArgsConstructor
 public abstract class ArenaDupeTask implements Runnable {
 
     private final Arena copiedArena;
-    private final int offsetX;
-    private final int offsetZ;
+    private int offsetX;
+    private int offsetZ;
+    private final int maxTries;
+    private final int incrementX;
+    private final int incrementZ;
+    private boolean successful = false;
+    private boolean completed = false;
+    int tries = 1;
+
+    public ArenaDupeTask(Arena copiedArena, int offsetX, int offsetZ, int maxTries, int incrementX, int incrementZ) {
+        this.copiedArena = copiedArena;
+        this.offsetX = offsetX;
+        this.offsetZ = offsetZ;
+        this.maxTries = maxTries;
+        this.incrementX = incrementX;
+        this.incrementZ = incrementZ;
+    }
 
     public void run() {
         for(Player pl : Bukkit.getOnlinePlayers()){
@@ -30,66 +44,68 @@ public abstract class ArenaDupeTask implements Runnable {
                 pl.sendMessage(ChatColor.DARK_PURPLE+"Preparing to duplicate arena "+copiedArena.getName()+"...");
             }
         }
-        List<Block> copy = blocksFromTwoPoints(copiedArena.getMin(), copiedArena.getMax());
-        List<Block> paste = new ArrayList<>();
-        for(Block block : copy){
-            paste.add(block.getLocation().getWorld().getBlockAt(
-                    block.getLocation().clone().add(
-                            offsetX,//X
-                            0,//Y
-                            offsetZ//Z
-                    )
-            ));
-        }
-        for(Player pl : Bukkit.getOnlinePlayers()){
-            if(pl.isOp()){
-                pl.sendMessage(ChatColor.DARK_PURPLE+"Scanning arena "+copiedArena.getName()+" to see if paste is safe...");
+        Map<Location,Block> copy = blocksFromTwoPoints(copiedArena.getMin(), copiedArena.getMax());
+        Map<Location,Block> paste = new HashMap<>();
+        for(Location loc : copy.keySet()){
+            if(copy.get(loc).getType() != Material.AIR) {
+                paste.put(
+                        loc.clone().add(offsetX, 0, offsetZ),
+                        copy.get(loc)
+                );
             }
         }
         boolean safe = true;
-        for(Block block : paste){
-            if(block.getWorld().getBlockAt(block.getLocation()).getType() != Material.AIR){
+        for(Location loc : paste.keySet()){
+            Block block = loc.getBlock();
+            if(block.getType() != Material.AIR){
                 safe = false;
                 break;
             }
         }
-        if(safe){
+        if(!safe){
             for(Player pl : Bukkit.getOnlinePlayers()){
                 if(pl.isOp()){
-                    pl.sendMessage(ChatColor.DARK_PURPLE+"Arena scan complete: Paste is safe.");
+                    pl.sendMessage(ChatColor.DARK_PURPLE+"Arena scan complete:"+ChatColor.RED+" Paste is not safe - Incrementing offset and re-trying. ("+tries+"/"+maxTries+")");
                 }
             }
-        }
-        else{
-            for(Player pl : Bukkit.getOnlinePlayers()){
-                if(pl.isOp()){
-                    pl.sendMessage(ChatColor.DARK_PURPLE+"Arena scan complete: Paste is not safe - Conflicting non-air blocks found in area.");
+            if(tries >= maxTries){
+                for(Player pl : Bukkit.getOnlinePlayers()){
+                    if(pl.isOp()){
+                        pl.sendMessage(ChatColor.DARK_PURPLE+"Arena scan complete:"+ChatColor.RED+" Paste is not safe.  ");
+                    }
                 }
+                completed = true;
+                return;
             }
+            else{
+                tries++;
+                offsetX += incrementX;
+                offsetZ += incrementZ;
+                run();
+            }
+            completed = true;
             return;
         }
-        for(Player pl : Bukkit.getOnlinePlayers()){
-            if(pl.isOp()){
-                pl.sendMessage(ChatColor.DARK_PURPLE+"Duplicating arena "+copiedArena.getName()+"... Expect lag.");
+        final AsyncBlockPlaceTask task = new AsyncBlockPlaceTask(paste, 50) {
+            @Override
+            public void finish() {
+                for(Player pl : Bukkit.getOnlinePlayers()){
+                    if(pl.isOp()){
+                        pl.sendMessage(ChatColor.DARK_PURPLE+"Duplicated arena "+copiedArena.getName()+".  " +
+                                "Placed "+getBlocksPlaced()+" blocks.");
+                    }
+                }
+                completed = true;
+                successful = true;
+                onComplete(copiedArena.duplicate(offsetX, offsetZ));
             }
-        }
-        int blocksPlaced = 0;
-        for(Block block : paste){
-            block.getWorld().getBlockAt(block.getLocation()).setType(block.getType());
-            block.getWorld().getBlockAt(block.getLocation()).getState().setType(block.getType());
-            blocksPlaced++;
-        }
-        for(Player pl : Bukkit.getOnlinePlayers()){
-            if(pl.isOp()){
-                pl.sendMessage(ChatColor.DARK_PURPLE+"Duplicated arena "+copiedArena.getName()+".  " +
-                        "Placed "+blocksPlaced+" blocks.");
-            }
-        }
-        onComplete();
+        };
+        task.runTaskTimer(Practice.getPlugin(), 0L, 20L);//Sync
+        completed = true;
     }
 
-    public List<Block> blocksFromTwoPoints(Location loc1, Location loc2) {
-        List<Block> blocks = new ArrayList<>();
+    public Map<Location, Block> blocksFromTwoPoints(Location loc1, Location loc2) {
+        Map<Location, Block> blocks = new HashMap<>();
 
         int topBlockX = (loc1.getBlockX() < loc2.getBlockX() ? loc2.getBlockX() : loc1.getBlockX());
         int bottomBlockX = (loc1.getBlockX() > loc2.getBlockX() ? loc2.getBlockX() : loc1.getBlockX());
@@ -104,7 +120,7 @@ public abstract class ArenaDupeTask implements Runnable {
             for (int z = bottomBlockZ; z <= topBlockZ; z++) {
                 for (int y = bottomBlockY; y <= topBlockY; y++) {
                     Block block = loc1.getWorld().getBlockAt(x, y, z);
-                    blocks.add(block);
+                    blocks.put(new Location(loc1.getWorld(),x,y,z),block);
                 }
             }
         }
@@ -112,6 +128,6 @@ public abstract class ArenaDupeTask implements Runnable {
         return blocks;
     }
 
-    public abstract void onComplete();
+    public abstract void onComplete(Arena result);
 
 }

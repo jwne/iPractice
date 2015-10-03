@@ -32,6 +32,7 @@ public class QueueManager {
         registerQueue(QueueType.RANKED_PARTY, new RankedPartyQueue());
         registerQueue(QueueType.PING, new UnrankedPingQueue());
         registerQueue(QueueType.KITE, new KiteQueue());
+        registerQueue(QueueType.UNRANKED_PARTY_SIZE, new UnrankedPartySizeQueue());
     }
 
     public void run(){
@@ -85,11 +86,19 @@ public class QueueManager {
                     PartyQueueMember pq = (PartyQueueMember) member;
                     if(pq.getParty().getLeader().equals(player.getName())){
                         queue.removeFromQueue(member);
+                        for(IPlayer pl : member.getPlayers()){
+                            pl.getPlayer().sendMessage(ChatColor.RED+"Your party was disbanded, so you were removed from the queue.");
+                            pl.getScoreboard().update();
+                        }
                         //If they are the leader, remove the whole party from the queue
                     }
                     else{
-                        member.getPlayers().remove(player);
-                        //If they aren't the leader, just remove them from member
+                        queue.removeFromQueue(member);
+                        for(IPlayer pl : member.getPlayers()){
+                            pl.getPlayer().sendMessage(ChatColor.RED+"A player left your party, so you were removed from the queue.");
+                            pl.getScoreboard().update();
+                        }
+                        //If they aren't the leader, remove the whole party from the queue, and
                     }
                 }
                 else{

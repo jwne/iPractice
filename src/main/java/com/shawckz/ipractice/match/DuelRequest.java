@@ -40,7 +40,8 @@ public class DuelRequest {
 
             p.sendMessage(ChatColor.GOLD+"You sent a duel request to "+ChatColor.LIGHT_PURPLE+recipient.getName()+
                     ChatColor.GOLD+" with ladder "+ChatColor.AQUA+ladder.getName()+ChatColor.GOLD+
-                    ".  This request times out in 15 seconds.");
+                    ".");
+            p.sendMessage(ChatColor.GRAY+"This request will time out in 15 seconds.");
 
             new FancyMessage(ChatColor.LIGHT_PURPLE+p.getName()+ChatColor.GOLD
                     +" has sent you a duel request with ladder "+ChatColor.AQUA+
@@ -48,7 +49,7 @@ public class DuelRequest {
                     .send(t);
 
 
-            new FancyMessage("Type "+ChatColor.GREEN+"/accept "+p.getName()+ChatColor.GOLD+" or ")
+            new FancyMessage(ChatColor.GOLD+"Type "+ChatColor.GREEN+"/accept "+p.getName()+ChatColor.GOLD+" or ")
                     .then(ChatColor.GREEN+""+ChatColor.BOLD+"[CLICK HERE]")
                     .command("/accept "+p.getName())
                     .tooltip(ChatColor.GOLD+"Accept "+p.getName()+"'s duel request")

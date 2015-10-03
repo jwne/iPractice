@@ -1,8 +1,6 @@
 package com.shawckz.ipractice.util.nametag;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -22,13 +20,13 @@ public class NametagPlayer {
     private Player player;
     private String name;
     private List<Nametag> registeredNametags;
-    private ConcurrentMap<NametagPlayer,Nametag> playerNametags;
+    private Map<NametagPlayer,Nametag> playerNametags;
 
     public NametagPlayer(Player player) {
         this.name = player.getName();
         this.player = player;
         this.registeredNametags = new ArrayList<>();
-        this.playerNametags = new ConcurrentHashMap<>();
+        this.playerNametags = new HashMap<>();
     }
 
     /**
@@ -186,7 +184,7 @@ public class NametagPlayer {
      * Remove all nametags for player and unregister all nametags
      */
     public void reset(){
-        Iterator<NametagPlayer> pl =playerNametags.keySet().iterator();
+        Iterator<NametagPlayer> pl = playerNametags.keySet().iterator();
         while(pl.hasNext()){
             NametagPlayer nametagPlayer = pl.next();
             Nametag nametag = playerNametags.get(nametagPlayer);

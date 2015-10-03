@@ -36,7 +36,7 @@ public abstract class QueueSelect implements Listener {
         for (Queue queue : Practice.getQueueManager().getQueues().values()) {
             if(queue.canJoin(p)){
                 inv.addItem(new ItemBuilder(queue.getIcon())
-                        .name(ChatColor.GOLD + WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " ")))
+                        .name(ChatColor.GOLD + queue.getType().getName())
                         .lore(ChatColor.BLUE + "" + ChatColor.ITALIC + queue.getType().getDescription())
                         .lore(ChatColor.GRAY + "Players in " + WordUtils.capitalizeFully(queue.getType().toString().replaceAll("_", " "))
                                 + " queue: " + ChatColor.AQUA + queue.getMembers().size())

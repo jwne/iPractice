@@ -68,13 +68,13 @@ public class CommandParty implements ICommand {
                 if(party.getLeader().equalsIgnoreCase(p.getName())){
                     party.msg(ChatColor.AQUA + "" + ChatColor.BOLD + "(PARTY) " + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + p.getName() + ChatColor.GOLD + " deleted the party.");
                     Practice.getPartyManager().unregister(party);
-                    ip.sendToSpawn();
+                    ip.sendToSpawnNoTp();
                     for(Player pl : party.getAllPlayers()){
                         IPlayer ipl = Practice.getCache().getIPlayer(pl);
                         if(ipl.getState() == PlayerState.AT_SPAWN){
                             ipl.getPlayer().getInventory().clear();
                             ipl.getPlayer().getInventory().setContents(ipl.getPlayer().getInventory().getContents());
-                            ipl.sendToSpawn();
+                            ipl.sendToSpawnNoTp();
                         }
                     }
                 }

@@ -49,7 +49,7 @@ public class KitBuilder implements Listener {
         player.setFoodLevel(20);
         Practice.getCache().getIPlayer(player).equipKit(ladder);
         for(Player pl : Bukkit.getOnlinePlayers()){
-            Practice.getEntityHider().hideEntity(player, pl);
+            player.hidePlayer(pl);
         }
         active = true;
         Practice.getCache().getIPlayer(player).getScoreboard().update();
@@ -61,7 +61,7 @@ public class KitBuilder implements Listener {
     public void exit(){
         HandlerList.unregisterAll(this);
         for(Player pl : Bukkit.getOnlinePlayers()){
-            Practice.getEntityHider().showEntity(player, pl);
+            player.showPlayer(pl);
         }
         active = false;
     }

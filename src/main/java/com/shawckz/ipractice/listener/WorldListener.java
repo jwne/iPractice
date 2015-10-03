@@ -10,6 +10,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -23,7 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class WorldListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onJoinHide(PlayerJoinEvent e){
         Player p = e.getPlayer();
         IPlayer ip = Practice.getCache().getIPlayer(p);

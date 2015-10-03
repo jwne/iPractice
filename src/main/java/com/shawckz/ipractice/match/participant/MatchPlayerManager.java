@@ -96,4 +96,14 @@ public class MatchPlayerManager {
         return pl;
     }
 
+    public Set<MatchPlayer> getMatchPlayers(){
+        Set<MatchPlayer> pl = new HashSet<>();
+        for(MatchParticipant pmp : participants){
+            for(MatchPlayer pll : pmp.getPlayers()){
+                pl.add(pll);
+            }
+        }
+        return pl;
+    }
+
 }

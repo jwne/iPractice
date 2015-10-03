@@ -49,7 +49,7 @@ public class CmdArgs {
      * @return String[] of arguments without flags
      */
     public String[] getArgs() {
-        return filterFlags(args);
+        return args;
     }
 
     /**

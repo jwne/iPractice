@@ -3,6 +3,7 @@ package com.shawckz.ipractice.spawn.item;
 public enum SpawnItemType {
 
     NORMAL,
-    PARTY
+    PARTY,
+    SPECTATOR
 
 }

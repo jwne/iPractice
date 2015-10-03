@@ -29,6 +29,7 @@ public class NametagManager {
 
     public static void remove(Player p){
         if(contains(p)){
+            players.get(p.getName()).reset();
             players.remove(p.getName());
         }
     }

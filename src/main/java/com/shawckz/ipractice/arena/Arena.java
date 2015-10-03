@@ -44,5 +44,4 @@ public abstract class Arena extends Configuration {
 
     public abstract void setMax(Location max);
 
-
 }

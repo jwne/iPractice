@@ -11,5 +11,6 @@ public class MatchPlayer {
 
     private final IPlayer player;
     private boolean alive = true;
+    private boolean spectating = false;
 
 }

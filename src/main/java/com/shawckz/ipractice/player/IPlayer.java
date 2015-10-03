@@ -11,6 +11,7 @@ import com.shawckz.ipractice.kite.KiteRequest;
 import com.shawckz.ipractice.match.DuelRequest;
 import com.shawckz.ipractice.ladder.Ladder;
 import com.shawckz.ipractice.match.Match;
+import com.shawckz.ipractice.match.PracticeMatch;
 import com.shawckz.ipractice.party.Party;
 import com.shawckz.ipractice.player.cache.CachePlayer;
 import com.shawckz.ipractice.rating.Elo;
@@ -28,10 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 @CollectionName(name = "iplayers")
@@ -86,6 +84,8 @@ public class IPlayer extends CachePlayer {
     private KitBuilder kitBuilder;
     private PracticeScoreboard scoreboard;
     private boolean staffTeleportShuffle = false;
+    private Set<String> watching = new HashSet<>();
+    private String spectatingMatch = null;
 
     public void setup() {
         if (player == null) {
@@ -126,20 +126,14 @@ public class IPlayer extends CachePlayer {
                         //this player is @ spawn, other player is building kit
                         ipl.getPlayer().hidePlayer(player);
                         player.showPlayer(pl);
-                        Practice.getEntityHider().hideEntity(ipl.getPlayer(), pl);
-                        Practice.getEntityHider().showEntity(player, pl);
                     }
                     else if (ipl.getState() == PlayerState.IN_MATCH){
                         //this player is @ spawn, other player is in match
-                        Practice.getEntityHider().hideEntity(player, pl);
-                        Practice.getEntityHider().hideEntity(pl, player);
                         player.hidePlayer(pl);
                         pl.hidePlayer(player);
                     }
                     else if (ipl.getState() == PlayerState.AT_SPAWN){
                         //both players are at spawn
-                        Practice.getEntityHider().showEntity(player, pl);
-                        Practice.getEntityHider().showEntity(pl, player);
                         pl.showPlayer(player);
                         player.showPlayer(pl);
                     }
@@ -147,45 +141,77 @@ public class IPlayer extends CachePlayer {
                 else if(getState() == PlayerState.IN_MATCH){
                     //this player is in a match
                     if(ipl.getState() == PlayerState.IN_MATCH){
-                        //if both players are in match and are in the same match, we dont want to hide them from eachother
                         if(Practice.getMatchManager().getMatch(ipl) != null &&
                                 Practice.getMatchManager().getMatch(this) != null &&
                            Practice.getMatchManager().getMatch(ipl).getId().equalsIgnoreCase(Practice.getMatchManager().getMatch(this).getId())){
-                            Practice.getEntityHider().showEntity(player, pl);
-                            Practice.getEntityHider().showEntity(pl, player);
                             pl.showPlayer(player);
                             player.showPlayer(pl);
                         }
                         else{
-                            Practice.getEntityHider().hideEntity(player, pl);
-                            Practice.getEntityHider().hideEntity(pl, player);
                             player.hidePlayer(pl);
                             pl.hidePlayer(player);
                         }
+                        pl.showPlayer(player);
+                        player.showPlayer(pl);
                     }
                     else{
-                        Practice.getEntityHider().hideEntity(player, pl);
-                        Practice.getEntityHider().hideEntity(pl, player);
                         player.hidePlayer(pl);
                         pl.hidePlayer(player);
                     }
                 }
                 else if (getState() == PlayerState.BUILDING_KIT){
                     player.hidePlayer(pl);
-                    Practice.getEntityHider().hideEntity(player, pl);
+                }
+                else if (getState() == PlayerState.SPECTATING_MATCH){
+                    if(ipl.getState() == PlayerState.IN_MATCH){
+                        if(Practice.getMatchManager().getMatch(ipl) != null &&
+                                Practice.getMatchManager().getMatch(this) != null &&
+                                Practice.getMatchManager().getMatch(ipl).getId().equalsIgnoreCase(Practice.getMatchManager().getMatch(this).getId())){
+                            player.showPlayer(pl);
+                            pl.hidePlayer(pl);
+                        }
+                        else{
+                            player.hidePlayer(pl);
+                            pl.hidePlayer(player);
+                        }
+                    }
+                    else{
+                        player.hidePlayer(pl);
+                        pl.hidePlayer(player);
+                    }
                 }
             }
         }
         else{
             for(Player pl : Bukkit.getOnlinePlayers()){
-                IPlayer tpl = Practice.getCache().getIPlayer(pl);
-                Practice.getEntityHider().showEntity(player, pl);
-                player.showPlayer(pl);
-                if(!tpl.isStaffMode()){
-                    //Allow staff members to see each other
-                    Practice.getEntityHider().hideEntity(pl, player);
-                    pl.hidePlayer(player);
+                handleStaffModeVisibility(pl);
+            }
+        }
+    }
+
+    private void handleStaffModeVisibility(Player pl){
+        if(watching.isEmpty()) {
+            IPlayer tpl = Practice.getCache().getIPlayer(pl);
+            player.showPlayer(pl);
+            if (!tpl.isStaffMode()) {
+                //Allow staff members to see each other
+                pl.hidePlayer(player);
+            }
+        }
+        else{
+            IPlayer tpl = Practice.getCache().getIPlayer(pl);
+            if(!tpl.isStaffMode()){
+                if(watching.contains(tpl.getName())){
+                    player.showPlayer(pl);
                 }
+                else {
+                    player.hidePlayer(pl);
+                }
+                pl.hidePlayer(player);
+            }
+            else{
+                pl.showPlayer(player);
+                player.showPlayer(pl);
             }
         }
     }
@@ -210,10 +236,10 @@ public class IPlayer extends CachePlayer {
 
     public void sendToSpawnNoTp() {
         this.state = PlayerState.AT_SPAWN;
+        this.spectatingMatch = null;
         player.setAllowFlight(false);
         player.setFlying(false);
         player.setGameMode(GameMode.SURVIVAL);
-       // player.teleport(Practice.getIConfig().getSpawn());
         player.setHealth(20);
         player.setFoodLevel(20);
         for(PotionEffect po : player.getActivePotionEffects()) {
@@ -231,14 +257,21 @@ public class IPlayer extends CachePlayer {
         player.getInventory().setContents(player.getInventory().getContents());
         scoreboard.update();
         handlePlayerVisibility();
+        NametagManager.getPlayer(player).reset();
+        player.spigot().setCollidesWithEntities(true);
     }
 
     public void sendToSpawn() {
-        this.state = PlayerState.AT_SPAWN;
-        player.setAllowFlight(false);
-        player.setFlying(false);
-        player.setGameMode(GameMode.SURVIVAL);
+        sendToSpawnNoTp();
         player.teleport(Practice.getIConfig().getSpawn());
+    }
+
+    public void makeSpectator(PracticeMatch match){
+        this.state = PlayerState.SPECTATING_MATCH;
+        this.spectatingMatch = match.getId();
+        player.setAllowFlight(true);
+        player.setFlying(true);
+        player.setGameMode(GameMode.SURVIVAL);
         player.setHealth(20);
         player.setFoodLevel(20);
         for(PotionEffect po : player.getActivePotionEffects()) {
@@ -253,8 +286,7 @@ public class IPlayer extends CachePlayer {
         player.getInventory().setBoots(null);
         Practice.getSpawn().giveItems(this);
         player.updateInventory();
-        player.getInventory().setContents(player.getInventory().getContents());
-        scoreboard.update();
+        player.spigot().setCollidesWithEntities(false);
         handlePlayerVisibility();
     }
 

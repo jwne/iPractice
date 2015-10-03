@@ -17,7 +17,7 @@ import java.io.File;
 public class KiteArena extends Arena {
 
     @ConfigData("id")
-    private int id;
+    private final int id;
 
     @ConfigData("name")
     private String name;
@@ -42,23 +42,22 @@ public class KiteArena extends Arena {
     @ConfigSerializer(serializer = LocationSerializer.class)
     private Location max;
 
-    public KiteArena(Plugin plugin, String name, Location spawnAlpha, Location spawnBravo, Location end, Location min, Location max) {
-        super(plugin, "kitearenas" + File.separator + name+".yml");
+    public KiteArena(Plugin plugin, int id, String name, Location spawnAlpha, Location spawnBravo, Location end, Location min, Location max) {
+        super(plugin, "kitearenas" + File.separator + id+".yml");
         this.name = name;
         this.spawnAlpha = spawnAlpha;
         this.spawnBravo = spawnBravo;
         this.end = end;
         this.min = min;
         this.max = max;
-        this.id = (Practice.getArenaManager().getArenaIndex()+1);
-        Practice.getArenaManager().setArenaIndex((id+1));
+        this.id = Practice.getArenaManager().getNextArenaIndex();
         load();
         save();
     }
 
-    public KiteArena(Plugin plugin, String name) {
-        super(plugin, "kitearenas" + File.separator + name + ".yml");
-        this.name = name;
+    public KiteArena(Plugin plugin, int id) {
+        super(plugin, "kitearenas" + File.separator + id + ".yml");
+        this.id = id;
         load();
     }
 
@@ -69,7 +68,7 @@ public class KiteArena extends Arena {
 
     @Override
     public KiteArena duplicate(int offsetX, int offsetZ) {
-        KiteArena arena = new KiteArena(Practice.getPlugin(), name, spawnAlpha, spawnBravo, end, min, max);
+        KiteArena arena = new KiteArena(Practice.getPlugin(), Practice.getArenaManager().getNextArenaIndex(), name, spawnAlpha, spawnBravo, end, min, max);
         arena.setSpawnAlpha(spawnAlpha.clone().add(offsetX, 0, offsetZ));
         arena.setSpawnBravo(spawnBravo.clone().add(offsetX, 0, offsetZ));
         arena.setMin(min.clone().add(offsetX, 0, offsetZ));

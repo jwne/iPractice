@@ -1,7 +1,9 @@
 package com.shawckz.ipractice.kite;
 
 import com.shawckz.ipractice.Practice;
+import com.shawckz.ipractice.arena.Arena;
 import com.shawckz.ipractice.arena.ArenaType;
+import com.shawckz.ipractice.arena.BasicArena;
 import com.shawckz.ipractice.arena.KiteArena;
 import com.shawckz.ipractice.exception.PracticeException;
 import com.shawckz.ipractice.ladder.Ladder;
@@ -10,6 +12,7 @@ import com.shawckz.ipractice.match.handle.MatchManager;
 import com.shawckz.ipractice.match.PracticeMatch;
 import com.shawckz.ipractice.player.IPlayer;
 import com.shawckz.ipractice.player.PlayerState;
+import com.shawckz.ipractice.task.ArenaDupeTask;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -53,9 +56,23 @@ public class KiteMatch implements PracticeMatch{
                 throw new PracticeException("KiteMatch: Arena is not Kite Arena");
             }
         }
-
         if(arena == null){
-            throw new PracticeException("KiteMatch: There are no kite arenas registered");
+            msg(ChatColor.RED+"There are currently no available arenas.  Please wait while we attempt to auto-generate one for you.");
+            try{
+                final Arena newest = Practice.getArenaManager().getNewestArena(ArenaType.KITE);
+                if(newest != null) {
+                    arena = (KiteArena) newest;
+                }
+                else{
+                    msg(ChatColor.RED + "Unable to start match(1): There are no available arenas.  Please contact an administrator and notify them of this error.");
+                    return;
+                }
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+                msg(ChatColor.RED + "Unable to start match(2): There are no available arenas.  Please contact an administrator and notify them of this error.");
+                return;
+            }
         }
 
         matchManager.registerMatch(this);
@@ -89,8 +106,8 @@ public class KiteMatch implements PracticeMatch{
         chaser.getPlayer().sendMessage(ChatColor.GOLD+"Beacon location: "+ChatColor.GREEN+arena.getEnd().getBlockX()
                 +", "+arena.getEnd().getBlockY()+", "+arena.getEnd().getBlockZ());
 
-        Practice.getEntityHider().showEntity(runner.getPlayer(), chaser.getPlayer());
-        Practice.getEntityHider().showEntity(chaser.getPlayer(), runner.getPlayer());
+        runner.getPlayer().showPlayer(chaser.getPlayer());
+        chaser.getPlayer().showPlayer(runner.getPlayer());
         runner.getPlayer().showPlayer(chaser.getPlayer());
         chaser.getPlayer().showPlayer(runner.getPlayer());
 
@@ -191,5 +208,15 @@ public class KiteMatch implements PracticeMatch{
     @Override
     public Ladder getLadder() {
         return Ladder.getLadder(KITE_LADDER_RUNNER);
+    }
+
+    @Override
+    public String getOpponent(IPlayer player) {
+        if(player.getName().equals(runner.getName())){
+            return chaser.getName();
+        }
+        else{
+            return runner.getName();
+        }
     }
 }

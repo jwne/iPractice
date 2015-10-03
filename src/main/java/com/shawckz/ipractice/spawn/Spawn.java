@@ -1,6 +1,7 @@
 package com.shawckz.ipractice.spawn;
 
 import com.shawckz.ipractice.Practice;
+import com.shawckz.ipractice.arena.ArenaType;
 import com.shawckz.ipractice.kit.KitBuilder;
 import com.shawckz.ipractice.kite.KiteSelect;
 import com.shawckz.ipractice.ladder.Ladder;
@@ -45,8 +46,8 @@ public class Spawn implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
 
         //Normal Items
-        registerItem(new SimpleSpawnItem(0, new ItemBuilder(Material.ENCHANTED_BOOK)
-                .name(ChatColor.GOLD + "Kit Editor"), new SpawnItemAction() {
+        registerItem(new SimpleSpawnItem(0, new ItemBuilder(Material.BOOK)
+                .name(ChatColor.BLUE + "Kit Editor"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 new LadderSelect(player) {
@@ -66,7 +67,7 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(2, new ItemBuilder(Material.DIAMOND_SWORD)
-                .name(ChatColor.GOLD + "Join a Queue"), new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Join a Queue"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 if (!Practice.getQueueManager().inQueue(player)) {
@@ -119,7 +120,7 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(4, new ItemBuilder(Material.EYE_OF_ENDER)
-                .name(ChatColor.GOLD + "Host an Event"), new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Host an Event"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 if(player.getPlayer().hasPermission("practice.events.host")){
@@ -132,16 +133,20 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(6, new ItemBuilder(Material.FIREWORK_CHARGE)
-                .name(ChatColor.GOLD + "Kite Practice"), new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Kite Practice"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
+                if(Practice.getArenaManager().getNewestArena(ArenaType.KITE) == null){
+                    player.getPlayer().sendMessage(ChatColor.RED+"Kite Practice does not have any arenas currently setup!");
+                    return;
+                }
                 new KiteSelect(player.getPlayer());
             }
         }));
 
 
         registerItem(new SimpleSpawnItem(8, new ItemBuilder(new ItemStack(Material.INK_SACK, 1, DyeColor.LIME.getDyeData()))
-                .name(ChatColor.GOLD + "Create a Party"), new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Create a Party"), new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 player.getPlayer().performCommand("party create");
@@ -151,7 +156,7 @@ public class Spawn implements Listener {
         //Party items
 
         registerItem(new SimpleSpawnItem(0, new ItemBuilder(new ItemStack(Material.NETHER_STAR))
-                .name(ChatColor.GOLD + "Party Members"), SpawnItemType.PARTY, new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Party Members"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 if (player.getParty() != null) {
@@ -167,7 +172,7 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(2, new ItemBuilder(new ItemStack(Material.DIAMOND_SWORD))
-                .name(ChatColor.GOLD + "Join a Party Queue"), SpawnItemType.PARTY, new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Join a Party Queue"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 if (player.getParty() != null) {
@@ -212,7 +217,7 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(4, new ItemBuilder(new ItemStack(Material.FIREWORK_CHARGE))
-                .name(ChatColor.GOLD + "Party Kite Practice"), SpawnItemType.PARTY, new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Party Kite Practice"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 player.getPlayer().sendMessage(ChatColor.GOLD + "Party Kite Practice is currently in development and will be out soon!");
@@ -220,7 +225,7 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(5, new ItemBuilder(new ItemStack(Material.ENDER_CHEST))
-                .name(ChatColor.GOLD + "Parties to Duel"), SpawnItemType.PARTY, new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Parties to Duel"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 PartiesInv.open(player.getPlayer());
@@ -228,7 +233,7 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(6, new ItemBuilder(new ItemStack(Material.REDSTONE_TORCH_ON))
-                .name(ChatColor.GOLD + "Party Events"), SpawnItemType.PARTY, new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Party Events"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 if (player.getParty() != null) {
@@ -266,6 +271,7 @@ public class Spawn implements Listener {
                                                         mb.withPlayer(pl, "Team B");
                                                         pl.sendMessage(ChatColor.GOLD+"You are on "+ChatColor.AQUA+"Team B");
                                                     }
+                                                    x++;
                                                 }
                                                 mb.build().startMatch(Practice.getMatchManager());
                                             } else {
@@ -290,10 +296,19 @@ public class Spawn implements Listener {
         }));
 
         registerItem(new SimpleSpawnItem(8, new ItemBuilder(new ItemStack(Material.FIREBALL))
-                .name(ChatColor.GOLD + "Leave the Party"), SpawnItemType.PARTY, new SpawnItemAction() {
+                .name(ChatColor.BLUE + "Leave the Party"), SpawnItemType.PARTY, new SpawnItemAction() {
             @Override
             public void onClick(final IPlayer player) {
                 player.getPlayer().performCommand("party leave");
+            }
+        }));
+
+        registerItem(new SimpleSpawnItem(8, new ItemBuilder(Material.BLAZE_POWDER).name(ChatColor.RED + "Back to Spawn")
+                , SpawnItemType.SPECTATOR, new SpawnItemAction() {
+            @Override
+            public void onClick(IPlayer player) {
+                player.setState(PlayerState.AT_SPAWN);
+                player.sendToSpawn();
             }
         }));
 
@@ -306,9 +321,13 @@ public class Spawn implements Listener {
     }
 
     public void giveItems(IPlayer player) {
-        if (player.getParty() != null) {
+        if (player.getState() == PlayerState.SPECTATING_MATCH) {
+            giveItems(player, SpawnItemType.SPECTATOR);
+        }
+        else if (player.getParty() != null) {
             giveItems(player, SpawnItemType.PARTY);
-        } else {
+        }
+        else{
             giveItems(player, SpawnItemType.NORMAL);
         }
     }

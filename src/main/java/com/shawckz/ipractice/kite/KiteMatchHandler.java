@@ -42,11 +42,6 @@ public class KiteMatchHandler implements Listener {
     @EventHandler
     public void onDrop(final PlayerDropItemEvent e){
         if(match.contains(e.getPlayer())){
-            for(Player pl : Bukkit.getOnlinePlayers()){
-                if(!match.contains(pl)){
-                    Practice.getEntityHider().hideEntity(pl, e.getItemDrop());
-                }
-            }
             new BukkitRunnable(){
                 @Override
                 public void run() {
@@ -77,14 +72,6 @@ public class KiteMatchHandler implements Listener {
                 Item item = p.getWorld().dropItemNaturally(p.getLocation(), i);
                 items.add(item);
             }
-
-            for(Player pl : Bukkit.getOnlinePlayers()){
-                if(!match.contains(pl)){
-                    for(Item item : items){
-                        Practice.getEntityHider().hideEntity(pl, item);
-                    }
-                }
-            }
             new BukkitRunnable(){
                 @Override
                 public void run() {
@@ -109,7 +96,6 @@ public class KiteMatchHandler implements Listener {
             if(i.hasItemMeta()){
                 if(i.getItemMeta().getLore() != null){
                     if(i.getItemMeta().getLore().contains(match.getId())){
-                        Practice.getEntityHider().hideEntity(e.getPlayer(), e.getItem());
                         e.setCancelled(true);
                     }
                 }
@@ -126,7 +112,6 @@ public class KiteMatchHandler implements Listener {
                         e.getItem().setItemStack(i);
                     }
                     else{
-                        Practice.getEntityHider().hideEntity(e.getPlayer(), e.getItem());
                         e.setCancelled(true);
                     }
                 }
@@ -250,23 +235,4 @@ public class KiteMatchHandler implements Listener {
             }
         }
     }
-
-    @EventHandler
-    public void onLaunch(ProjectileLaunchEvent e){
-        Projectile proj = e.getEntity();
-        if(proj.getShooter() != null){
-            if(proj.getShooter() instanceof Player){
-                Player p = (Player) proj.getShooter();
-
-                if(match.contains(p)){
-                    for(Player pl : Bukkit.getOnlinePlayers()){
-                        if(!match.contains(pl)){
-                            Practice.getEntityHider().hideEntity(pl,proj);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 }

@@ -19,6 +19,7 @@ import com.shawckz.ipractice.spawn.Spawn;
 import com.shawckz.ipractice.task.TaskAutoSave;
 import com.shawckz.ipractice.task.TaskClearEntities;
 import com.shawckz.ipractice.util.EntityHider;
+import com.shawckz.ipractice.util.nametag.NametagManager;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -38,7 +39,6 @@ public class Practice extends JavaPlugin {
     @Getter private static PartyManager partyManager;
     @Getter private static MatchManager matchManager;
     @Getter private static ProtocolManager protocolManager;
-    @Getter private static EntityHider entityHider;
     @Getter private static EventManager eventManager;
     @Getter private static QueueManager queueManager;
     @Getter private static TaskAutoSave taskAutoSave;
@@ -55,7 +55,6 @@ public class Practice extends JavaPlugin {
         spawn = new Spawn(this);
         partyManager = new PartyManager(this);
         matchManager = new MatchManager(this);
-        entityHider = new EntityHider(this, EntityHider.Policy.BLACKLIST);
         arenaManager = new ArenaManager(this);
         eventManager = new EventManager(this);
         queueManager = new QueueManager(this);
@@ -101,8 +100,7 @@ public class Practice extends JavaPlugin {
         partyManager = null;
         iConfig = null;
         matchManager = null;
-        entityHider = null;
-        arenaManager.getArenas().clear();;
+        arenaManager.getArenas().clear();
         arenaManager = null;
         eventManager = null;
 

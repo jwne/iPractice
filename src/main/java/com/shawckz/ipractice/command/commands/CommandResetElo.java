@@ -30,7 +30,7 @@ public class CommandResetElo implements ICommand {
                 String player = cmdArgs.matchPlayer(0);
                 IPlayer target = Practice.getCache().getIPlayer(player);
                 if(target != null){
-                    if(cmdArgs.getArg(1).equalsIgnoreCase("any")){
+                    if(cmdArgs.getArg(1).equalsIgnoreCase("all")){
                         for(Ladder ladder : Ladder.getLadders()){
                             target.setElo(ladder, IPlayer.DEFAULT_ELO);
                         }

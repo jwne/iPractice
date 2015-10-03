@@ -17,7 +17,7 @@ import java.io.File;
 public class BasicArena extends Arena {
 
     @ConfigData("id")
-    private int id;
+    private final int id;
 
     @ConfigData("name")
     private String name;
@@ -38,22 +38,21 @@ public class BasicArena extends Arena {
     @ConfigSerializer(serializer = LocationSerializer.class)
     private Location max;
 
-    public BasicArena(Plugin plugin, String name, Location spawnAlpha, Location spawnBravo, Location min, Location max) {
-        super(plugin, "arenas" + File.separator + name+".yml");
+    public BasicArena(Plugin plugin, int id, String name, Location spawnAlpha, Location spawnBravo, Location min, Location max) {
+        super(plugin, "arenas" + File.separator + id +".yml");
+        this.id = id;
         this.name = name;
         this.spawnAlpha = spawnAlpha;
         this.spawnBravo = spawnBravo;
         this.min = min;
         this.max = max;
-        this.id = (Practice.getArenaManager().getArenaIndex()+1);
-        Practice.getArenaManager().setArenaIndex((id+1));
         load();
         save();
     }
 
-    public BasicArena(Plugin plugin, String name) {
-        super(plugin, "arenas" + File.separator + name + ".yml");
-        this.name = name;
+    public BasicArena(Plugin plugin, int id) {
+        super(plugin, "arenas" + File.separator + id + ".yml");
+        this.id = id;
         load();
     }
 
@@ -63,8 +62,8 @@ public class BasicArena extends Arena {
     }
 
     @Override
-    public Arena duplicate(int offsetX, int offsetZ) {
-        Arena arena = new BasicArena(Practice.getPlugin(), name, spawnAlpha, spawnBravo, min, max);
+    public BasicArena duplicate(int offsetX, int offsetZ) {
+        BasicArena arena = new BasicArena(Practice.getPlugin(), Practice.getArenaManager().getNextArenaIndex(), name, spawnAlpha, spawnBravo, min, max);
         arena.setSpawnAlpha(spawnAlpha.clone().add(offsetX, 0, offsetZ));
         arena.setSpawnBravo(spawnBravo.clone().add(offsetX, 0, offsetZ));
         arena.setMin(min.clone().add(offsetX, 0, offsetZ));

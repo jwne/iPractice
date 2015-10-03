@@ -11,6 +11,7 @@ import com.shawckz.ipractice.scoreboard.internal.XScoreboard;
 import com.shawckz.ipractice.scoreboard.internal.label.BasicLabel;
 import com.shawckz.ipractice.scoreboard.practice.label.EnderpearlCooldownLabel;
 import com.shawckz.ipractice.scoreboard.practice.label.MatchTimerLabel;
+import com.shawckz.ipractice.scoreboard.practice.label.ValueLabel;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,14 +34,14 @@ public class MatchBoardType implements PracticeBoardType {
     @Override
     public void update(XScoreboard scoreboard) {
         remove(scoreboard);
-        PracticeMatch practiceMatch = Practice.getMatchManager().getMatch(player);
+        final PracticeMatch practiceMatch = Practice.getMatchManager().getMatch(player);
 
         if(practiceMatch != null) {
 
             if (practiceMatch.getType() == MatchType.NORMAL || practiceMatch.getType() == MatchType.KITE) {
 
                 if (this.matchTimerLabel == null) {
-                    this.matchTimerLabel = new MatchTimerLabel(scoreboard, 4, practiceMatch);
+                    this.matchTimerLabel = new MatchTimerLabel(scoreboard, 3, practiceMatch);
                     labels.add(matchTimerLabel);
                 }
                 if (this.enderpearlCooldownLabel == null) {
@@ -50,7 +51,7 @@ public class MatchBoardType implements PracticeBoardType {
 
            //     if((this.enderpearlCooldownLabel.isVisible() && this.enderpearlCooldownLabel.isRunning())
           //              || (this.matchTimerLabel.isVisible() && this.matchTimerLabel.isRunning() && !this.matchTimerLabel.isComplete())) {
-                    labels.add(new BasicLabel(scoreboard, 5, ChatColor.GRAY + "" +
+                    labels.add(new BasicLabel(scoreboard, 4, ChatColor.GRAY + "" +
                             ChatColor.STRIKETHROUGH + "-------------------" + ChatColor.GREEN + "" + ChatColor.YELLOW));
 
                     labels.add(new BasicLabel(scoreboard, 1, ChatColor.GRAY + "" +
