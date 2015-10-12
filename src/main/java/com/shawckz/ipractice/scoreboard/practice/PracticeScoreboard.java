@@ -37,7 +37,7 @@ public class PracticeScoreboard {
     public PracticeScoreboard(IPlayer ip) {
         this.ip = ip;
         this.scoreboard = new XScoreboard(
-                ChatColor.GOLD+"Practice PvP "+ChatColor.RED+"[BETA]");//&6Practice PvP
+                ChatColor.GOLD+"Practice PvP");//&6Practice PvP
 
         boards.add(new SpawnBoardType(scoreboard, ip));
         boards.add(new KitBuilderBoardType(scoreboard, ip));

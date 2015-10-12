@@ -134,6 +134,16 @@ public class Match implements PracticeMatch {
                     }
                 }
                 NametagManager.getPlayer(pmmp.getPlayer().getPlayer()).reset();
+                for (MatchParticipant tpmp : playerManager.getParticipants()) {
+                    for (MatchPlayer tmp : tpmp.getPlayers()) {
+                        NametagManager.getPlayer(tmp.getPlayer().getPlayer()).reset();
+                    }
+                }
+            }
+        }
+
+        for(MatchParticipant pmp : playerManager.getParticipants()){
+            for(MatchPlayer pmmp : pmp.getPlayers()){
                 PracticeTeam team = teamManager.getTeam(pmmp.getPlayer());
                 for (MatchParticipant tpmp : playerManager.getParticipants()) {
                     for (MatchPlayer tmp : tpmp.getPlayers()) {
@@ -149,6 +159,7 @@ public class Match implements PracticeMatch {
                 }
             }
         }
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -211,6 +222,8 @@ public class Match implements PracticeMatch {
                         if (p.isSpectating()) {
                             p.getPlayer().sendToSpawn();
                         }
+                        p.setSpectating(false);
+                        p.setAlive(false);
                     }
                 }
             }
@@ -218,11 +231,9 @@ public class Match implements PracticeMatch {
         matchManager.unregisterMatch(this);
     }
 
-    public void eliminatePlayer(IPlayer player, IPlayer killer) {
+    public void eliminatePlayer(final IPlayer player, IPlayer killer) {
         MatchParticipant participant = playerManager.getParticipant(player);
         if (participant != null) {
-            player.makeSpectator(this);
-            playerManager.getPlayer(player).setSpectating(true);
             playerManager.getPlayer(player).setAlive(false);
 
             if (killer != null) {
@@ -239,6 +250,15 @@ public class Match implements PracticeMatch {
             }
 
             inventories.put(player.getName(), new MatchInventory(player.getPlayer()).getUuid());
+
+            final Match m = this;
+            new BukkitRunnable(){
+                @Override
+                public void run() {
+                    player.makeSpectator(m);
+                    playerManager.getPlayer(player).setSpectating(true);
+                }
+            }.runTaskLater(Practice.getPlugin(), 5L);
 
             if (ranked) {
                 player.getDeaths().put(ladder, (player.getDeaths().get(ladder) + 1));
@@ -335,9 +355,9 @@ public class Match implements PracticeMatch {
             if (pl.getTeam().getName().equals(team.getName())) {
                 for (MatchPlayer mp : pl.getPlayers()) {
                     if (mp.isAlive()) {
+                        inventories.put(mp.getPlayer().getName(), new MatchInventory(mp.getPlayer().getPlayer()).getUuid());
                         mp.getPlayer().makeSpectator(this);
                         playerManager.getPlayer(mp.getPlayer()).setSpectating(true);
-                        inventories.put(mp.getPlayer().getName(), new MatchInventory(mp.getPlayer().getPlayer()).getUuid());
                     }
                 }
             }

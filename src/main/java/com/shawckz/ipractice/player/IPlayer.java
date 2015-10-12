@@ -116,72 +116,7 @@ public class IPlayer extends CachePlayer {
     }
 
     public void handlePlayerVisibility(){
-        if(!staffMode){
-            for(Player pl : Bukkit.getOnlinePlayers()){
-                IPlayer ipl = Practice.getCache().getIPlayer(pl);
-                if(ipl == null) continue;
-
-                if(getState() == PlayerState.AT_SPAWN){
-                    if(ipl.getState() == PlayerState.BUILDING_KIT){
-                        //this player is @ spawn, other player is building kit
-                        ipl.getPlayer().hidePlayer(player);
-                        player.showPlayer(pl);
-                    }
-                    else if (ipl.getState() == PlayerState.IN_MATCH){
-                        //this player is @ spawn, other player is in match
-                        player.hidePlayer(pl);
-                        pl.hidePlayer(player);
-                    }
-                    else if (ipl.getState() == PlayerState.AT_SPAWN){
-                        //both players are at spawn
-                        pl.showPlayer(player);
-                        player.showPlayer(pl);
-                    }
-                }
-                else if(getState() == PlayerState.IN_MATCH){
-                    //this player is in a match
-                    if(ipl.getState() == PlayerState.IN_MATCH){
-                        if(Practice.getMatchManager().getMatch(ipl) != null &&
-                                Practice.getMatchManager().getMatch(this) != null &&
-                           Practice.getMatchManager().getMatch(ipl).getId().equalsIgnoreCase(Practice.getMatchManager().getMatch(this).getId())){
-                            pl.showPlayer(player);
-                            player.showPlayer(pl);
-                        }
-                        else{
-                            player.hidePlayer(pl);
-                            pl.hidePlayer(player);
-                        }
-                        pl.showPlayer(player);
-                        player.showPlayer(pl);
-                    }
-                    else{
-                        player.hidePlayer(pl);
-                        pl.hidePlayer(player);
-                    }
-                }
-                else if (getState() == PlayerState.BUILDING_KIT){
-                    player.hidePlayer(pl);
-                }
-                else if (getState() == PlayerState.SPECTATING_MATCH){
-                    if(ipl.getState() == PlayerState.IN_MATCH){
-                        if(Practice.getMatchManager().getMatch(ipl) != null &&
-                                Practice.getMatchManager().getMatch(this) != null &&
-                                Practice.getMatchManager().getMatch(ipl).getId().equalsIgnoreCase(Practice.getMatchManager().getMatch(this).getId())){
-                            player.showPlayer(pl);
-                            pl.hidePlayer(pl);
-                        }
-                        else{
-                            player.hidePlayer(pl);
-                            pl.hidePlayer(player);
-                        }
-                    }
-                    else{
-                        player.hidePlayer(pl);
-                        pl.hidePlayer(player);
-                    }
-                }
-            }
-        }
+        if(!staffMode){}
         else{
             for(Player pl : Bukkit.getOnlinePlayers()){
                 handleStaffModeVisibility(pl);
@@ -259,6 +194,14 @@ public class IPlayer extends CachePlayer {
         handlePlayerVisibility();
         NametagManager.getPlayer(player).reset();
         player.spigot().setCollidesWithEntities(true);
+        for(Player pl : Bukkit.getOnlinePlayers()){
+            if(pl.canSee(player)){
+                NametagManager.getPlayer(pl).setPlayerNametag(NametagManager.getPlayer(player), Match.NORMAL);
+            }
+            if(player.canSee(pl)){
+                NametagManager.getPlayer(player).setPlayerNametag(NametagManager.getPlayer(pl), Match.NORMAL);
+            }
+        }
     }
 
     public void sendToSpawn() {

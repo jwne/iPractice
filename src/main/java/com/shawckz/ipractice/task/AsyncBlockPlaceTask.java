@@ -62,11 +62,11 @@ public abstract class AsyncBlockPlaceTask extends BukkitRunnable {
             }
             else{
                 blockIndex = 0;
-                for(Player pl : Bukkit.getOnlinePlayers()){
+                /*for(Player pl : Bukkit.getOnlinePlayers()){
                     if(pl.isOp()){
                         pl.sendMessage(ChatColor.DARK_PURPLE+"Placed "+blocksPlaced+" of "+totalBlocks+" blocks ["+bps+" blocks/s]");
                     }
-                }
+                }*/
                 break;
             }
         }

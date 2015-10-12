@@ -3,6 +3,7 @@ package com.shawckz.ipractice.match.handle;
 import com.shawckz.ipractice.Practice;
 import com.shawckz.ipractice.match.Match;
 import com.shawckz.ipractice.player.IPlayer;
+import com.shawckz.ipractice.util.AutoRespawn;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
@@ -16,10 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -61,12 +59,16 @@ public class MatchHandler implements Listener {
         }
     }
 
-    private void fakeDeath(Player p, Player killer, boolean dropItems) {
+    @EventHandler
+    public void onDeath(PlayerDeathEvent e){
+        Player p = e.getEntity();
+        Player killer = p.getKiller();
+        boolean dropItems = match.getRemainingPlayers() <= 2;
         final IPlayer ip = Practice.getCache().getIPlayer(p);
         if (match.getPlayerManager().hasPlayer(p)) {
             if(dropItems){
                 final Set<Item> items = new HashSet<>();
-                for (ItemStack i : p.getInventory().getContents()) {
+                for (ItemStack i : e.getDrops()) {
                     ItemMeta im = i.getItemMeta();
                     if (im.getLore() == null) {
                         im.setLore(new ArrayList<String>());
@@ -76,16 +78,7 @@ public class MatchHandler implements Listener {
                     Item item = p.getWorld().dropItemNaturally(p.getLocation(), i);
                     items.add(item);
                 }
-                for (ItemStack i : p.getInventory().getArmorContents()) {
-                    ItemMeta im = i.getItemMeta();
-                    if (im.getLore() == null) {
-                        im.setLore(new ArrayList<String>());
-                    }
-                    im.getLore().add(match.getId());
-                    i.setItemMeta(im);
-                    Item item = p.getWorld().dropItemNaturally(p.getLocation(), i);
-                    items.add(item);
-                }
+                e.getDrops().clear();
 
                 new BukkitRunnable() {
                     @Override
@@ -95,10 +88,13 @@ public class MatchHandler implements Listener {
                                 item.remove();
                             }
                         }
+                        items.clear();
                     }
                 }.runTaskLater(Practice.getPlugin(), 60L);
             }
 
+
+            AutoRespawn.autoRespawn(e);
 
             if (killer != null) {
                 IPlayer kip = Practice.getCache().getIPlayer(killer);
@@ -196,11 +192,6 @@ public class MatchHandler implements Listener {
                     e.setCancelled(true);
                     e.setDamage(0.0);
                 }
-                else{
-                    if(p.getHealth() - e.getDamage() <= 0){
-                        fakeDeath(p, null, match.getRemainingPlayers() > 2);
-                    }
-                }
             }
         }
     }
@@ -223,11 +214,6 @@ public class MatchHandler implements Listener {
                             e.setCancelled(true);
                             e.setDamage(0.0);
                             d.sendMessage(ChatColor.RED + p.getName() + " is on your team!");
-                        }
-                        else{
-                            if(p.getHealth() - e.getDamage() <= 0){
-                                fakeDeath(p, d, match.getRemainingPlayers() > 2);
-                            }
                         }
                     }
                 } else {

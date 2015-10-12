@@ -20,13 +20,13 @@ public class NametagPlayer {
     private Player player;
     private String name;
     private List<Nametag> registeredNametags;
-    private Map<NametagPlayer,Nametag> playerNametags;
+    private ConcurrentMap<NametagPlayer,Nametag> playerNametags;
 
     public NametagPlayer(Player player) {
         this.name = player.getName();
         this.player = player;
         this.registeredNametags = new ArrayList<>();
-        this.playerNametags = new HashMap<>();
+        this.playerNametags = new ConcurrentHashMap<>();
     }
 
     /**
@@ -176,7 +176,7 @@ public class NametagPlayer {
         }
         for(NametagPlayer p : playerNametags.keySet()){
             Nametag nametag = playerNametags.get(p);
-            setPlayerNametag(p,nametag);
+            setPlayerNametag(p, nametag);
         }
     }
 
@@ -188,7 +188,14 @@ public class NametagPlayer {
         while(pl.hasNext()){
             NametagPlayer nametagPlayer = pl.next();
             Nametag nametag = playerNametags.get(nametagPlayer);
-            removePlayerNametag(nametagPlayer,nametag);
+            if(hasRegisteredNametag(nametag)){
+                NametagEdit nametagEdit = new NametagEdit();
+                nametagEdit.setNametag(nametag);
+                nametagEdit.setParam(NametagEdit.NametagParam.REMOVE_PLAYER);
+                nametagEdit.removePlayer(nametagPlayer.getPlayer()); // Not tested, maybe remove this if it breaks.
+                nametagEdit.sendToPlayer(player);
+                playerNametags.remove(player);
+            }
         }
         for(Nametag nametag : registeredNametags){
             NametagEdit nametagEdit = new NametagEdit();

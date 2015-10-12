@@ -71,7 +71,7 @@ public abstract class ArenaDupeTask implements Runnable {
             if(tries >= maxTries){
                 for(Player pl : Bukkit.getOnlinePlayers()){
                     if(pl.isOp()){
-                        pl.sendMessage(ChatColor.DARK_PURPLE+"Arena scan complete:"+ChatColor.RED+" Paste is not safe.  ");
+                        pl.sendMessage(ChatColor.DARK_PURPLE+"Arena scan complete:"+ChatColor.RED+" Paste is not safe.");
                     }
                 }
                 completed = true;

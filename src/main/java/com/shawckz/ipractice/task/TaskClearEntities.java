@@ -1,14 +1,9 @@
 package com.shawckz.ipractice.task;
 
-import com.shawckz.ipractice.Practice;
-import com.shawckz.ipractice.player.IPlayer;
-
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 
 public class TaskClearEntities implements Runnable {
 
